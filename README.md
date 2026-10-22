@@ -8,7 +8,7 @@ Data comes from `thrive-gym-api`, which the desktop app syncs to.
 ```bash
 npm install
 cp .env.example .env.local   # point NEXT_PUBLIC_API_URL at the API
-npm run dev                  # http://localhost:3018
+npm run dev                  # http://localhost:3000
 ```
 
 `NEXT_PUBLIC_API_URL` is read at **build** time, so on the server it must be in
@@ -73,6 +73,6 @@ remains configured in `lib/site.ts`.
 ## Deploy
 
 Pushing to `master` runs `.github/workflows/main.yml`: pull, build, and (re)start the
-`thrive-gym-app` PM2 process on the VPS (`npm start`, port 3020). Repository secrets:
+`thrive-gym-app` PM2 process on the VPS (`npm start`, port 3000). Repository secrets:
 `HOST`, `USERNAME`, `PRIVATE_KEY`, `SSH_PORT`. Point the domain's reverse proxy at
-port 3020.
+port 3000.

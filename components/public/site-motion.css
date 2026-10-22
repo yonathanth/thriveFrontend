@@ -1,0 +1,20 @@
+.thrive-site-motion { display: contents; }
+@keyframes thrive-page-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes thrive-panel-enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+@keyframes thrive-value-enter { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .thrive-offerings-page .tm-hero-copy, .ts-intro-heading, .tm-pricing-intro, .tc-intro, .tj-intro, .thrive-service-detail-hero { animation: thrive-page-enter 850ms cubic-bezier(.22,.61,.36,1) both; }
+  .tj-form, .tj-payment, .tj-session { animation: thrive-panel-enter 420ms ease-out both; }
+  .tj-total strong, .tm-plan-amount strong { animation: thrive-value-enter 300ms ease-out both; }
+  .tj-access label, .tm-membership-selector button, .tj-field select { transition: background 300ms, color 300ms, border-color 300ms; }
+  .thrive-facilities-lightbox[open] .thrive-facilities-lightbox-content { animation: thrive-panel-enter 420ms ease-out both; }
+  .thrive-facilities-lightbox-image img { animation: thrive-panel-enter 350ms ease-out both; }
+  @supports (interpolate-size: allow-keywords) {
+    .tm-questions details { interpolate-size: allow-keywords; }
+    .tm-questions details::details-content { height: 0; opacity: 0; overflow: clip; transition: height 380ms ease, opacity 300ms ease, content-visibility 380ms; transition-behavior: allow-discrete; }
+    .tm-questions details[open]::details-content { height: auto; opacity: 1; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thrive-site-motion *, .thrive-site-motion *::before, .thrive-site-motion *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

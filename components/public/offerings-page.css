@@ -1,0 +1,71 @@
+.thrive-offerings-page { background: #0b1013; }
+.thrive-offerings-page .tm-hero { grid-template-columns: 1fr; padding-top: 145px; padding-bottom: 30px; gap: 45px; }
+.thrive-offerings-page .tm-hero-copy { display: grid; grid-template-columns: 1.35fr 1fr; gap: 20px 70px; align-items: end; }
+.thrive-offerings-page .tm-hero h1 { grid-row: span 2; font-size: clamp(51px, 6.5vw, 93px); line-height: 1.04; }
+.thrive-offerings-page .tm-hero-copy > p { max-width: 340px; margin-top: 0; font-size: 17px; }
+.thrive-offerings-page .tm-actions { margin-top: 0; align-self: start; gap: 25px; }
+.thrive-offerings-page .tm-hero-photo { min-height: 410px; border-radius: 22px; }
+.thrive-offerings-page .tm-hero-photo img { object-position: center 53%; }
+.thrive-offerings-page .tm-hero-photo > span { left: 40px; bottom: 32px; font-size: clamp(30px, 3.7vw, 51px); }
+.thrive-offerings-page .tm-hero-photo em { color: #8ddfff; }
+.thrive-offerings-page .tm-offerings { padding-top: 65px; }
+.to-catalog-heading { display: grid; grid-template-columns: 1fr 1.05fr; align-items: end; gap: 45px; margin-bottom: 40px; }
+.to-directory { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 30px; }
+.to-directory a { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #c3d0d9; }
+.to-directory a > span { font-size: 11px; color: #09b2f7; }
+.to-directory svg { color: #6e8d9f; margin-left: auto; }
+.to-directory a:hover { color: #8ddfff; }
+.thrive-offerings-page .tm-offering-list { display: grid; grid-template-columns: 1fr 1fr; gap: 50px 30px; }
+.thrive-offerings-page .tm-offering { display: flex; flex-direction: column; gap: 0; align-items: stretch; min-width: 0; scroll-margin-top: 120px; }
+.thrive-offerings-page .tm-offering-photo { min-height: 0; height: auto; aspect-ratio: 16 / 10; flex-shrink: 0; border-radius: 18px; }
+.thrive-offerings-page .tm-offering-photo img { transition: transform 500ms; }
+.thrive-offerings-page .tm-offering-photo:hover img { transform: scale(1.025); }
+.to-photo-index { position: absolute; left: 20px; top: 20px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #071b2dd9; backdrop-filter: blur(8px); color: #b6eaff; font-size: 13px; }
+.thrive-offerings-page .tm-offering-copy { display: flex; flex-direction: column; align-items: flex-start; padding: 26px 4px 0; flex: 1; }
+.thrive-offerings-page .tm-offering h3 { font-size: clamp(29px, 3vw, 41px); }
+.thrive-offerings-page .tm-offering-copy > p { max-width: 460px; font-size: 16px; line-height: 1.8; margin-top: 14px; }
+.thrive-offerings-page .tm-offering ul { gap: 9px; margin-top: 22px; margin-bottom: 27px; }
+.thrive-offerings-page .tm-offering li { font-size: 14px; line-height: 1.65; color: #c5d3db; }
+.thrive-offerings-page .tm-offering-copy > a { width: 100%; display: flex; justify-content: space-between; margin-top: auto; color: #8ddfff; gap: 20px; }
+.thrive-offerings-page .tm-offering-copy > a > span { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 50%; background: #132c3a; transition: background 200ms, color 200ms; }
+.thrive-offerings-page .tm-offering-copy > a:hover > span { background: #09b2f7; color: #062332; }
+.thrive-offerings-page .tm-offering.to-featured { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: stretch; gap: 0; border-radius: 22px; overflow: hidden; background: #17252e; }
+.thrive-offerings-page .to-featured .tm-offering-photo { aspect-ratio: auto; min-height: 0; height: 330px; border-radius: 0; }
+.thrive-offerings-page .to-featured .tm-offering-copy { position: relative; margin-top: -2px; background: #17252e; display: grid; grid-template-columns: 1.15fr 1fr auto; align-items: center; gap: 35px; padding: 32px 35px; }
+.thrive-offerings-page .to-featured h3 { position: absolute; z-index: 1; left: 35px; bottom: 28px; font-size: clamp(36px, 4.4vw, 62px); color: #f4f4f0; }
+.thrive-offerings-page .to-featured .tm-offering-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #17252e00 20%, #17252e35 45%, #17252eb3 74%, #17252e 96%); }
+.thrive-offerings-page .to-featured .to-photo-index { z-index: 1; }
+.thrive-offerings-page .to-featured .tm-offering-copy > p { margin: 0; }
+.thrive-offerings-page .to-featured ul { margin: 0; }
+.thrive-offerings-page .to-featured .tm-offering-copy > a { width: auto; margin: 0; padding: 12px 12px 12px 20px; border-radius: 40px; background: #f4faff; color: #062332; font-size: 14px; white-space: nowrap; }
+.thrive-offerings-page .to-featured .tm-offering-copy > a > span { background: #062332; color: #8ddfff; }
+.thrive-offerings-page .to-featured .tm-offering-copy > a:hover { background: #c2edff; }
+.thrive-offerings-page .tm-everyday { position: relative; padding-block: 45px; margin-block: 10px 90px; background: #0b293a; border-radius: 24px; grid-template-columns: 1fr 2fr; gap: 45px; }
+.thrive-offerings-page .tm-everyday h2 { font-size: clamp(32px, 3.5vw, 48px); }
+.thrive-offerings-page .tm-everyday em { color: #8ddfff; }
+.thrive-offerings-page .tm-benefits article > span { font-size: clamp(30px, 3.4vw, 47px); margin-bottom: 20px; }
+.thrive-offerings-page .tm-benefits h3 { font-size: 17px; line-height: 1.5; }
+.thrive-offerings-page .tm-benefits p { color: #a8c1d0; font-size: 15px; }
+.thrive-offerings-page .tm-faq { padding-top: 0; }
+.thrive-offerings-page .tm-questions details { border-bottom-color: #7894a329; }
+.thrive-offerings-page .tm-questions summary { font-size: 17px; padding-block: 25px; }
+.thrive-offerings-page .tm-closing { padding-block: 25px 90px; }
+.thrive-offerings-page .tm-closing .tm-button { background: #09b2f7; color: #062332; }
+.thrive-offerings-page .tm-closing .tm-button:hover { background: #8ddfff; }
+@media (max-width: 1099px) { .thrive-offerings-page .tm-hero-copy { column-gap: 35px; } .thrive-offerings-page .tm-everyday { grid-template-columns: 1fr; gap: 35px; } .to-catalog-heading { gap: 30px; } }
+@media (max-width: 799px) { .thrive-offerings-page .tm-hero-copy { grid-template-columns: 1fr; } .thrive-offerings-page .tm-hero h1 { grid-row: auto; font-size: 66px; } .thrive-offerings-page .tm-hero-copy > p { max-width: 430px; } .thrive-offerings-page .tm-actions { margin-top: 8px; } .to-catalog-heading { grid-template-columns: 1fr; } .to-directory { max-width: 580px; } .thrive-offerings-page .tm-offering.to-featured { grid-template-columns: 1fr; } .thrive-offerings-page .to-featured .tm-offering-photo { height: 340px; min-height: 0; } .thrive-offerings-page .tm-offering-list { gap: 40px 25px; } }
+@media (max-width: 699px) { .thrive-offerings-page .tm-hero { padding-top: 125px; gap: 30px; } .thrive-offerings-page .tm-hero h1 { font-size: clamp(43px, 9.5vw, 64px); } .thrive-offerings-page .tm-hero-photo { min-height: 320px; } .thrive-offerings-page .tm-hero-photo > span { left: 24px; bottom: 25px; font-size: 31px; } .thrive-offerings-page .tm-hero-copy > p { font-size: 16px; } .thrive-offerings-page .tm-offerings { padding-top: 35px; } .to-directory { grid-template-columns: 1fr; gap: 17px; } .thrive-offerings-page .tm-offering-list { grid-template-columns: 1fr; gap: 35px; } .thrive-offerings-page .to-featured .tm-offering-copy { padding: 28px 24px; } .thrive-offerings-page .to-featured .tm-offering-photo { height: 280px; } .thrive-offerings-page .tm-offering-photo { aspect-ratio: 4 / 3; } .thrive-offerings-page .tm-everyday { border-radius: 0; padding-block: 38px; margin-block: 0 65px; } .thrive-offerings-page .tm-benefits { grid-template-columns: 1fr; gap: 30px; } .thrive-offerings-page .tm-benefits article > span { margin-bottom: 9px; } .thrive-offerings-page .tm-closing { padding-bottom: 65px; } }
+.thrive-offerings-page .tm-offering.to-immersive { position: relative; isolation: isolate; overflow: hidden; border-radius: 20px; min-height: 570px; }
+.thrive-offerings-page .to-immersive .tm-offering-photo { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; border-radius: 0; }
+.thrive-offerings-page .to-immersive .tm-offering-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #020b12ed 0%, #020b12b8 48%, #020b1280 70%, #020b12d9 100%); }
+.thrive-offerings-page .to-immersive .to-photo-index { z-index: 1; background: #0e3d54; }
+.thrive-offerings-page .to-immersive .tm-offering-copy { position: relative; padding: 85px 35px 35px; }
+.thrive-offerings-page .to-immersive .tm-offering-copy > p { color: #e1eaf0; }
+.thrive-offerings-page .to-immersive li { color: #e1eaf0; }
+.thrive-offerings-page .to-immersive .tm-offering-copy > a { color: #b1e9ff; }
+.thrive-offerings-page .to-immersive .tm-offering-copy > a > span { background: #0d394f; }
+@media (max-width: 699px) { .thrive-offerings-page .tm-offering.to-immersive { min-height: 530px; } .thrive-offerings-page .to-immersive .tm-offering-copy { padding: 80px 25px 28px; } }
+@media (prefers-reduced-motion: reduce) { .thrive-offerings-page .tm-offering-photo img, .thrive-offerings-page .tm-offering-copy > a > span { transition: none; } }
+
+@media (max-width: 1099px) { .thrive-offerings-page .to-featured .tm-offering-copy { grid-template-columns: 1fr 1fr; gap: 25px; } .thrive-offerings-page .to-featured .tm-offering-copy > a { justify-self: start; } }
+@media (max-width: 699px) { .thrive-offerings-page .to-featured .tm-offering-copy { grid-template-columns: 1fr; gap: 23px; padding: 26px 24px; } .thrive-offerings-page .to-featured h3 { left: 24px; bottom: 24px; } .thrive-offerings-page .to-featured .tm-offering-copy > a { width: 100%; white-space: normal; gap: 12px; font-size: 13px; } .thrive-offerings-page .to-featured .tm-offering-copy > a > span { flex-shrink: 0; } }

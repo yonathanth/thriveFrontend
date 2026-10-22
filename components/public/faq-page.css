@@ -1,0 +1,5 @@
+.tf-categories { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 32px; }
+.tf-categories button { padding: 11px 20px; border-radius: 30px; background: #202a30; color: #b2c0c8; cursor: pointer; }
+.tf-categories button[aria-pressed="true"] { background: #09b2f7; color: #062332; }
+.tf-categories button:focus-visible { outline: 2px solid #8ddfff; outline-offset: 4px; }
+.tf-questions { max-width: 960px; padding-bottom: 60px; }

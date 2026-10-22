@@ -1,0 +1,52 @@
+/* Scope the design's base styles so portal typography and theme stay intact. */
+.thrive-public {
+  --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  --radius-lg: .5rem;
+  --radius-xl: .75rem;
+  --radius-2xl: 1rem;
+  min-height: 100vh;
+  background: #050507;
+  color: #f4f4f5;
+  overflow-x: clip;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.thrive-public ::selection { background: #fbbf24; color: #000; }
+.thrive-public [id] { scroll-margin-top: 7rem; }
+.thrive-public .glass-panel { background: #ffffff14; backdrop-filter: blur(16px); border: 1px solid #ffffff26; }
+.thrive-public .glass-panel-dark { background: #0a0a0e8c; backdrop-filter: blur(20px); border: 1px solid #ffffff1f; }
+.thrive-public .glass-pill { background: #ffffff1f; backdrop-filter: blur(12px); border: 1px solid #fff3; }
+
+/* The document owns the page scrollbar; nested public scrollers match it. */
+html:has(.thrive-public)::-webkit-scrollbar,
+body:has(.thrive-public)::-webkit-scrollbar,
+.thrive-public ::-webkit-scrollbar { width: 8px; height: 8px; }
+
+html:has(.thrive-public)::-webkit-scrollbar-track,
+body:has(.thrive-public)::-webkit-scrollbar-track,
+.thrive-public ::-webkit-scrollbar-track { background: #050507; }
+
+html:has(.thrive-public)::-webkit-scrollbar-thumb,
+body:has(.thrive-public)::-webkit-scrollbar-thumb,
+.thrive-public ::-webkit-scrollbar-thumb {
+  background: #354854;
+  border: 2px solid #050507;
+  border-radius: 999px;
+}
+
+html:has(.thrive-public)::-webkit-scrollbar-thumb:hover,
+body:has(.thrive-public)::-webkit-scrollbar-thumb:hover,
+.thrive-public ::-webkit-scrollbar-thumb:hover { background: #09b2f7; }
+
+html:has(.thrive-public)::-webkit-scrollbar-corner,
+body:has(.thrive-public)::-webkit-scrollbar-corner,
+.thrive-public ::-webkit-scrollbar-corner { background: #050507; }
+
+@supports not selector(::-webkit-scrollbar) {
+  html:has(.thrive-public), body:has(.thrive-public), .thrive-public * {
+    scrollbar-width: thin;
+    scrollbar-color: #354854 #050507;
+  }
+}

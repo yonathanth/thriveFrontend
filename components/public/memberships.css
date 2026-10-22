@@ -1,0 +1,159 @@
+.thrive-memberships-page { background: #0b0d0e; color: #f4f4f0; }
+.thrive-memberships-page em { font-family: var(--font-editorial), Georgia, serif; font-weight: 400; color: #09b2f7; }
+.thrive-memberships-page h2 { font-size: clamp(35px, 3.6vw, 52px); font-weight: 500; letter-spacing: -.045em; line-height: 1.12; }
+.thrive-memberships-page main section[id] { scroll-margin-top: 100px; }
+.tm-section { padding-block: clamp(65px, 7vw, 100px); }
+.tm-hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(30px, 5vw, 75px); align-items: center; padding-top: 155px; padding-bottom: 70px; }
+.tm-hero h1 { font-size: clamp(44px, 5.1vw, 74px); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; }
+.tm-hero-copy > p { font-size: 16px; line-height: 1.8; color: #a9b4ba; max-width: 350px; margin-top: 25px; }
+.tm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 25px; margin-top: 32px; }
+.tm-button { display: inline-flex; align-items: center; justify-content: center; gap: 20px; padding: 15px 23px; border-radius: 40px; background: #f4f8fa; color: #062332; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 200ms; }
+.tm-button:hover { background: #c2edff; }
+.tm-text-link { display: inline-flex; align-items: center; gap: 13px; font-size: 14px; color: #e3ecf0; }
+.tm-text-link svg { color: #09b2f7; }
+.tm-text-link:hover { color: #8ddfff; }
+.tm-hero-photo { position: relative; isolation: isolate; min-height: 480px; overflow: hidden; border-radius: 18px; }
+.tm-hero-photo img { object-fit: cover; object-position: 67% center; }
+.tm-hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, #020a10de); }
+.tm-hero-photo > span { position: absolute; bottom: 32px; left: 30px; right: 30px; font-size: 30px; letter-spacing: -.035em; line-height: 1.2; }
+.tm-hero-photo em { color: #e6f5fc; }
+.tm-offerings > h2 { margin-bottom: 45px; }
+.tm-offering-list { display: flex; flex-direction: column; gap: 28px; }
+.tm-offering { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(35px, 6vw, 85px); align-items: center; scroll-margin-top: 115px; }
+.tm-offering-photo { position: relative; min-height: 345px; height: 100%; overflow: hidden; border-radius: 17px; }
+.tm-offering-photo img { object-fit: cover; }
+.tm-offering-copy { padding-block: 28px; padding-right: 22px; }
+.tm-offering-number { display: block; font-size: 13px; color: #09b2f7; margin-bottom: 18px; }
+.tm-offering h3 { font-size: clamp(28px, 2.8vw, 40px); font-weight: 500; letter-spacing: -.045em; line-height: 1.15; }
+.tm-offering-copy > p { font-size: 16px; line-height: 1.8; color: #a9b4ba; margin-top: 15px; max-width: 350px; }
+.tm-offering ul { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.tm-offering li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #d7e0e5; }
+.tm-detail-mark { display: inline-block; width: 11px; height: 2px; flex-shrink: 0; border-radius: 2px; background: #09b2f7; }
+.tm-offering-copy > a { margin-top: 28px; }
+.tm-offering-reverse .tm-offering-photo { order: 2; }
+.tm-offering-reverse .tm-offering-copy { padding-left: 25px; }
+.tm-plans { background: #11171a; }
+.tm-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; }
+.tm-section-heading > p { font-size: 16px; line-height: 1.8; color: #a9b4ba; }
+.tm-membership-selector { display: flex; width: fit-content; gap: 5px; padding: 5px; border-radius: 40px; background: #202a30; margin-top: 35px; }
+.tm-membership-selector button { padding: 11px 24px; border-radius: 30px; font-size: 15px; color: #b2c0c8; cursor: pointer; transition: background 200ms, color 200ms; }
+.tm-membership-selector button[aria-pressed="true"] { background: #09b2f7; color: #062332; font-weight: 600; }
+.tm-membership-selector button:hover { color: white; }
+.tm-membership-selector button[aria-pressed="true"]:hover { color: #062332; background: #8ddfff; }
+.tm-membership-explainer { margin-top: 22px; margin-bottom: 30px; max-width: 720px; }
+.tm-membership-explainer p { font-size: 16px; color: #d7e0e5; line-height: 1.8; }
+.tm-membership-explainer > span { display: block; font-size: 14px; line-height: 1.8; color: #9cabb3; margin-top: 8px; }
+.tm-plan-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.tm-plan { display: flex; flex-direction: column; min-width: 0; min-height: 540px; padding: 32px; background: #1b2429; border: 1px solid #ffffff0d; border-radius: 18px; }
+.tm-plan h3 { font-size: 24px; font-weight: 500; letter-spacing: -.035em; }
+.tm-plan-description { font-size: 15px; color: #9cabb3; margin-top: 9px; }
+.tm-plan-duration { display: flex; align-items: baseline; gap: 12px; margin-block: 25px; }
+.tm-plan-duration > span:first-child { font-size: clamp(62px, 6vw, 86px); font-weight: 600; line-height: 1; letter-spacing: -.06em; color: #8ddfff; }
+.tm-plan-duration > span:last-child { color: #9cabb3; font-size: 15px; }
+.tm-plan-price { display: flex; flex-direction: column; gap: 6px; }
+.tm-plan-price strong { font-size: 21px; letter-spacing: -.035em; font-weight: 500; }
+.tm-plan-price > span { font-size: 13px; color: #9cabb3; }
+.tm-plan-inclusions { font-size: 15px; line-height: 1.8; color: #a9b4ba; margin-top: 24px; margin-bottom: 26px; }
+.tm-plan-details { margin-top: 30px; margin-bottom: 30px; }
+.tm-plan-features { display: flex; flex-direction: column; gap: 15px; }
+.tm-plan-features li { list-style: none; font-size: 14px; color: #aebdc6; line-height: 1.6; }
+.tm-plan-terms { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+.tm-plan-terms > div { display: flex; align-items: baseline; justify-content: space-between; gap: 15px; font-size: 13px; line-height: 1.6; }
+.tm-plan-terms dt { color: #849ba8; }
+.tm-plan-terms dd { color: #d4e1e8; text-align: right; }
+.tm-plan-action { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 17px; margin-top: auto; background: #f4f8fa; color: #062332; font-size: 14px; font-weight: 600; border-radius: 35px; transition: background 200ms; }
+.tm-plan-action:hover { background: #c2edff; }
+.tm-plan-action { cursor: pointer; text-align: left; }
+.tm-pricing-page { background: #11171a; }
+.tm-pricing-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 30px; padding-top: 140px; padding-bottom: 25px; }
+.tm-pricing-intro h1 { font-size: clamp(40px, 4.2vw, 60px); font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+.tm-pricing-intro > div > p { margin-top: 13px; color: #a9b4ba; font-size: 16px; line-height: 1.7; }
+.tm-draft-note { flex-basis: 100%; font-size: 13px; line-height: 1.7; color: #91b3c6; }
+.tm-plans-direct { padding-top: 0; padding-bottom: 55px; }
+.tm-plans-direct .tm-membership-selector { margin-top: 0; }
+.tm-plans-direct .tm-membership-explainer { margin-top: 17px; margin-bottom: 22px; }
+.tm-plan-amount { display: flex; flex-direction: column; gap: 8px; margin-top: 26px; }
+.tm-plan-amount strong { color: #8ddfff; font-size: clamp(35px, 3.1vw, 45px); font-weight: 600; line-height: 1.05; letter-spacing: -.055em; }
+.tm-plan-amount > span { color: #e3ecf0; font-size: 15px; }
+.tm-plan-amount > span > span { color: #9cabb3; }
+.tm-plan-help { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 1.7; color: #9cabb3; margin-top: 30px; }
+.tm-plan-help a { display: inline-flex; align-items: center; gap: 8px; color: #8ddfff; }
+.tm-class-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
+.tm-class-price { min-width: 0; overflow: hidden; border-radius: 17px; background: #1b2429; scroll-margin-top: 115px; display: flex; flex-direction: column; }
+.tm-class-price-copy { display: flex; flex-direction: column; padding: 32px 25px; flex: 1; }
+.tm-class-price h3 { font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
+.tm-class-price-copy > p { color: #a9b4ba; font-size: 14px; line-height: 1.7; margin-top: 10px; margin-bottom: 26px; }
+.tm-class-price .tm-plan-price { margin-top: auto; margin-bottom: 25px; }
+.tm-class-price .tm-plan-action { margin-top: 0; }
+.tm-class-price .tm-text-link { margin-top: 20px; font-size: 13px; }
+.tm-class-amount { display: flex; flex-direction: column; gap: 6px; margin-block: 23px; }
+.tm-class-amount strong { color: #8ddfff; font-size: 32px; letter-spacing: -.04em; line-height: 1.1; font-weight: 600; }
+.tm-class-amount strong > span { font-size: 16px; font-weight: 400; }
+.tm-class-amount > span { font-size: 14px; color: #9cabb3; }
+.tm-class-schedule { display: flex; flex-direction: column; gap: 13px; margin-bottom: 27px; }
+.tm-class-schedule > div { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.tm-class-schedule dt { font-size: 13px; color: #879ba6; }
+.tm-class-schedule dd { font-size: 14px; color: #d7e0e5; line-height: 1.6; }
+.tm-class-price-copy > .tm-plan-action { margin-top: auto; }
+.tm-class-prices-note { margin-top: 25px; color: #9cabb3; font-size: 14px; line-height: 1.8; }
+.tm-everyday { display: grid; grid-template-columns: .8fr 2fr; gap: 65px; }
+.tm-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
+.tm-benefits article > span { display: block; font-size: clamp(30px, 3vw, 43px); font-weight: 600; letter-spacing: -.045em; color: #09b2f7; margin-bottom: 23px; }
+.tm-benefits h3 { font-size: 17px; font-weight: 500; letter-spacing: -.025em; line-height: 1.3; }
+.tm-benefits p { margin-top: 12px; font-size: 15px; line-height: 1.8; color: #a9b4ba; }
+.tm-faq { display: grid; grid-template-columns: 1fr 1.25fr; gap: 70px; padding-top: 30px; }
+.tm-questions details { border-bottom: 1px solid #ffffff1a; }
+.tm-questions summary { display: flex; justify-content: space-between; align-items: center; gap: 25px; padding-block: 23px; font-size: 16px; line-height: 1.5; letter-spacing: -.025em; list-style: none; cursor: pointer; }
+.tm-questions summary::-webkit-details-marker { display: none; }
+.tm-questions summary svg { flex-shrink: 0; color: #09b2f7; transition: transform 200ms; }
+.tm-questions details[open] summary svg { transform: rotate(45deg); }
+.tm-questions details > p { font-size: 16px; line-height: 1.85; color: #a9b4ba; padding-bottom: 23px; max-width: 540px; }
+.tm-closing { display: flex; justify-content: space-between; align-items: center; gap: 40px; padding-block: 70px 95px; }
+.tm-closing .tm-button { margin-top: 28px; }
+.tm-closing-contact { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; }
+.tm-closing-contact > span { font-size: 14px; color: #a9b4ba; }
+.tm-closing-contact > a { display: flex; align-items: center; gap: 20px; font-size: clamp(27px, 3.1vw, 44px); font-weight: 600; letter-spacing: -.05em; }
+.tm-closing-contact svg { color: #09b2f7; }
+.tm-closing-contact > p { color: #a9b4ba; font-size: 16px; line-height: 1.8; }
+.thrive-memberships-page main a:focus-visible, .thrive-memberships-page main button:focus-visible, .tm-questions summary:focus-visible { outline: 2px solid #09b2f7; outline-offset: 5px; }
+@media (max-width: 1100px) { .tm-class-prices, .tm-plan-grid { grid-template-columns: 1fr 1fr; } .tm-plan { padding: 26px 22px; } .tm-everyday { grid-template-columns: 1fr; gap: 40px; } .tm-faq { gap: 40px; } .tm-offering { gap: 35px; } }
+@media (max-width: 799px) {
+  .tm-hero { grid-template-columns: 1fr; gap: 40px; padding-top: 135px; }
+  .tm-hero h1 { font-size: clamp(44px, 7vw, 64px); }
+  .tm-hero-photo { min-height: 360px; }
+  .tm-offering { grid-template-columns: 1fr; gap: 0; }
+  .tm-offering-photo { min-height: 320px; }
+  .tm-offering-reverse .tm-offering-photo { order: 0; }
+  .tm-offering-reverse .tm-offering-copy { padding-left: 0; }
+  .tm-offering-copy { padding-block: 27px 35px; }
+  .tm-offering h3 { font-size: 34px; }
+  .tm-plan-grid { grid-template-columns: 1fr 1fr; }
+  .tm-plan { padding: 30px; }
+  .tm-plan-duration > span:first-child { font-size: 80px; }
+  .tm-plan-action { max-width: 360px; }
+  .tm-section-heading { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .tm-benefits { gap: 25px; }
+  .tm-faq { grid-template-columns: 1fr; gap: 25px; }
+  .tm-closing { flex-direction: column; align-items: flex-start; gap: 45px; }
+}
+@media (max-width: 499px) {
+  .tm-pricing-intro { padding-top: 125px; gap: 18px; }
+  .tm-pricing-intro > .tm-text-link { font-size: 14px; }
+  .tm-plan-amount strong { font-size: 45px; }
+  .tm-class-prices, .tm-plan-grid { grid-template-columns: 1fr; }
+  .tm-hero-copy > p { font-size: 16px; }
+  .tm-actions { gap: 22px; }
+  .tm-hero-photo { min-height: 350px; }
+  .tm-hero-photo > span { left: 25px; bottom: 25px; font-size: 27px; }
+  .tm-offering-photo { min-height: 270px; }
+  .tm-benefits { grid-template-columns: 1fr; gap: 35px; }
+  .tm-benefits article > span { margin-bottom: 12px; font-size: 40px; }
+  .tm-plan { padding: 28px 24px; }
+  .tm-questions summary { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .tm-button, .tm-plan-action, .tm-questions summary svg, .tm-membership-selector button { transition: none; } }
+
+.tm-class-muay-thai { background: #192b36; }
+.tm-class-kickboxing { background: #152f3e; }
+.tm-class-kids-karate { background: #263431; }
+.tm-class-personal-training { background: #2a2d39; }

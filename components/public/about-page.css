@@ -1,0 +1,94 @@
+.thrive-story-page { background: #0b1013; color: #f4f4f0; }
+.thrive-story-page em { font-family: var(--font-editorial), Georgia, serif; font-weight: 400; }
+.thrive-story-page h2 { font-size: clamp(36px, 4vw, 58px); font-weight: 500; letter-spacing: -.05em; line-height: 1.12; }
+.thrive-story-page h2 em { color: #09b2f7; }
+.ts-intro { padding-top: 155px; }
+.ts-intro-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 35px; margin-bottom: 48px; }
+.ts-intro h1 { font-size: clamp(64px, 8.5vw, 122px); line-height: .99; letter-spacing: -.065em; font-weight: 500; }
+.ts-intro h1 em { color: #09b2f7; }
+.ts-intro-heading > div { padding-bottom: 8px; }
+.ts-intro-heading p { color: #b0bdc5; font-size: 17px; line-height: 1.8; }
+.ts-intro-heading a { display: inline-flex; gap: 24px; align-items: center; margin-top: 27px; font-size: 14px; }
+.ts-intro-heading svg { color: #09b2f7; }
+.ts-cover { position: relative; isolation: isolate; height: clamp(430px, 43vw, 620px); border-radius: 20px; overflow: hidden; }
+.ts-cover > img { object-fit: cover; object-position: center 45%; }
+.ts-cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, #030c1110 25%, #030c11be); }
+.ts-cover-caption { position: absolute; left: 40px; bottom: 40px; font-size: clamp(28px, 3.5vw, 49px); line-height: 1.15; letter-spacing: -.04em; }
+.ts-experience { position: absolute; right: 0; bottom: 0; background: #09b2f7; color: #062332; padding: 34px 42px; border-radius: 20px 0 0 0; }
+.ts-experience strong { display: flex; align-items: baseline; gap: 9px; font-size: 88px; line-height: 1; letter-spacing: -.07em; font-weight: 600; }
+.ts-experience strong span { font-size: 21px; letter-spacing: -.03em; font-weight: 500; }
+.ts-experience p { font-size: 15px; line-height: 1.6; margin-top: 14px; }
+.ts-story { display: grid; grid-template-columns: 1fr 1fr; gap: 60px 90px; padding-block: 105px 85px; }
+.ts-label { display: block; font-size: 13px; color: #8fa3af; margin-bottom: 25px; }
+.ts-story-copy { padding-top: 40px; }
+.ts-story-copy p { color: #aebcc5; font-size: 16px; line-height: 1.85; margin-top: 20px; }
+.ts-story-copy .ts-story-lead { color: #edf4f8; font-size: 24px; letter-spacing: -.035em; line-height: 1.45; margin-top: 0; }
+.ts-founder { padding-bottom: 95px; }
+.ts-founder-feature { display: grid; grid-template-columns: 1fr 1.05fr; overflow: hidden; border-radius: 22px; background: #16232b; }
+.ts-founder-identity { position: relative; isolation: isolate; min-height: 570px; overflow: hidden; display: flex; align-items: flex-end; padding: 44px; background: radial-gradient(ellipse at 20% 15%, #125773, transparent 70%), #09222f; }
+.ts-founder-identity > img { object-fit: cover; object-position: center top; }
+.ts-founder-photo-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, #05131b50 53%, #05131bf2 100%); }
+.ts-founder-identity > div { position: relative; }
+.ts-founder-identity > div > span { font-size: 14px; color: #8ddfff; }
+.ts-founder-identity h2 { margin-top: 10px; font-size: clamp(80px, 9vw, 130px); letter-spacing: -.065em; line-height: 1; }
+.ts-founder-identity p { font-size: 16px; color: #afc9d7; margin-top: 17px; }
+.ts-founder-story { padding: clamp(32px, 4.2vw, 60px); }
+.ts-founder-story .ts-label { color: #8ddfff; }
+.ts-founder-story h3 { font-size: clamp(30px, 3vw, 43px); font-weight: 500; line-height: 1.18; letter-spacing: -.045em; }
+.ts-founder-story h3 em { color: #8ddfff; }
+.ts-founder-story > p { color: #b4c3cc; font-size: 16px; line-height: 1.8; margin-top: 23px; }
+.ts-founder-years { display: flex; align-items: center; gap: 23px; margin-top: 34px; }
+.ts-founder-years strong { font-size: 75px; color: #09b2f7; line-height: 1; letter-spacing: -.06em; font-weight: 600; }
+.ts-founder-years span { font-size: 14px; color: #b4c3cc; line-height: 1.7; }
+.ts-inside-intro { padding-top: 20px; padding-bottom: 30px; }
+.ts-inside-intro .ts-label { margin-bottom: 15px; }
+.ts-inside-intro > p { color: #b4c1c9; font-size: 16px; line-height: 1.8; }
+.thrive-story-page .thrive-facilities { background: transparent; padding-top: 15px; }
+.ts-people { padding-block: 55px 100px; }
+.ts-people-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 40px; }
+.ts-people-heading p { font-size: 16px; line-height: 1.8; color: #aebcc5; }
+.ts-coaches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.ts-coach { min-width: 0; }
+.ts-coach-photo { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 18px; }
+.ts-coach-photo img { object-fit: cover; }
+.ts-coach-copy { padding: 26px 4px; }
+.ts-coach-copy > span { font-size: 14px; color: #8ddfff; }
+.ts-coach-copy h3 { font-size: clamp(25px, 2.5vw, 35px); letter-spacing: -.04em; line-height: 1.2; font-weight: 500; margin-top: 8px; }
+.ts-coach-copy p { font-size: 16px; color: #aebcc5; line-height: 1.8; max-width: 380px; margin-top: 10px; }
+.ts-team-prices { display: inline-flex; align-items: center; gap: 20px; font-size: 14px; margin-top: 20px; }
+.ts-team-prices svg { color: #09b2f7; }
+.ts-visit { display: flex; align-items: flex-end; justify-content: space-between; gap: 45px; padding-block: 65px 100px; }
+.ts-visit h2 { font-size: clamp(34px, 3.7vw, 53px); }
+.ts-join { display: inline-flex; align-items: center; gap: 45px; border-radius: 40px; background: #09b2f7; color: #062332; padding: 18px 25px; margin-top: 32px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 200ms; }
+.ts-join:hover { background: #8ddfff; }
+.ts-visit-details { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; padding-bottom: 5px; }
+.ts-visit-details > a { color: #aebcc5; font-size: 15px; line-height: 1.8; }
+.ts-visit-details .ts-phone { display: flex; align-items: center; gap: 20px; color: #f4f4f0; font-size: clamp(26px, 2.7vw, 38px); letter-spacing: -.04em; font-weight: 500; white-space: nowrap; }
+.ts-phone svg { color: #09b2f7; }
+.thrive-story-page main a:focus-visible, .thrive-story-page main button:focus-visible { outline: 2px solid #09b2f7; outline-offset: 5px; }
+@media (max-width: 899px) { .ts-intro-heading { align-items: flex-start; } .ts-intro-heading p { font-size: 15px; } .ts-story { gap: 40px; } .ts-visit { flex-direction: column; align-items: flex-start; } .ts-founder-identity { padding: 30px; } .ts-coaches { gap: 18px; } }
+@media (max-width: 699px) {
+  .ts-intro { padding-top: 130px; }
+  .ts-intro-heading { flex-direction: column; gap: 26px; margin-bottom: 30px; }
+  .ts-intro h1 { font-size: clamp(59px, 12vw, 82px); }
+  .ts-intro-heading p { font-size: 16px; }
+  .ts-intro-heading a { margin-top: 18px; }
+  .ts-cover { height: 510px; }
+  .ts-cover > img { object-position: 56% center; }
+  .ts-cover-caption { left: 24px; bottom: 220px; font-size: 30px; }
+  .ts-experience { padding: 25px 30px; min-width: 200px; }
+  .ts-experience strong { font-size: 72px; }
+  .ts-story { grid-template-columns: 1fr; padding-block: 65px; gap: 30px; }
+  .ts-story-copy { padding-top: 0; }
+  .ts-founder { padding-bottom: 55px; }
+  .ts-founder-feature { grid-template-columns: 1fr; }
+  .ts-founder-identity { min-height: 400px; padding: 30px; }
+  .ts-founder-story { padding: 32px 26px; }
+  .ts-founder-years { gap: 18px; }
+  .ts-inside-intro > p br { display: none; }
+  .ts-people { padding-block: 35px 45px; }
+  .ts-people-heading { flex-direction: column; align-items: flex-start; gap: 22px; }
+  .ts-coaches { grid-template-columns: 1fr; gap: 25px; }
+  .ts-coach-photo { aspect-ratio: 1; }
+  .ts-visit { padding-block: 45px 70px; }
+}

@@ -2,47 +2,49 @@
 
 import { useState } from 'react';
 import SmsSendModal from '@/components/admin/SmsSendModal';
-import SmsBulkForm from '@/components/admin/SmsBulkForm';
-import SmsBalanceCard from '@/components/admin/SmsBalanceCard';
+import SmsGroupSend from '@/components/admin/SmsGroupSend';
 import SmsHistoryTable from '@/components/admin/SmsHistoryTable';
-import SmsOutreach from '@/components/admin/SmsOutreach';
-import { smsApi } from '@/lib/api';
 
-type Tab = 'send' | 'bulk' | 'outreach' | 'history';
+type Tab = 'one' | 'same' | 'personalized' | 'history';
 
+/**
+ * Sending SMS by hand. Automatic messages (renewal reminders, welcome, absent and
+ * inactive members) are switched on and off in the desktop app's Settings.
+ */
 export default function SmsPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('send');
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('one');
 
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: 'send', label: 'Send SMS', icon: 'send' },
-    { id: 'bulk', label: 'Bulk SMS', icon: 'campaign' },
-    { id: 'outreach', label: 'Absent & Inactive', icon: 'person_search' },
-    { id: 'history', label: 'History', icon: 'history' },
+  const tabs: { id: Tab; label: string; icon: string; hint: string }[] = [
+    { id: 'one', label: 'One person', icon: 'person', hint: 'Text one member or any Ethio Telecom number.' },
+    { id: 'same', label: 'Many, same message', icon: 'campaign', hint: 'Everyone you pick gets the same text.' },
+    {
+      id: 'personalized',
+      label: 'Many, personalized',
+      icon: 'badge',
+      hint: "Each member gets their own message with their name, plan or expiry date filled in.",
+    },
+    { id: 'history', label: 'History', icon: 'history', hint: 'Everything sent, with delivery and failure reasons.' },
   ];
-
+  const current = tabs.find((t) => t.id === activeTab)!;
 
   return (
     <div className="min-h-screen bg-background p-4 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-6">
-          <h1 className="text-white text-3xl font-bold mb-2">SMS Management</h1>
-          <p className="text-white/60">Send messages, manage templates, and track SMS history</p>
+          <h1 className="text-white text-3xl font-bold mb-2">SMS</h1>
+          <p className="text-white/60">
+            Send messages by hand. Automatic messages are set up in the desktop app, under Settings → SMS.
+          </p>
         </div>
 
-        {/* Balance Card */}
-        <div className="mb-6">
-          <SmsBalanceCard />
-        </div>
-
-        {/* Tabs */}
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-hidden mb-6">
           <div className="border-b border-surface-dark-lighter">
-            <div className="flex overflow-x-auto">
+            <div className="flex overflow-x-auto" role="tablist">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab.id
@@ -58,49 +60,14 @@ export default function SmsPage() {
           </div>
 
           <div className="p-6">
-            {/* Send SMS Tab */}
-            {activeTab === 'send' && (
-              <div>
-                <button
-                  onClick={() => setIsSendModalOpen(true)}
-                  className="px-6 py-3 bg-primary text-black rounded-lg hover:bg-primary/90 font-medium"
-                >
-                  <span className="material-symbols-outlined align-middle mr-2">send</span>
-                  Send New SMS
-                </button>
-              </div>
-            )}
-
-            {/* Bulk SMS Tab */}
-            {activeTab === 'bulk' && (
-              <SmsBulkForm
-                onSuccess={() => {
-                  // Optionally refresh history tab if user switches to it
-                  // The history will refresh when the tab is opened
-                }}
-              />
-            )}
-
-            {activeTab === 'outreach' && <SmsOutreach />}
-
-            {/* History Tab */}
+            <p className="text-white/50 text-sm mb-6">{current.hint}</p>
+            {activeTab === 'one' && <SmsSendModal inline isOpen onClose={() => {}} />}
+            {activeTab === 'same' && <SmsGroupSend key="same" personalized={false} />}
+            {activeTab === 'personalized' && <SmsGroupSend key="personalized" personalized />}
             {activeTab === 'history' && <SmsHistoryTable />}
           </div>
         </div>
       </div>
-
-      {/* Send SMS Modal */}
-      <SmsSendModal
-        isOpen={isSendModalOpen}
-        onClose={() => setIsSendModalOpen(false)}
-        onSuccess={() => {
-          if (activeTab === 'history') {
-            window.location.reload();
-          }
-        }}
-      />
     </div>
   );
 }
-
-

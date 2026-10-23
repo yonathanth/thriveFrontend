@@ -78,13 +78,18 @@ export default function SmsHistoryTable() {
     {
       key: 'status',
       header: 'Status',
-      render: (item: SmsHistory) => getStatusBadge(item.status),
+      render: (item: SmsHistory) => (
+        <div className="max-w-xs">
+          {getStatusBadge(item.status)}
+          {item.errorMessage && <p className="text-red-300 text-xs mt-1 whitespace-normal">{item.errorMessage}</p>}
+        </div>
+      ),
     },
     {
       key: 'sentAt',
-      header: 'Sent At',
+      header: 'Date',
       render: (item: SmsHistory) => (
-        <span className="text-white/60 text-sm">{formatDate(item.sentAt)}</span>
+        <span className="text-white/60 text-sm">{formatDate(item.sentAt ?? item.createdAt)}</span>
       ),
     },
   ];

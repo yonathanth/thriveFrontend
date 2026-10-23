@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { smsApi, membersApi, Member } from '@/lib/api';
+import { smsCount } from '@/lib/sms';
 
 interface SmsSendModalProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ interface SmsSendModalProps {
   initialPhone?: string;
   initialMemberId?: number;
   onSuccess?: () => void;
+  /** Shown in the page instead of as a dialog (always open, no Cancel). */
+  inline?: boolean;
 }
 
 export default function SmsSendModal({
@@ -17,6 +20,7 @@ export default function SmsSendModal({
   initialPhone = '',
   initialMemberId,
   onSuccess,
+  inline = false,
 }: SmsSendModalProps) {
   const [phone, setPhone] = useState(initialPhone);
   const [message, setMessage] = useState('');
@@ -26,6 +30,7 @@ export default function SmsSendModal({
   const [isSearching, setIsSearching] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState<string | null>(null);
 
   useEffect(() => {
     setPhone(initialPhone);
@@ -58,16 +63,10 @@ export default function SmsSendModal({
     setMemberResults([]);
   };
 
-  const calculateSmsCount = (text: string): number => {
-    // Standard SMS: 160 characters per message
-    // For messages longer than 160, each 153 characters = 1 message (due to concatenation)
-    if (text.length <= 160) return 1;
-    return Math.ceil(text.length / 153);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSent(null);
 
     if (!phone.trim()) {
       setError('Phone number is required');
@@ -86,7 +85,8 @@ export default function SmsSendModal({
       setPhone('');
       setMemberId(undefined);
       onSuccess?.();
-      onClose();
+      if (inline) setSent('Sent. Its delivery shows in History.');
+      else onClose();
     } catch (err) {
       let errorMessage = 'Failed to send SMS';
       
@@ -95,38 +95,18 @@ export default function SmsSendModal({
       } else if (typeof err === 'object' && err !== null && 'message' in err) {
         errorMessage = String(err.message);
       }
-      
-      // Provide helpful context for common errors
-      if (errorMessage.includes('unverified contact') || errorMessage.includes('verify')) {
-        errorMessage = 'This phone number is not verified. During beta testing, you need to verify contacts in the AfroMessage dashboard before sending SMS.';
-      }
-      
       setError(errorMessage);
     } finally {
       setIsSending(false);
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !inline) return null;
 
-  const smsCount = calculateSmsCount(message);
+  const sms = smsCount(message);
   const charCount = message.length;
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter w-full max-w-md">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-white text-xl font-semibold">Send SMS</h2>
-            <button
-              onClick={onClose}
-              className="text-white/60 hover:text-white"
-              disabled={isSending}
-            >
-              <span className="material-symbols-outlined">close</span>
-            </button>
-          </div>
-
+  const form = (
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Member Search */}
             <div className="relative">
@@ -167,7 +147,7 @@ export default function SmsSendModal({
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+251912345678"
+                placeholder="0912345678"
                 required
                 className="w-full px-4 py-2 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-primary"
                 disabled={isSending}
@@ -190,8 +170,8 @@ export default function SmsSendModal({
                 disabled={isSending}
               />
               <div className="flex items-center justify-between mt-1">
-                <div className="text-white/60 text-xs">
-                  {charCount} characters • {smsCount} SMS
+                <div className={`text-xs ${sms.parts > 1 || sms.unicode ? 'text-amber-300' : 'text-white/60'}`}>
+                  {sms.chars} characters • {sms.parts} SMS{sms.unicode ? ' (Unicode: 70 per SMS)' : ''}
                 </div>
                 <div className="text-white/60 text-xs">
                   {1600 - charCount} remaining
@@ -204,16 +184,19 @@ export default function SmsSendModal({
                 {error}
               </div>
             )}
+            {sent && <div className="text-emerald-400 text-sm">{sent}</div>}
 
             <div className="flex gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSending}
-                className="flex-1 px-4 py-2 bg-surface-dark-lighter text-white rounded-lg hover:bg-surface-dark-lighter/80 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
+              {!inline && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  disabled={isSending}
+                  className="flex-1 px-4 py-2 bg-surface-dark-lighter text-white rounded-lg hover:bg-surface-dark-lighter/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={isSending || !phone.trim() || !message.trim()}
@@ -223,9 +206,23 @@ export default function SmsSendModal({
               </button>
             </div>
           </form>
+  );
+
+  if (inline) return <div className="max-w-md">{form}</div>;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter w-full max-w-md">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-white text-xl font-semibold">Send SMS</h2>
+            <button onClick={onClose} className="text-white/60 hover:text-white" disabled={isSending}>
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          {form}
         </div>
       </div>
     </div>
   );
 }
-

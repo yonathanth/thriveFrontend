@@ -335,9 +335,11 @@ export interface SmsResponse {
   to: string;
 }
 
-export interface SmsBalance {
-  balance: string;
-  estimatedMessages: number;
+/** How a batch went; each failure reason is in the history. */
+export interface SmsBatchResult {
+  sent: number;
+  failed: number;
+  firstError: string | null;
 }
 
 export interface SmsHistory {
@@ -347,14 +349,16 @@ export interface SmsHistory {
   status: string;
   sentAt: Date | null;
   memberId?: number | null;
+  /** Why a failed message failed */
+  errorMessage?: string | null;
+  createdAt: Date;
 }
 
 export interface SmsStatus {
   messageId: string;
-  cost: string;
-  parts: number;
+  /** queued, sent, delivered or failed */
   status: string;
-  description: string;
+  segments: number | null;
 }
 
 export interface SmsTemplate {
@@ -922,8 +926,10 @@ export const healthMetricsApi = {
     apiFetch<HealthMetric | null>(`/api/health-metrics/member/${memberId}/latest`),
 };
 
-// SMS API
-export type OutreachKind = 'absent' | 'inactive';
+// SMS API (sent through SMS Ethiopia; the website only sends by hand)
+
+/** Member lists to text: everyone, active, expiring soon, absent, or inactive. */
+export type OutreachKind = 'all' | 'active' | 'expiring' | 'absent' | 'inactive';
 
 export interface OutreachCandidate {
   /** Website member id */
@@ -931,17 +937,23 @@ export interface OutreachCandidate {
   fullName: string;
   phoneNumber: string;
   serviceName: string | null;
-  /** Days since last visit (absent) or since the membership ended (inactive) */
+  status: string;
+  /** Local date the membership ends, YYYY-MM-DD */
+  expiryDate: string | null;
+  /** Days until the membership ends (negative once it has) */
+  daysLeft: number | null;
+  /** Days since last visit (absent), since the membership ended (inactive), or until it ends (others) */
   days: number;
 }
 
 export const smsOutreachApi = {
-  /** Members absent / inactive between minDays and maxDays (either end open when omitted). */
+  /** Members on a list, with `days` between minDays and maxDays (each list has its own default). */
   candidates: (kind: OutreachKind, minDays?: number, maxDays?: number) =>
     apiFetch<OutreachCandidate[]>(`/api/sms/outreach${buildQueryString({ kind, minDays, maxDays })}`),
 
+  /** Each chosen member gets the template with their own details filled in. */
   send: (kind: OutreachKind, memberIds: number[], minDays?: number, template?: string, maxDays?: number) =>
-    apiFetch<{ sent: number; skipped: number; campaignIds: string[] }>('/api/sms/outreach/send', {
+    apiFetch<SmsBatchResult & { skipped: number }>('/api/sms/outreach/send', {
       method: 'POST',
       body: JSON.stringify({ kind, memberIds, minDays, maxDays, template: template || undefined }),
     }),
@@ -954,22 +966,17 @@ export const smsApi = {
       body: JSON.stringify({ phone, message, memberId }),
     }),
 
-  sendBulk: (phones: string[], message: string, campaign?: string) =>
-    apiFetch<{ campaignId: string | null; count: number }>('/api/sms/bulk', {
+  sendBulk: (phones: string[], message: string) =>
+    apiFetch<SmsBatchResult>('/api/sms/bulk', {
       method: 'POST',
-      body: JSON.stringify({ phones, message, campaign }),
+      body: JSON.stringify({ phones, message }),
     }),
 
-  sendPersonalized: (
-    recipients: Array<{ phone: string; message: string }>,
-    campaign?: string
-  ) =>
-    apiFetch<{ campaignId: string | null; count: number }>('/api/sms/personalized', {
+  sendPersonalized: (recipients: Array<{ phone: string; message: string; memberId?: number }>) =>
+    apiFetch<SmsBatchResult>('/api/sms/personalized', {
       method: 'POST',
-      body: JSON.stringify({ recipients, campaign }),
+      body: JSON.stringify({ recipients }),
     }),
-
-  getBalance: () => apiFetch<SmsBalance>('/api/sms/balance'),
 
   getStatus: (messageId: string) =>
     apiFetch<SmsStatus>(`/api/sms/status/${encodeURIComponent(messageId)}`),

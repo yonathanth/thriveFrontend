@@ -28,6 +28,8 @@ export function notificationIcon(type: string): string {
       return 'event_busy';
     case 'payment_received':
       return 'receipt_long';
+    case 'freeze_changed':
+      return 'ac_unit';
     case 'message':
       return 'campaign';
     case 'client_digest':

@@ -847,6 +847,7 @@ export type NotificationType =
   | 'membership_expired'
   | 'payment_received'
   | 'plan_changed'
+  | 'freeze_changed'
   | 'client_digest';
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
@@ -859,6 +860,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   membership_expired: 'Membership ended',
   payment_received: 'Payments received',
   plan_changed: 'Plan changes and renewals',
+  freeze_changed: 'Membership frozen or unfrozen',
   client_digest: 'Clients to check on',
 };
 
@@ -867,7 +869,7 @@ export const NOTIFICATION_TYPES_BY_ROLE: Record<string, NotificationType[]> = {
   admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'message'],
   manager: ['package_changed', 'start_date_changed', 'expiring_summary', 'message'],
   trainer: ['message', 'client_digest'],
-  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed'],
+  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed', 'freeze_changed'],
 };
 
 /** Who a message from staff can go to. */

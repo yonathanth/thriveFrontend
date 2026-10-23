@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { smsApi, membersApi, Member } from '@/lib/api';
-import { smsCount } from '@/lib/sms';
+import { smsLengthNote } from '@/lib/sms';
 
 interface SmsSendModalProps {
   isOpen: boolean;
@@ -103,8 +103,7 @@ export default function SmsSendModal({
 
   if (!isOpen && !inline) return null;
 
-  const sms = smsCount(message);
-  const charCount = message.length;
+  const note = smsLengthNote(message);
 
   const form = (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -169,13 +168,9 @@ export default function SmsSendModal({
                 className="w-full px-4 py-2 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-primary resize-none"
                 disabled={isSending}
               />
-              <div className="flex items-center justify-between mt-1">
-                <div className={`text-xs ${sms.parts > 1 || sms.unicode ? 'text-amber-300' : 'text-white/60'}`}>
-                  {sms.chars} characters • {sms.parts} SMS{sms.unicode ? ' (Unicode: 70 per SMS)' : ''}
-                </div>
-                <div className="text-white/60 text-xs">
-                  {1600 - charCount} remaining
-                </div>
+              <div role={note.warn ? 'alert' : undefined} className={`text-xs mt-1 ${note.warn ? 'text-amber-300' : 'text-white/60'}`}>
+                {note.warn ? '⚠ ' : ''}
+                {note.text}
               </div>
             </div>
 

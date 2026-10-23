@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { smsApi, smsOutreachApi, OutreachCandidate, OutreachKind } from '@/lib/api';
-import { smsCount } from '@/lib/sms';
+import { smsLengthNote } from '@/lib/sms';
 
 /** Ready-made ranges for each list; `days` means something different per list. */
 const LISTS: {
@@ -131,7 +131,11 @@ export default function SmsGroupSend({ personalized }: { personalized: boolean }
   );
   const count = kind === 'typed' ? typedNumbers.length : chosen.length;
   const preview = personalized ? fill(text, chosen[0] ?? SAMPLE) : text;
-  const sms = smsCount(preview);
+  // Personalized messages differ in length; warn about the longest one.
+  const longest = personalized
+    ? chosen.map((c) => fill(text, c)).reduce((a, m) => (m.length > a.length ? m : a), preview)
+    : text;
+  const note = smsLengthNote(longest);
 
   const send = async () => {
     if (count === 0 || !text.trim()) return;
@@ -337,9 +341,10 @@ export default function SmsGroupSend({ personalized }: { personalized: boolean }
           placeholder={personalized ? 'Hi {name}, your {service} membership ends on {expiry_date}…' : 'Write the message everyone will get…'}
           className="w-full px-4 py-3 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50"
         />
-        <p className={`text-xs mt-2 ${sms.parts > 1 || sms.unicode ? 'text-amber-300' : 'text-white/40'}`}>
-          About {sms.chars} characters, {sms.parts} SMS per person
-          {sms.unicode ? ' (Amharic, emoji or special characters: 70 characters per SMS)' : ''}.
+        <p role={note.warn ? 'alert' : undefined} className={`text-xs mt-2 ${note.warn ? 'text-amber-300' : 'text-white/40'}`}>
+          {note.warn ? '⚠ ' : ''}
+          {personalized && chosen.length > 1 ? 'Longest message: ' : ''}
+          {note.text}
         </p>
         {personalized && text.trim() && (
           <p className="text-white/70 text-sm mt-2">

@@ -27,6 +27,15 @@ export default function SmsHistoryTable() {
     fetchHistory();
   }, [fetchHistory]);
 
+  // The server looks up delivery whenever the history is loaded; while something is
+  // still on its way, load it again every 30 seconds.
+  const hasPending = (history?.data ?? []).some((m) => m.status === 'queued' || m.status === 'sent');
+  useEffect(() => {
+    if (!hasPending) return;
+    const id = setInterval(fetchHistory, 30_000);
+    return () => clearInterval(id);
+  }, [hasPending, fetchHistory]);
+
   const getStatusBadge = (status: string) => {
     const statusLower = status.toLowerCase();
     const styles: Record<string, string> = {

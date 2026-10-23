@@ -7,6 +7,7 @@ import {
   transactionsApi,
   Transaction,
   TransactionType,
+  TransactionSource,
   TransactionStats,
   PaginatedResponse,
 } from '@/lib/api';
@@ -50,6 +51,7 @@ const SOURCE_LABELS: Record<NonNullable<Transaction['source']>, string> = {
   membership: 'Membership',
   addon: 'Add-on',
   drop_in: 'Drop-in',
+  inventory: 'Inventory sale',
   other: 'Other',
 };
 
@@ -108,6 +110,7 @@ export default function TransactionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [typeFilter, setTypeFilter] = useState<string>('');
+  const [sourceFilter, setSourceFilter] = useState<string>('');
   const [startDate, setStartDate] = useState(() => getRangeFromPreset('daily').startDate ?? '');
   const [endDate, setEndDate] = useState(() => getRangeFromPreset('daily').endDate ?? '');
   const [filterRangePreset, setFilterRangePreset] = useState<FilterRangePreset>('daily');
@@ -136,6 +139,7 @@ export default function TransactionsPage() {
         page,
         limit,
         transactionType: (typeFilter as TransactionType) || undefined,
+        source: (sourceFilter as TransactionSource) || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
@@ -145,11 +149,12 @@ export default function TransactionsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, typeFilter, startDate, endDate]);
+  }, [page, typeFilter, sourceFilter, startDate, endDate]);
 
   const fetchAllTransactionsByFilter = useCallback(
     async (options?: {
       transactionType?: TransactionType;
+      source?: TransactionSource;
       startDate?: string;
       endDate?: string;
     }): Promise<Transaction[]> => {
@@ -163,6 +168,7 @@ export default function TransactionsPage() {
           page: pageNum,
           limit: pageLimit,
           transactionType: options?.transactionType,
+          source: options?.source,
           startDate: options?.startDate,
           endDate: options?.endDate,
         });
@@ -180,6 +186,7 @@ export default function TransactionsPage() {
     try {
       const allTx = await fetchAllTransactionsByFilter({
         transactionType: (typeFilter as TransactionType) || undefined,
+        source: (sourceFilter as TransactionSource) || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
@@ -201,12 +208,13 @@ export default function TransactionsPage() {
       console.error('Failed to fetch filtered card totals:', err);
       setFilteredCardTotals(null);
     }
-  }, [fetchAllTransactionsByFilter, typeFilter, startDate, endDate]);
+  }, [fetchAllTransactionsByFilter, typeFilter, sourceFilter, startDate, endDate]);
 
   const fetchStats = useCallback(async () => {
     try {
       const data = await transactionsApi.getStats({
         transactionType: (typeFilter as TransactionType) || undefined,
+        source: (sourceFilter as TransactionSource) || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       });
@@ -214,7 +222,7 @@ export default function TransactionsPage() {
     } catch (err) {
       console.error('Failed to fetch stats:', err);
     }
-  }, [typeFilter, startDate, endDate]);
+  }, [typeFilter, sourceFilter, startDate, endDate]);
 
   useEffect(() => {
     fetchTransactions();
@@ -364,6 +372,7 @@ export default function TransactionsPage() {
   ): Promise<Transaction[]> => {
     return fetchAllTransactionsByFilter({
       transactionType: (typeFilter as TransactionType) || undefined,
+      source: (sourceFilter as TransactionSource) || undefined,
       startDate: exportDateRange?.startDate || undefined,
       endDate: exportDateRange?.endDate || undefined,
     });
@@ -375,6 +384,9 @@ export default function TransactionsPage() {
       parts.push(`Type: ${TRANSACTION_TYPE_LABELS[typeFilter as TransactionType] ?? typeFilter}`);
     } else {
       parts.push('Type: All');
+    }
+    if (sourceFilter) {
+      parts.push(`For: ${SOURCE_LABELS[sourceFilter as TransactionSource] ?? sourceFilter}`);
     }
     if (exportDateRange?.startDate || exportDateRange?.endDate) {
       parts.push(`Date: ${exportDateRange.startDate || '...'} -> ${exportDateRange.endDate || '...'}`);
@@ -708,6 +720,22 @@ export default function TransactionsPage() {
             <option value="positive_return">Positive Return</option>
             <option value="negative_return">Negative Return</option>
           </select>
+          <select
+            value={sourceFilter}
+            onChange={(e) => {
+              setSourceFilter(e.target.value);
+              setPage(1);
+            }}
+            aria-label="What the payment was for"
+            className="h-10 px-4 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white focus:outline-none focus:border-primary/50 transition-colors xl:min-w-[170px]"
+          >
+            <option value="">All Sources</option>
+            <option value="membership">Membership</option>
+            <option value="addon">Add-ons</option>
+            <option value="drop_in">Drop-ins</option>
+            <option value="inventory">Inventory sales</option>
+            <option value="other">Other</option>
+          </select>
           <input
             type="date"
             value={startDate}
@@ -730,11 +758,12 @@ export default function TransactionsPage() {
             placeholder="To Date"
             className="h-10 px-4 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white focus:outline-none focus:border-primary/50 transition-colors xl:min-w-[170px]"
           />
-          {(typeFilter || startDate || endDate) && (
+          {(typeFilter || sourceFilter || startDate || endDate) && (
             <button
               type="button"
               onClick={() => {
                 setTypeFilter('');
+                setSourceFilter('');
                 setStartDate('');
                 setEndDate('');
                 setFilterRangePreset('custom');

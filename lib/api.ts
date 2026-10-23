@@ -168,6 +168,8 @@ export interface TodayAttendance {
 
 export type TransactionType = 'income' | 'expense' | 'positive_return' | 'negative_return';
 
+export type TransactionSource = 'membership' | 'addon' | 'drop_in' | 'inventory' | 'other';
+
 export interface Transaction {
   id: number;
   memberId: number;
@@ -178,7 +180,7 @@ export interface Transaction {
   paymentMethod?: string;
   paymentStatus?: string;
   /** What the payment was for */
-  source?: 'membership' | 'addon' | 'drop_in' | 'other';
+  source?: TransactionSource;
   /** Membership, add-on or drop-in name */
   sourceName?: string;
   /** Price before discount */
@@ -286,6 +288,7 @@ export interface TransactionQuery extends PaginationQuery {
   startDate?: string;
   endDate?: string;
   transactionType?: TransactionType;
+  source?: TransactionSource;
   category?: string;
 }
 
@@ -628,6 +631,143 @@ export const transactionsApi = {
     apiFetch<PaginatedResponse<Transaction>>(
       `/api/transactions/member/${memberId}${buildQueryString(query as Record<string, unknown>)}`
     ),
+};
+
+// Inventory (synced from the desktop, read-only here). Quantities are base units.
+export interface InventoryItem {
+  localId: number;
+  kind: 'sellable' | 'asset';
+  name: string;
+  sku: string | null;
+  unitName: string;
+  packName: string | null;
+  unitsPerPack: number | null;
+  unitPrice: number;
+  packPrice: number | null;
+  assetLocation: string | null;
+  assetCondition: string | null;
+  assetSerial: string | null;
+  notes: string | null;
+  isActive: boolean;
+  storeQty: number;
+  heldQty: number;
+  pendingQty: number;
+  soldQty: number;
+}
+
+/** What a quantity is counted in: enough to show it as packs and units. */
+export interface InventoryUnits {
+  unitName: string;
+  packName: string | null;
+  unitsPerPack: number | null;
+}
+
+export interface InventoryHolding extends InventoryUnits {
+  itemLocalId: number;
+  itemName: string;
+  holderUserLocalId: number;
+  holderName: string | null;
+  qtyBase: number;
+  updatedAt: string | null;
+}
+
+export type AssignmentStatus = 'pending' | 'accepted' | 'rejected' | 'cancelled';
+
+export interface InventoryAssignment extends InventoryUnits {
+  localId: number;
+  itemLocalId: number;
+  itemName: string;
+  kind: 'assign' | 'transfer';
+  qtyBase: number;
+  fromName: string | null;
+  toName: string | null;
+  createdByName: string | null;
+  status: AssignmentStatus;
+  note: string | null;
+  createdAt: string | null;
+  respondedAt: string | null;
+}
+
+export interface InventoryMovement extends InventoryUnits {
+  localId: number;
+  itemLocalId: number;
+  itemName: string;
+  type: string;
+  qtyBase: number;
+  fromBucket: string;
+  fromName: string | null;
+  toBucket: string;
+  toName: string | null;
+  actorUsername: string | null;
+  reason: string | null;
+  /** Admins only; null for managers. */
+  unitPrice: number | null;
+  amount: number | null;
+  createdAt: string | null;
+}
+
+export interface InventorySale extends InventoryUnits {
+  localId: number;
+  itemLocalId: number;
+  itemName: string;
+  holderName: string | null;
+  expectedQtyBase: number;
+  remainingQtyBase: number;
+  soldQtyBase: number;
+  unitPrice: number;
+  packPrice: number | null;
+  amount: number;
+  paymentMethod: string | null;
+  reportedAt: string | null;
+  voidedAt: string | null;
+  voidReason: string | null;
+}
+
+export type ReportGranularity = 'day' | 'month' | 'year';
+
+export interface InventoryReport {
+  granularity: ReportGranularity;
+  totals: {
+    revenue: number;
+    refunded: number;
+    net: number;
+    soldQty: number;
+    reports: number;
+    allRevenue: number;
+    share: number;
+  };
+  periods: { period: string; revenue: number; refunded: number; net: number; soldQty: number }[];
+  byItem: (InventoryUnits & { itemLocalId: number; itemName: string; soldQty: number; amount: number; reports: number })[];
+  byHolder: { holderUserLocalId: number; holderName: string | null; soldQty: number; amount: number; reports: number }[];
+}
+
+export interface InventoryRangeQuery extends PaginationQuery {
+  itemId?: number;
+  type?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export const inventoryApi = {
+  items: (kind?: 'sellable' | 'asset') =>
+    apiFetch<InventoryItem[]>(`/api/inventory/items${buildQueryString({ kind })}`),
+  holdings: () => apiFetch<InventoryHolding[]>('/api/inventory/holdings'),
+  assignments: (query: PaginationQuery & { status?: AssignmentStatus } = {}) =>
+    apiFetch<PaginatedResponse<InventoryAssignment>>(
+      `/api/inventory/assignments${buildQueryString(query as Record<string, unknown>)}`
+    ),
+  movements: (query: InventoryRangeQuery = {}) =>
+    apiFetch<PaginatedResponse<InventoryMovement>>(
+      `/api/inventory/movements${buildQueryString(query as Record<string, unknown>)}`
+    ),
+  integrity: () =>
+    apiFetch<{ itemLocalId: number; itemName: string; ledger: number; balances: number }[]>('/api/inventory/integrity'),
+  /** Admin only. */
+  sales: (query: InventoryRangeQuery = {}) =>
+    apiFetch<PaginatedResponse<InventorySale>>(`/api/inventory/sales${buildQueryString(query as Record<string, unknown>)}`),
+  /** Admin only. */
+  report: (query: { granularity?: ReportGranularity; startDate?: string; endDate?: string } = {}) =>
+    apiFetch<InventoryReport>(`/api/inventory/report${buildQueryString(query as Record<string, unknown>)}`),
 };
 
 // Services API

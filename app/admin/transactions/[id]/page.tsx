@@ -13,6 +13,7 @@ const SOURCE_LABELS: Record<NonNullable<Transaction['source']>, string> = {
   membership: 'Membership',
   addon: 'Add-on',
   drop_in: 'Drop-in',
+  inventory: 'Inventory sale',
   other: 'Other',
 };
 

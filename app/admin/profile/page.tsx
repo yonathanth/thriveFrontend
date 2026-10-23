@@ -2,7 +2,6 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS } from '@/lib/roles';
 import { Card, Detail } from '@/components/portal/membership';
@@ -12,7 +11,6 @@ const inputClass =
 
 export default function AdminProfilePage() {
   const { user, updateProfile, logout } = useAuth();
-  const router = useRouter();
 
   const canEditEmail = user?.role === 'admin';
   const roleLabel = user ? ROLE_LABELS[user.role] : 'Administrator';
@@ -63,7 +61,6 @@ export default function AdminProfilePage() {
 
   const handleSignOut = () => {
     logout();
-    router.replace('/login');
   };
 
   return (

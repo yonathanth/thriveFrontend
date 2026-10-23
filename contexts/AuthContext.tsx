@@ -21,6 +21,16 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** The account saved at the last sign-in or profile load, if any. */
+function readCachedUser(): AdminProfile | null {
+  try {
+    const raw = localStorage.getItem('user');
+    return raw ? (JSON.parse(raw) as AdminProfile) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -38,12 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const user = await authApi.getProfile();
+      localStorage.setItem('user', JSON.stringify(user));
       setState({ user, isAuthenticated: true, isLoading: false });
     } catch (error) {
-      // Token invalid or expired
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      setState({ user: null, isAuthenticated: false, isLoading: false });
+      if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
+        // The server rejected the session: expired, revoked or deactivated.
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+        setState({ user: null, isAuthenticated: false, isLoading: false });
+        return;
+      }
+      // The server could not be reached or was slow: keep the session and the account
+      // as last known, rather than signing someone out over a network blip.
+      const cached = readCachedUser();
+      setState(
+        cached
+          ? { user: cached, isAuthenticated: true, isLoading: false }
+          : { user: null, isAuthenticated: false, isLoading: false },
+      );
     }
   }, []);
 
@@ -100,6 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     setState({ user: null, isAuthenticated: false, isLoading: false });
+    // A full load of the sign-in page: nothing from the old session stays in memory,
+    // and no page guard can race this with a redirect of its own.
+    window.location.replace('/login');
   };
 
   const updateProfile = async (data: ProfileUpdate) => {

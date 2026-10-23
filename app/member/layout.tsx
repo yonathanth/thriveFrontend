@@ -1,6 +1,5 @@
 'use client';
 
-import { AuthProvider } from '@/contexts/AuthContext';
 import RequireRole from '@/components/auth/RequireRole';
 import PortalShell, { PortalNavItem } from '@/components/portal/PortalShell';
 
@@ -15,10 +14,8 @@ const nav: PortalNavItem[] = [
 
 export default function MemberLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <RequireRole roles={['member']}>
-        <PortalShell nav={nav}>{children}</PortalShell>
-      </RequireRole>
-    </AuthProvider>
+    <RequireRole roles={['member']}>
+      <PortalShell nav={nav}>{children}</PortalShell>
+    </RequireRole>
   );
 }

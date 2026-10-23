@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { shareMeta } from "@/lib/seo";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { MultipleSchemaComponent } from "@/lib/schema-component";
 import { organizationSchema, localBusinessSchema } from "@/lib/schemas";
 import { BUSINESS_AREA, SITE_BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -87,7 +88,8 @@ export default function RootLayout({
       <body
         className={`bg-background text-on-background overflow-x-hidden antialiased`}
       >
-        {children}
+        {/* One sign-in state for the whole site, so moving between areas never re-checks it. */}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

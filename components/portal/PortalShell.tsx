@@ -4,7 +4,7 @@ import { ReactNode, Suspense, useCallback, useState } from 'react';
 import Link from 'next/link';
 import { CircleUserRound, LogOut } from 'lucide-react';
 import NotificationBell from '@/components/admin/NotificationBell';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS } from '@/lib/roles';
 import AppSidebar, { SidebarItem, UserAvatar, isActivePath } from '@/components/layout/AppSidebar';
@@ -17,7 +17,6 @@ export type PortalNavItem = SidebarItem;
 export default function PortalShell({ nav, children }: { nav: PortalNavItem[]; children: ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
   const { isCollapsed, toggleCollapse } = useSidebarCollapse();
@@ -29,7 +28,6 @@ export default function PortalShell({ nav, children }: { nav: PortalNavItem[]; c
 
   const signOut = () => {
     logout();
-    router.replace('/login');
   };
 
   return (

@@ -392,6 +392,9 @@ function getToken(): string | null {
 }
 
 // Base fetch wrapper with auth
+/** How long a request may take before it is given up on. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
 async function apiFetch<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -412,8 +415,14 @@ async function apiFetch<T>(
     response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
+      // A request never waits forever: a sleeping server would otherwise leave the
+      // page spinning with no way out.
+      signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (err) {
+    if (err instanceof DOMException && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+      throw new ApiError(0, 'The server is taking too long to answer. Please try again in a moment.');
+    }
     const message =
       err instanceof TypeError && err.message === 'Failed to fetch'
         ? `Cannot reach the API at ${API_URL}. Make sure the gym-api server is running (e.g. \`npm run start:dev\` in gym-api) and that NEXT_PUBLIC_API_URL matches its port.`

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Sidebar from '@/components/admin/Sidebar';
 import NotificationBell from '@/components/admin/NotificationBell';
 import { syncApi } from '@/lib/api';
@@ -24,7 +24,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   const signOut = () => {
     logout();
-    router.replace('/login');
   };
 
   // The admin panel is for admins and managers with no pending password change.
@@ -164,9 +163,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
-    </AuthProvider>
+    <AdminLayoutContent>{children}</AdminLayoutContent>
   );
 }
 

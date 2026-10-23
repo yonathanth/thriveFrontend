@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AlertCircle, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { homeFor } from '@/lib/roles';
 import AuthShell from './AuthShell';
 import PasswordField from './PasswordField';
 
@@ -16,7 +14,6 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -24,8 +21,9 @@ export default function LoginForm() {
     setError('');
     setIsSubmitting(true);
     try {
-      const user = await login(identifier, password);
-      router.replace(user.mustChangePassword ? '/change-password' : homeFor(user.role));
+      // Signing in updates the shared session; the login page then takes the user on.
+      // Navigating from here too raced that redirect and could leave both cancelled.
+      await login(identifier, password);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {

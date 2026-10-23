@@ -18,6 +18,7 @@ import {
 import { formatDesktopDate, humanize, num, str } from '@/lib/desktop';
 import SmsSendModal from '@/components/admin/SmsSendModal';
 import { useAuth } from '@/contexts/AuthContext';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -607,6 +608,7 @@ export default function MemberDetailPage({ params }: Props) {
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-hidden">
           <div className="p-4 border-b border-surface-dark-lighter">
             <h2 className="text-white font-semibold">Transaction History</h2>
+            <FinanceFromTag />
             <p className="text-white/40 text-sm">
               {transactions?.meta.total || 0} total transactions
             </p>

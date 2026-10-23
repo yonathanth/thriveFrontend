@@ -984,6 +984,18 @@ export const pushApi = {
     }),
 };
 
+// Website-only settings
+export const siteSettingsApi = {
+  /** The date website finances are counted from, or null (admins and managers). */
+  financeStart: () => apiFetch<{ date: string | null }>('/api/site-settings/finance-start'),
+  /** Sets (YYYY-MM-DD) or clears it (admins). */
+  setFinanceStart: (date: string | null) =>
+    apiFetch<{ date: string | null }>('/api/site-settings/finance-start', {
+      method: 'PUT',
+      body: JSON.stringify({ date: date ?? '' }),
+    }),
+};
+
 // Sync API
 export const syncApi = {
   getLastSync: () => apiFetch<{ lastSyncAt: string | null }>('/api/sync/last-sync'),
@@ -1234,6 +1246,8 @@ export interface MyMembership extends MembershipSummary {
 export interface MyHistory {
   planHistory: DesktopRow[];
   freezeHistory: DesktopRow[];
+  /** Payments before this date (YYYY-MM-DD) are left out; null when all are shown */
+  financeFrom: string | null;
   payments: {
     id: number;
     date: string;

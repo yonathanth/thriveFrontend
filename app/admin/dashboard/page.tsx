@@ -9,6 +9,7 @@ import {
 } from '@/lib/api';
 import StatsCard from '@/components/admin/StatsCard';
 import { useAuth } from '@/contexts/AuthContext';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
 
 export default function DashboardPage() {
   // Revenue and transactions are admin-only; the API refuses them to managers too.
@@ -76,6 +77,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-white text-2xl font-bold">Dashboard</h1>
         <p className="text-white/60 mt-1">Welcome back! Here&apos;s your gym overview.</p>
+        <FinanceFromTag className="mt-2" />
       </div>
 
       {/* Stats Grid */}

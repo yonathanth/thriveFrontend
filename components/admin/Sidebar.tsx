@@ -44,6 +44,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     items: [
       { name: 'Accounts', href: '/admin/accounts', icon: 'manage_accounts' },
       { name: 'Audit Log', href: '/admin/audit-log', icon: 'history', roles: ['admin'] },
+      { name: 'Settings', href: '/admin/settings', icon: 'settings', roles: ['admin'] },
     ],
   },
 ];

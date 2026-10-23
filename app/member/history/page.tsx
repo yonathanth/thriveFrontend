@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { meApi, MyHistory, ApiError } from '@/lib/api';
 import { formatETB } from '@/lib/desktop';
 import { Card, ErrorNote, FreezeHistory, PlanHistory, formatDate } from '@/components/portal/membership';
+import { formatFinanceDate } from '@/components/admin/FinanceFromTag';
 
 export default function MemberHistoryPage() {
   const [history, setHistory] = useState<MyHistory | null>(null);
@@ -36,6 +37,9 @@ export default function MemberHistoryPage() {
       </div>
 
       <Card title="Payments">
+        {history.financeFrom && (
+          <p className="text-white/50 text-xs mb-3">Showing payments from {formatFinanceDate(history.financeFrom)}.</p>
+        )}
         {history.payments.length === 0 ? (
           <p className="text-white/40 text-sm">No payments recorded.</p>
         ) : (

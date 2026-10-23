@@ -12,6 +12,7 @@ import {
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
 import { dayValue, describeQty, formatEtb, formatWhen } from '@/lib/inventory';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
 
 type Preset = 'today' | 'month' | 'year' | 'custom';
 
@@ -162,6 +163,7 @@ export default function InventorySalesPage() {
             Sales booked from staff stock reports. They are part of the income on the Transactions page, shown here on
             their own.
           </p>
+          <FinanceFromTag className="mt-2" />
         </div>
       </div>
 

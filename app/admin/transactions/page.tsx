@@ -13,6 +13,7 @@ import {
 } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
 
 function sanitizeText(s: string): string {
   return s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '');
@@ -650,6 +651,7 @@ export default function TransactionsPage() {
         <div>
           <h1 className="text-white text-2xl font-bold">Transactions</h1>
           <p className="text-white/60 mt-1">Manage income, outflows, and returns</p>
+          <FinanceFromTag className="mt-2" />
         </div>
         <div className="relative" ref={exportMenuRef}>
           <button

@@ -30,6 +30,8 @@ export function notificationIcon(type: string): string {
       return 'receipt_long';
     case 'freeze_changed':
       return 'ac_unit';
+    case 'progress_check_due':
+      return 'monitor_weight';
     case 'message':
       return 'campaign';
     case 'client_digest':

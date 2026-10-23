@@ -7,6 +7,7 @@ const nav: PortalNavItem[] = [
   { name: 'Dashboard', href: '/member/dashboard', icon: 'dashboard', exact: true },
   { name: 'Membership', href: '/member', icon: 'card_membership', exact: true },
   { name: 'Attendance', href: '/member/attendance', icon: 'fact_check' },
+  { name: 'My progress', href: '/member/progress', icon: 'monitor_weight' },
   { name: 'History', href: '/member/history', icon: 'history' },
   { name: 'Notifications', href: '/member/notifications', icon: 'notifications' },
   { name: 'Profile', href: '/member/profile', icon: 'person' },

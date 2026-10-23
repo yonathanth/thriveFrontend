@@ -19,6 +19,7 @@ import { formatDesktopDate, humanize, num, str } from '@/lib/desktop';
 import SmsSendModal from '@/components/admin/SmsSendModal';
 import { useAuth } from '@/contexts/AuthContext';
 import FinanceFromTag from '@/components/admin/FinanceFromTag';
+import ProgressView from '@/components/progress/ProgressView';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -678,6 +679,8 @@ export default function MemberDetailPage({ params }: Props) {
           </div>
         </div>
       )}
+
+      {activeTab === 'health' && <ProgressView memberId={member.id} />}
 
       {activeTab === 'health' && (
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-hidden">

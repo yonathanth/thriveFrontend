@@ -857,6 +857,7 @@ export type NotificationType =
   | 'payment_received'
   | 'plan_changed'
   | 'freeze_changed'
+  | 'progress_check_due'
   | 'client_digest';
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
@@ -870,6 +871,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   payment_received: 'Payments received',
   plan_changed: 'Plan changes and renewals',
   freeze_changed: 'Membership frozen or unfrozen',
+  progress_check_due: 'Progress check reminders',
   client_digest: 'Clients to check on',
 };
 
@@ -878,7 +880,7 @@ export const NOTIFICATION_TYPES_BY_ROLE: Record<string, NotificationType[]> = {
   admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'message'],
   manager: ['package_changed', 'start_date_changed', 'expiring_summary', 'message'],
   trainer: ['message', 'client_digest'],
-  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed', 'freeze_changed'],
+  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed', 'freeze_changed', 'progress_check_due'],
 };
 
 /** Who a message from staff can go to. */
@@ -982,6 +984,79 @@ export const pushApi = {
       method: 'POST',
       body: JSON.stringify({ endpoint }),
     }),
+};
+
+// Progress: measurements from the gym app, photos, goals and check reminders
+export interface ProgressMeasurement {
+  id: number;
+  measuredAt: string;
+  bodyType: string | null;
+  weight: number | null;
+  bmi: number | null;
+  bodyFatPercent: number | null;
+  heartRate: number | null;
+  muscleMass: number | null;
+  leanBodyMass: number | null;
+  boneMass: number | null;
+  skeletalMuscleMass: number | null;
+  visceralFat: number | null;
+  subcutaneousFatPercent: number | null;
+  proteinPercent: number | null;
+  bmr: number | null;
+  bodyAge: number | null;
+}
+
+export interface ProgressPhoto {
+  id: number;
+  healthMetricId: number;
+  createdAt: string;
+  /** Only for the member's own photos */
+  visibleToTrainer?: boolean;
+  visibleToStaff?: boolean;
+}
+
+export interface ProgressData {
+  member: { id: number; fullName: string; gender: string | null; age: number | null };
+  measurements: ProgressMeasurement[];
+  photos: ProgressPhoto[];
+  goals: { metric: string; target: number; setByName: string | null }[];
+  schedule: { intervalDays: number; setByName: string | null; nextDue: string | null } | null;
+  standards: Record<string, unknown>[];
+  canSetSchedule: boolean;
+}
+
+export const progressApi = {
+  mine: () => apiFetch<ProgressData>('/api/progress/me'),
+  ofMember: (memberId: number) => apiFetch<ProgressData>(`/api/progress/member/${memberId}`),
+  /** target in the units shown (kg for masses); null removes the goal */
+  setGoal: (memberId: number | 'me', metric: string, target: number | null) =>
+    apiFetch<{ metric: string; target: number | null }>(
+      memberId === 'me' ? '/api/progress/me/goal' : `/api/progress/member/${memberId}/goal`,
+      { method: 'PUT', body: JSON.stringify({ metric, target }) },
+    ),
+  setSchedule: (memberId: number, intervalDays: number | null) =>
+    apiFetch<{ intervalDays: number | null }>(`/api/progress/member/${memberId}/schedule`, {
+      method: 'PUT',
+      body: JSON.stringify({ intervalDays }),
+    }),
+  addPhoto: (input: { healthMetricId: number; image: string; thumb: string; visibleToTrainer: boolean; visibleToStaff: boolean }) =>
+    apiFetch<{ id: number }>('/api/progress/photos', { method: 'POST', body: JSON.stringify(input) }),
+  setVisibility: (id: number, visibleToTrainer: boolean, visibleToStaff: boolean) =>
+    apiFetch<ProgressPhoto>(`/api/progress/photos/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ visibleToTrainer, visibleToStaff }),
+    }),
+  deletePhoto: (id: number) => apiFetch<void>(`/api/progress/photos/${id}`, { method: 'DELETE' }),
+  /** A photo as a local URL: images need the sign-in, so they are fetched, not linked. */
+  photoUrl: async (id: number, size: 'thumb' | 'full'): Promise<string> => {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/api/progress/photos/${id}/${size}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new ApiError(response.status, 'Could not load the photo');
+    return URL.createObjectURL(await response.blob());
+  },
 };
 
 // Website-only settings

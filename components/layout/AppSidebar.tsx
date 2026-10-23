@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
-import { SITE_NAME } from '@/lib/site';
+import { ReactNode, useEffect, useRef } from 'react';
+import BrandLogo from '@/components/public/BrandLogo';
 
 export interface SidebarItem {
   name: string;
@@ -26,6 +27,8 @@ interface AppSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   footer?: ReactNode;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export function isActivePath(pathname: string, item: SidebarItem): boolean {
@@ -33,33 +36,112 @@ export function isActivePath(pathname: string, item: SidebarItem): boolean {
 }
 
 /** Left navigation shared by the admin panel and the trainer and member portals. */
-export default function AppSidebar({ sections, subtitle, homeHref, isOpen, onClose, footer }: AppSidebarProps) {
+export default function AppSidebar({
+  sections,
+  subtitle,
+  homeHref,
+  isOpen,
+  onClose,
+  footer,
+  isCollapsed = false,
+  onToggleCollapse,
+}: AppSidebarProps) {
   const pathname = usePathname();
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButton.current?.focus();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key === 'Tab') {
+        const controls = sidebarRef.current?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled)');
+        const first = controls?.[0];
+        const last = controls?.[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => { if (desktop.matches) onClose(); };
+    desktop.addEventListener('change', closeOnDesktop);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKey);
+      desktop.removeEventListener('change', closeOnDesktop);
+      previousFocus?.focus();
+    };
+  }, [isOpen, onClose]);
 
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
 
       <aside
-        className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col border-r border-white/5 bg-gradient-to-b from-[#0b1220] via-[#0a0d14] to-[#080808] transform transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        ref={sidebarRef}
+        id="portal-navigation"
+        aria-label={`${subtitle} navigation`}
+        className={`portal-sidebar fixed top-0 left-0 h-dvh z-50 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0 ${
+          isCollapsed ? 'w-20' : 'w-64'
+        } ${isOpen ? 'translate-x-0' : '-translate-x-full invisible lg:visible'}`}
       >
-        <div className="px-5 pb-5">
-          <Link href={homeHref} onClick={onClose} className="flex flex-col items-start gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/thrive-logo.png" alt={SITE_NAME} className="h-20 w-auto object-contain" />
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[0.7rem] font-medium uppercase tracking-wider text-primary">
-              <span className="size-1.5 rounded-full bg-primary" />
-              {subtitle}
-            </span>
-          </Link>
+        <div className={`portal-brand relative ${isCollapsed ? 'flex flex-col items-center justify-center !p-4' : 'flex items-center justify-between'}`}>
+          {!isCollapsed ? (
+            <>
+              <Link href={homeHref} onClick={onClose} className="flex flex-col items-start min-w-0" aria-label="Thrive — dashboard">
+                <BrandLogo />
+                <span className="portal-role truncate">{subtitle}</span>
+              </Link>
+              {onToggleCollapse && (
+                <button
+                  type="button"
+                  onClick={onToggleCollapse}
+                  title="Collapse sidebar"
+                  aria-label="Collapse sidebar"
+                  className="hidden lg:flex items-center justify-center size-8 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <Link href={homeHref} onClick={onClose} className="flex items-center justify-center" aria-label="Thrive — dashboard" title="Thrive">
+                <Image src="/favicon/favicon.svg" alt="Thrive" width={32} height={32} className="size-8 rounded-lg" />
+              </Link>
+              {onToggleCollapse && (
+                <button
+                  type="button"
+                  onClick={onToggleCollapse}
+                  title="Expand sidebar"
+                  aria-label="Expand sidebar"
+                  className="hidden lg:flex mt-3 items-center justify-center size-8 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                </button>
+              )}
+            </>
+          )}
+          <button ref={closeButton} type="button" onClick={onClose} aria-label="Close menu" className="absolute right-2 top-3 rounded-lg p-2 text-white/60 hover:bg-white/5 lg:hidden">
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 pb-4">
+        <nav aria-label="Main navigation" className={`flex-1 min-h-0 overflow-y-auto pb-4 ${isCollapsed ? 'px-2' : 'px-3'}`}>
           {sections.map((section, i) => (
-            <div key={section.label ?? i} className={i > 0 ? 'mt-5' : ''}>
-              {section.label && (
-                <p className="px-3 pb-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/30">
+            <div key={section.label ?? i} className={i > 0 ? (isCollapsed ? 'mt-3 pt-3 border-t border-white/5' : 'mt-5') : ''}>
+              {section.label && !isCollapsed && (
+                <p className="px-3 pb-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/30 truncate">
                   {section.label}
                 </p>
               )}
@@ -72,21 +154,23 @@ export default function AppSidebar({ sections, subtitle, homeHref, isOpen, onClo
                         href={item.href}
                         onClick={onClose}
                         aria-current={active ? 'page' : undefined}
-                        className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${active
-                            ? 'bg-primary/15 text-white shadow-[inset_0_0_0_1px_rgba(59,140,255,0.25)]'
-                            : 'text-white/55 hover:bg-white/5 hover:text-white'
-                          }`}
+                        title={item.name}
+                        aria-label={item.name}
+                        className={`portal-nav-link group relative flex items-center rounded-lg text-sm font-medium transition-colors ${
+                          isCollapsed
+                            ? 'justify-center p-2.5'
+                            : 'gap-3 px-3 py-2.5'
+                        } ${active ? 'text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
                       >
-                        {active && (
-                          <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-full bg-primary shadow-[0_0_12px_rgba(59,140,255,0.8)]" />
-                        )}
                         <span
-                          className={`material-symbols-outlined text-[20px] transition-colors ${active ? 'text-primary' : 'text-white/40 group-hover:text-white/80'
-                            }`}
+                          aria-hidden="true"
+                          className={`material-symbols-outlined text-[20px] transition-colors shrink-0 ${
+                            active ? 'text-primary' : 'text-white/40 group-hover:text-white/80'
+                          }`}
                         >
                           {item.icon}
                         </span>
-                        {item.name}
+                        {!isCollapsed && <span className="truncate">{item.name}</span>}
                       </Link>
                     </li>
                   );
@@ -96,7 +180,7 @@ export default function AppSidebar({ sections, subtitle, homeHref, isOpen, onClo
           ))}
         </nav>
 
-        {footer && <div className="border-t border-white/5 p-3">{footer}</div>}
+        {footer && <div className={`border-t border-white/5 ${isCollapsed ? 'p-2' : 'p-3'}`}>{footer}</div>}
       </aside>
     </>
   );
@@ -113,7 +197,7 @@ export function UserAvatar({ name, size = 'md' }: { name?: string | null; size?:
       .join('') || '?';
   return (
     <span
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-bright to-[#1d4ed8] font-semibold text-white ${size === 'lg' ? 'size-12 text-base' : 'size-9 text-sm'
+      className={`portal-avatar inline-flex shrink-0 items-center justify-center rounded-full font-semibold ${size === 'lg' ? 'size-12 text-base' : 'size-9 text-sm'
         }`}
     >
       {initials}

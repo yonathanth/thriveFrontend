@@ -11,7 +11,7 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           <nav aria-label="Explore Thrive"><h2>Explore</h2>
             <Link href="/#home">Home</Link><Link href="/about">About</Link><Link href="/about#facilities">Facilities</Link><Link href="/contact">Contact</Link>
             <Link href="/services">Offerings</Link><Link href="/pricing">Prices</Link>
-            <Link href="/faq">FAQ</Link><Link href="/login">Member & staff sign in</Link>
+            <Link href="/faq">FAQ</Link>
           </nav>
           <nav aria-label="Training services"><h2>Training</h2>
             <Link href="/services#strength-and-conditioning">Strength & conditioning</Link>

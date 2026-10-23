@@ -1,40 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Routes that don't require authentication
-const publicAdminRoutes = ['/admin/login'];
-
+// Keep old staff sign-in links working; all roles now share /login.
+// Portal layouts and the backend guards enforce role access.
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Only apply to /admin routes
-  if (!pathname.startsWith('/admin')) {
-    return NextResponse.next();
+  if (request.nextUrl.pathname === '/admin/login') {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
-  
-  // Allow public admin routes
-  if (publicAdminRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-  
-  // Check for auth token in cookies (set by client-side after login)
-  // Note: For client-side auth, we'll handle redirect in the layout component
-  // This middleware provides an additional layer of protection
-  
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: ['/admin/:path*'],
-};
-
-
-
-
-
-
-
-
-
-
-
+export const config = { matcher: ['/admin/:path*'] };

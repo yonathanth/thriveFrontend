@@ -35,7 +35,7 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
         { opacity: 0, transform: 'translateY(-12px)' },
         { opacity: 1, transform: 'none' },
       ], { duration: 480, easing: 'cubic-bezier(.22,.61,.36,1)' }));
-      mobileDialog.current.querySelectorAll('.landing-mobile-links a, .landing-mobile-join, .landing-mobile-menu-bottom').forEach((element, index) => {
+      mobileDialog.current.querySelectorAll('.landing-mobile-links a, .landing-mobile-signin, .landing-mobile-join, .landing-mobile-menu-bottom').forEach((element, index) => {
         menuAnimations.current.push(element.animate([
           { opacity: 0, transform: 'translateY(12px)' },
           { opacity: 1, transform: 'none' },
@@ -44,7 +44,7 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
     }
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const desktop = window.matchMedia('(min-width: 768px)');
+    const desktop = window.matchMedia('(min-width: 1024px)');
     const closeOnDesktop = () => { if (desktop.matches) setMobileMenuOpen(false); };
     desktop.addEventListener('change', closeOnDesktop);
     return () => {
@@ -107,8 +107,8 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
       <Link href="/" className="landing-brand-link" aria-label="Thrive — home"><BrandLogo /></Link>
 
       {/* Right Edge: Nav Links + Join Now Button with no bar circling them */}
-      <div className="flex items-center gap-5 md:gap-6 lg:gap-9">
-        <nav className="hidden md:flex items-center gap-5 lg:gap-8">
+      <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
+        <nav className="hidden lg:flex items-center gap-5 lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -121,6 +121,8 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
           ))}
         </nav>
 
+        <Link href="/login" className="landing-signin">Sign in</Link>
+
         {/* Right CTA Button */}
         <button
           onClick={onJoinClick}
@@ -132,7 +134,7 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
         {/* Mobile Menu Button */}
         <button
           onClick={() => { if (mobileMenuOpen) closeMobileMenu(); else setMobileMenuOpen(true); }}
-          className="md:hidden p-2 text-white/90 hover:text-white rounded-lg focus:outline-none"
+          className="lg:hidden p-2 text-white/90 hover:text-white rounded-lg focus:outline-none"
           aria-label="Toggle menu"
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
@@ -152,6 +154,7 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
               <Link key={link.name} href={link.href} aria-current={isCurrentPage(link.href) ? 'page' : undefined} onClick={closeMobileMenu}>{link.name}<ChevronRight size={22} strokeWidth={1.3} aria-hidden="true" /></Link>
             ))}
           </nav>
+          <Link href="/login" className="landing-mobile-signin" onClick={closeMobileMenu}>Sign in<ArrowUpRight size={20} aria-hidden="true" /></Link>
           <button type="button" className="landing-mobile-join" onClick={() => { closeMobileMenu(); onJoinClick?.(); }}>Join Now<ArrowUpRight size={20} aria-hidden="true" /></button>
           <div className="landing-mobile-menu-bottom"><a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa</a><a href="tel:+251913814546">091 381 4546</a><span>Open 24/7</span></div>
         </div>

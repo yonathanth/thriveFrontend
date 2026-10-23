@@ -103,29 +103,7 @@ export default function MembersPage() {
         <span className="text-white/80">{member.serviceType || '-'}</span>
       ),
     },
-    {
-      key: 'membershipTier',
-      header: 'Tier',
-      render: (member: Member) => {
-        if (!member.membershipTier) return <span className="text-white/40">-</span>;
-        const tierColors: Record<string, string> = {
-          silver: 'bg-gray-500/10 text-gray-400 border-gray-500/20',
-          gold: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-          platinum: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-          bright: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-        };
-        const tierKey = member.membershipTier.toLowerCase();
-        return (
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border capitalize ${
-              tierColors[tierKey] || tierColors.silver
-            }`}
-          >
-            {member.membershipTier}
-          </span>
-        );
-      },
-    },
+
     {
       key: 'status',
       header: 'Status',

@@ -48,7 +48,7 @@ export default function DataTable<T extends object>({
   return (
     <div className="bg-surface-dark rounded-xl border border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="portal-table w-full">
           <thead>
             <tr className="bg-white/2 border-b border-white/5">
               {columns.map((column) => (

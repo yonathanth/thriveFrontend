@@ -1,38 +1,46 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import Sidebar from '@/components/admin/Sidebar';
-import AccountDropdown from '@/components/admin/AccountDropdown';
 import NotificationBell from '@/components/admin/NotificationBell';
 import { syncApi } from '@/lib/api';
 import { homeFor, PANEL_ROLES } from '@/lib/roles';
+import FullScreenSpinner from '@/components/auth/FullScreenSpinner';
+import PortalFrame from '@/components/portal/PortalFrame';
+import { useSidebarCollapse } from '@/hooks/useSidebarCollapse';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse();
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const sectionName = (pathname.split('/')[2] || 'dashboard').replaceAll('-', ' ');
 
-  // Check if current page is login
-  const isLoginPage = pathname === '/admin/login';
+  const signOut = () => {
+    logout();
+    router.replace('/login');
+  };
 
   // The admin panel is for admins and managers with no pending password change.
   const canUsePanel =
     isAuthenticated && !!user && !user.mustChangePassword && PANEL_ROLES.includes(user.role);
 
   useEffect(() => {
-    if (isLoading || isLoginPage) return;
-    if (!isAuthenticated || !user) router.push('/admin/login');
+    if (isLoading) return;
+    if (!isAuthenticated || !user) router.replace('/login');
     else if (user.mustChangePassword) router.replace('/change-password');
     else if (!PANEL_ROLES.includes(user.role)) router.replace(homeFor(user.role));
-  }, [isAuthenticated, isLoading, isLoginPage, router, user]);
+  }, [isAuthenticated, isLoading, router, user]);
 
   // Fetch last sync time
   useEffect(() => {
-    if (canUsePanel && !isLoginPage) {
+    if (canUsePanel) {
       const fetchLastSync = async () => {
         try {
           const data = await syncApi.getLastSync();
@@ -46,7 +54,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
       const interval = setInterval(fetchLastSync, 30000);
       return () => clearInterval(interval);
     }
-  }, [canUsePanel, isLoginPage]);
+  }, [canUsePanel]);
 
   const formatLastSync = (dateString: string | null) => {
     if (!dateString) return 'Never';
@@ -65,21 +73,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   // Show loading state
-  if (isLoading && !isLoginPage) {
-    return (
-      <div className="min-h-screen bg-background-dark flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="size-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-          <p className="text-white/60">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Login page - no sidebar
-  if (isLoginPage) {
-    return <>{children}</>;
-  }
+  if (isLoading) return <FullScreenSpinner />;
 
   // Redirect if not signed in, or not an admin/manager
   if (!canUsePanel) {
@@ -87,22 +81,36 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-background-dark">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <PortalFrame>
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={closeSidebar}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={toggleCollapse}
+      />
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
         {/* Top header */}
-        <header className="sticky top-0 z-30 bg-background-dark/80 backdrop-blur-lg border-b border-white/5">
+        <header className="portal-header sticky top-0 z-30 backdrop-blur-lg">
           <div className="flex items-center justify-between h-16 px-4 lg:px-8">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter transition-colors"
-            >
-              <span className="material-symbols-outlined text-2xl">menu</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                aria-label="Open menu"
+                aria-expanded={sidebarOpen}
+                aria-controls="portal-navigation"
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter transition-colors"
+              >
+                <span className="material-symbols-outlined text-2xl">menu</span>
+              </button>
+            </div>
 
-            <div className="flex-1 lg:flex-none" />
+            <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
+              <span className="hidden text-white/40 sm:inline">{user?.role === 'manager' ? 'Manager' : 'Admin'}</span>
+              <span className="material-symbols-outlined hidden text-base text-white/20 sm:inline">chevron_right</span>
+              <span className="truncate font-medium capitalize">{sectionName}</span>
+            </div>
 
             {/* Last Sync Time and Account dropdown */}
             <div className="flex items-center gap-2 sm:gap-4">
@@ -117,16 +125,36 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 <NotificationBell />
               </Suspense>
 
-              {/* Account dropdown */}
-              <AccountDropdown />
+              {/* Profile & Account Button */}
+              <Link
+                href="/admin/profile"
+                aria-label="Profile & Account"
+                title="Profile & Account"
+                className={`p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter hover:text-white transition-colors ${
+                  pathname === '/admin/profile' ? 'text-primary bg-primary/10' : ''
+                }`}
+              >
+                <span className="material-symbols-outlined text-xl">account_circle</span>
+              </Link>
+
+              {/* Sign Out Button */}
+              <button
+                type="button"
+                onClick={signOut}
+                aria-label="Sign out"
+                title="Sign out"
+                className="p-2 rounded-lg text-white/60 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+              >
+                <span className="material-symbols-outlined text-xl">logout</span>
+              </button>
             </div>
           </div>
         </header>
 
         {/* Page content */}
-        <main className="p-4 lg:p-8">{children}</main>
+        <main className="portal-content mx-auto max-w-[1440px] p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
-    </div>
+    </PortalFrame>
   );
 }
 

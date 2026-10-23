@@ -9,8 +9,6 @@ import FullScreenSpinner from './FullScreenSpinner';
 interface RequireRoleProps {
   roles: Role[];
   children: ReactNode;
-  /** Where to send signed-out visitors. */
-  loginPath?: string;
 }
 
 /**
@@ -18,7 +16,7 @@ interface RequireRoleProps {
  * password change; everyone else is sent where they belong. The backend enforces
  * the same rules; this only keeps people out of pages they cannot use.
  */
-export default function RequireRole({ roles, children, loginPath = '/login' }: RequireRoleProps) {
+export default function RequireRole({ roles, children }: RequireRoleProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
@@ -26,10 +24,10 @@ export default function RequireRole({ roles, children, loginPath = '/login' }: R
 
   useEffect(() => {
     if (isLoading || allowed) return;
-    if (!isAuthenticated || !user) router.replace(loginPath);
+    if (!isAuthenticated || !user) router.replace('/login');
     else if (user.mustChangePassword) router.replace('/change-password');
     else router.replace(homeFor(user.role));
-  }, [allowed, isAuthenticated, isLoading, loginPath, router, user]);
+  }, [allowed, isAuthenticated, isLoading, router, user]);
 
   if (!allowed) return <FullScreenSpinner />;
   return <>{children}</>;

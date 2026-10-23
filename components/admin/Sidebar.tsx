@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS, Role } from '@/lib/roles';
 import AppSidebar, { SidebarItem, SidebarSection, UserAvatar } from '@/components/layout/AppSidebar';
@@ -50,9 +51,11 @@ const navSections: { label: string; items: NavItem[] }[] = [
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, isCollapsed = false, onToggleCollapse }: SidebarProps) {
   const { user } = useAuth();
 
   const sections: SidebarSection[] = navSections
@@ -69,15 +72,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       homeHref="/admin/dashboard"
       isOpen={isOpen}
       onClose={onClose}
+      isCollapsed={isCollapsed}
+      onToggleCollapse={onToggleCollapse}
       footer={
         user && (
-          <div className="flex items-center gap-3 rounded-lg bg-white/3 px-3 py-2.5">
-            <UserAvatar name={user.name} />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">{user.name}</p>
-              <p className="truncate text-xs text-white/40">{ROLE_LABELS[user.role]}</p>
-            </div>
-          </div>
+          isCollapsed ? (
+            <Link
+              href="/admin/profile"
+              onClick={onClose}
+              className="flex items-center justify-center rounded-lg bg-white/3 p-2 transition-colors hover:bg-white/5"
+              aria-label="Open your profile"
+              title={user.name}
+            >
+              <UserAvatar name={user.name} />
+            </Link>
+          ) : (
+            <Link
+              href="/admin/profile"
+              onClick={onClose}
+              className="flex items-center gap-3 rounded-lg bg-white/3 px-3 py-2.5 transition-colors hover:bg-white/5"
+              aria-label="Open your profile"
+            >
+              <UserAvatar name={user.name} />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-white">{user.name}</p>
+                <p className="truncate text-xs text-white/40">{ROLE_LABELS[user.role]}</p>
+              </div>
+            </Link>
+          )
         )
       }
     />

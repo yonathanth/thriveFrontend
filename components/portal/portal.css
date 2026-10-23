@@ -1,0 +1,104 @@
+@font-face {
+  font-family: 'Thrive Portal Icons';
+  src: url('/fonts/material-symbols-outlined.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+.thrive-portal {
+  --color-primary: #09b2f7;
+  --color-primary-bright: #65d2ff;
+  --color-on-primary: #062332;
+  --color-background: #0b1013;
+  --color-background-dark: #0b1013;
+  --color-surface: #131b20;
+  --color-surface-dark: #131b20;
+  --color-card-dark: #131b20;
+  --color-surface-bright: #1b272f;
+  --color-surface-dark-lighter: #1b272f;
+  --color-surface-container-low: #10171c;
+  --color-surface-container: #131b20;
+  --color-surface-container-high: #1b272f;
+  --color-surface-container-highest: #23323c;
+  --color-surface-variant: #23323c;
+  --color-on-surface: #f4f8fa;
+  --color-on-surface-variant: #a5b4be;
+  --color-outline: #2a3a44;
+  --color-outline-variant: #2a3a44;
+  --color-border-dark: #2a3a44;
+  --color-surface-border: #2a3a44;
+  --color-secondary-container: #09b2f7;
+  --color-on-secondary-container: #062332;
+  --radius-lg: .625rem;
+  --radius-xl: .875rem;
+  --radius-2xl: 1rem;
+  min-height: 100dvh;
+  background: var(--color-background-dark);
+  color: #f4f8fa;
+  font-family: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+/* Keep the existing utility-based screens on the same surface and border palette. */
+.thrive-portal :is(.border-surface-dark-lighter, .border-white\/5) { border-color: #ffffff14; }
+.thrive-portal .divide-surface-dark-lighter > :not(:last-child) { border-color: #ffffff14; }
+.thrive-portal :is(.font-body, .font-headline) { font-family: inherit; }
+.thrive-portal .material-symbols-outlined {
+  font-family: 'Thrive Portal Icons';
+  font-weight: 400;
+  font-style: normal;
+  font-feature-settings: 'liga';
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  direction: ltr;
+  flex-shrink: 0;
+}
+.thrive-portal h1 { font-weight: 600; letter-spacing: -.04em; line-height: 1.25; }
+.thrive-portal :is(h2, h3) { letter-spacing: -.025em; }
+.thrive-portal :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid #65d2ff;
+  outline-offset: 3px;
+}
+.thrive-portal :is(input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]), select, textarea) {
+  min-width: 0;
+  border-radius: .625rem;
+  border-color: #ffffff26;
+}
+.thrive-portal :is(button, a).bg-primary { color: #062332; font-weight: 600; border-radius: 999px; }
+.thrive-portal button:not(:disabled) { cursor: pointer; }
+.thrive-portal button:disabled { cursor: not-allowed; }
+.portal-content { min-width: 0; width: 100%; }
+.portal-header { background: #0b1013ed; border-bottom: 1px solid #ffffff14; }
+.portal-sidebar { background: #10171c; border-right: 1px solid #ffffff14; }
+.portal-brand { padding: 26px 24px 22px; }
+.portal-brand .thrive-logo { width: 140px; }
+.portal-role { margin-top: 10px; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: #a5b4be; }
+.portal-nav-link { border: 1px solid transparent; }
+.portal-nav-link[aria-current=page] { background: #09b2f712; border-color: #09b2f740; color: #d5f2ff; }
+.portal-nav-link[aria-current=page] .material-symbols-outlined { color: #65d2ff; }
+.portal-avatar { background: #09b2f71a; color: #8ddfff; border: 1px solid #09b2f733; }
+.portal-stat { border: 1px solid #ffffff14; transition: border-color 180ms; }
+.portal-stat:hover { border-color: #09b2f740; }
+.portal-table thead { background: #ffffff03; }
+.portal-table th { color: #a5b4be; font-weight: 500; letter-spacing: .06em; }
+.portal-membership { background: #11232d; border-color: #09b2f733; }
+.portal-membership-days { color: #8ddfff; }
+
+html:has(.thrive-portal)::-webkit-scrollbar,
+body:has(.thrive-portal)::-webkit-scrollbar,
+.thrive-portal ::-webkit-scrollbar { width: 8px; height: 8px; }
+html:has(.thrive-portal)::-webkit-scrollbar-track,
+body:has(.thrive-portal)::-webkit-scrollbar-track,
+.thrive-portal ::-webkit-scrollbar-track { background: #0b1013; }
+html:has(.thrive-portal)::-webkit-scrollbar-thumb,
+body:has(.thrive-portal)::-webkit-scrollbar-thumb,
+.thrive-portal ::-webkit-scrollbar-thumb { background: #354854; border: 2px solid #0b1013; border-radius: 999px; }
+.thrive-portal ::-webkit-scrollbar-thumb:hover { background: #09b2f7; }
+@media (prefers-reduced-motion: reduce) {
+  .thrive-portal *, .thrive-portal *::before, .thrive-portal *::after { scroll-behavior: auto; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

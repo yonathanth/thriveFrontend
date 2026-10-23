@@ -1,150 +1,66 @@
-"use client";
+'use client';
 
-import { useEffect, useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import FullScreenSpinner from "@/components/auth/FullScreenSpinner";
-import { homeFor } from "@/lib/roles";
-import { SITE_NAME } from "@/lib/site";
+import { useEffect, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AlertCircle, ArrowLeft, ArrowUpRight, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import FullScreenSpinner from '@/components/auth/FullScreenSpinner';
+import AuthShell from '@/components/auth/AuthShell';
+import PasswordField from '@/components/auth/PasswordField';
+import { homeFor } from '@/lib/roles';
 
 const MIN_LENGTH = 6;
 
-/**
- * Required after signing in with a temporary password (first sign-in or after a
- * staff reset); also where anyone signed in changes their password.
- */
+/** Required after a temporary password; also supports voluntary changes. */
 export default function ChangePasswordPage() {
   const { user, isAuthenticated, isLoading, changePassword, logout } = useAuth();
   const router = useRouter();
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) router.replace("/login");
+    if (!isLoading && !isAuthenticated) router.replace('/login');
   }, [isAuthenticated, isLoading, router]);
 
   if (isLoading || !user) return <FullScreenSpinner />;
-
   const forced = !!user.mustChangePassword;
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+    setError('');
     if (next.length < MIN_LENGTH) return setError(`Use at least ${MIN_LENGTH} characters.`);
-    if (next !== confirm) return setError("The new passwords do not match.");
-    if (next === current) return setError("Choose a password different from the current one.");
-
+    if (next !== confirm) return setError('The new passwords do not match.');
+    if (next === current) return setError('Choose a password different from the current one.');
     setIsSubmitting(true);
     try {
       const updated = await changePassword(current, next);
       router.replace(homeFor(updated.role));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not change the password");
+      setError(err instanceof Error ? err.message : 'Could not change the password');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="v2 flex min-h-screen p-2 md:p-3">
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-[1.25rem] bg-night px-4 py-16 md:rounded-[1.5rem]">
-        <div className="relative w-full max-w-md">
-          <div className="mb-6 flex justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/thrive-logo.png" alt={SITE_NAME} width={111} height={40} className="h-10 w-auto object-contain" />
-          </div>
-
-          <div className="rounded-[1.25rem] bg-white p-7 md:p-10">
-            <p className="mono text-lime-deep">{user.name}</p>
-            <h1 className="mt-3 text-4xl font-light tracking-tight">
-              {forced ? "Choose a new password" : "Change password"}
-            </h1>
-            <p className="mono mt-2 text-night/55">
-              {forced
-                ? "You signed in with a temporary password. Set your own to continue."
-                : "Other devices will be signed out."}
-            </p>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              {error && (
-                <div className="rounded-[0.9rem] border border-red-300 bg-red-50 p-4 text-sm text-red-700" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <label className="block">
-                <span className="mono mb-2 block text-night/60">
-                  {forced ? "Temporary password" : "Current password"}
-                </span>
-                <input
-                  type="password"
-                  value={current}
-                  onChange={(e) => setCurrent(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  className="field"
-                />
-              </label>
-
-              <label className="block">
-                <span className="mono mb-2 block text-night/60">New password</span>
-                <input
-                  type="password"
-                  value={next}
-                  onChange={(e) => setNext(e.target.value)}
-                  required
-                  minLength={MIN_LENGTH}
-                  autoComplete="new-password"
-                  className="field"
-                />
-              </label>
-
-              <label className="block">
-                <span className="mono mb-2 block text-night/60">Confirm new password</span>
-                <input
-                  type="password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                  minLength={MIN_LENGTH}
-                  autoComplete="new-password"
-                  className="field"
-                />
-              </label>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="cta cta-lg cta-dark w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isSubmitting ? "Saving…" : "Save password"}
-              </button>
-            </form>
-          </div>
-
-          <div className="mt-6 flex justify-center gap-6">
-            {forced ? (
-              <button
-                onClick={() => {
-                  logout();
-                  router.replace("/login");
-                }}
-                className="mono text-white/60 hover:text-white"
-              >
-                Sign out
-              </button>
-            ) : (
-              <Link href={homeFor(user.role)} className="mono text-white/60 hover:text-white">
-                ← Back
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <AuthShell
+      fullscreen
+      title={<>{forced ? 'Set your' : 'Change your'} <em>password.</em></>}
+      description={forced ? 'Replace your temporary password to continue to your portal.' : 'Choose a new password. Your other devices will be signed out.'}
+      footer={forced ? <button type="button" onClick={() => { logout(); router.replace('/login'); }}><LogOut size={15} aria-hidden="true" />Sign out</button> : <Link href={homeFor(user.role)}><ArrowLeft size={15} aria-hidden="true" />Back to your portal</Link>}
+    >
+      <form onSubmit={handleSubmit} className="ta-form" aria-label="Change password" aria-busy={isSubmitting}>
+        {error && <div id="password-error" className="ta-alert" role="alert"><AlertCircle size={17} aria-hidden="true" /><span>{error}</span></div>}
+        <PasswordField id="current-password" name="currentPassword" label={forced ? 'Temporary password' : 'Current password'} value={current} onChange={(event) => setCurrent(event.target.value)} required autoComplete="current-password" aria-describedby={error ? 'password-error' : undefined} />
+        <PasswordField id="new-password" name="newPassword" label="New password" value={next} onChange={(event) => setNext(event.target.value)} required minLength={MIN_LENGTH} autoComplete="new-password" hint={`Use at least ${MIN_LENGTH} characters, different from your current password.`} aria-describedby={error ? 'password-error' : undefined} />
+        <PasswordField id="confirm-password" name="confirmPassword" label="Confirm new password" value={confirm} onChange={(event) => setConfirm(event.target.value)} required minLength={MIN_LENGTH} autoComplete="new-password" aria-describedby={error ? 'password-error' : undefined} />
+        <button type="submit" disabled={isSubmitting} className="ta-primary">{isSubmitting ? <><span className="ta-spinner" aria-hidden="true" />Saving…</> : <>Save password<ArrowUpRight size={19} aria-hidden="true" /></>}</button>
+      </form>
+    </AuthShell>
   );
 }

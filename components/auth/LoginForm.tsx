@@ -1,118 +1,53 @@
-"use client";
+'use client';
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { homeFor } from "@/lib/roles";
-import { SITE_NAME } from "@/lib/site";
-
-interface LoginFormProps {
-  eyebrow: string;
-  subtitle: string;
-}
+import { useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AlertCircle, ArrowUpRight } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { homeFor } from '@/lib/roles';
+import AuthShell from './AuthShell';
+import PasswordField from './PasswordField';
 
 /** Sign-in for every role: phone number (anyone) or email (admins). */
-export default function LoginForm({ eyebrow, subtitle }: LoginFormProps) {
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+export default function LoginForm() {
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+    setError('');
     setIsSubmitting(true);
-
     try {
       const user = await login(identifier, password);
-      router.push(user.mustChangePassword ? "/change-password" : homeFor(user.role));
+      router.replace(user.mustChangePassword ? '/change-password' : homeFor(user.role));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="v2 flex min-h-screen p-2 md:p-3">
-      <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-[1.25rem] bg-night px-4 py-16 md:rounded-[1.5rem]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/hero.jpg" alt="" className="photo absolute inset-0 h-full w-full object-cover opacity-40" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-night via-night/70 to-night/50" />
-
-        <div className="relative w-full max-w-md">
-          <Link href="/" className="mb-6 flex justify-center" aria-label={`${SITE_NAME} home`}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/thrive-logo.png" alt={SITE_NAME} width={111} height={60} className="h-20 w-auto object-contain" />
-          </Link>
-
-          <div className="rounded-[1.25rem] bg-white p-7 md:p-10">
-            <p className="mono text-lime-deep">{eyebrow}</p>
-            <h1 className="mt-3 text-4xl font-light tracking-tight">Sign in</h1>
-            <p className="mono mt-2 text-night/55">{subtitle}</p>
-
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-              {error && (
-                <div className="rounded-[0.9rem] border border-red-300 bg-red-50 p-4 text-sm text-red-700" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <label className="block">
-                <span className="mono mb-2 block text-night/60">Phone number or email</span>
-                <input
-                  id="identifier"
-                  type="text"
-                  inputMode="email"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  required
-                  autoComplete="username"
-                  placeholder="09XX XXX XXX"
-                  className="field"
-                />
-              </label>
-
-              <label className="block">
-                <span className="mono mb-2 block text-night/60">Password</span>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className="field"
-                />
-              </label>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="cta cta-lg cta-dark w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {isSubmitting ? "Signing in…" : "Sign in"}
-              </button>
-
-              <p className="text-sm text-night/55">
-                First time here? Sign in with your phone number and the temporary password from the front
-                desk. Forgot your password? Ask the front desk to reset it.
-              </p>
-            </form>
-          </div>
-
-          <div className="mt-6 flex justify-center">
-            <Link href="/" className="mono text-white/60 hover:text-white">
-              ← Back to website
-            </Link>
-          </div>
+    <AuthShell fullscreen title={<>Welcome <em>back.</em></>} description="Sign in to your Thrive account.">
+      <form className="ta-form" onSubmit={handleSubmit} aria-label="Sign in" aria-busy={isSubmitting}>
+        {error && <div id="login-error" className="ta-alert" role="alert"><AlertCircle size={17} aria-hidden="true" /><span>{error}</span></div>}
+        <div className="ta-field">
+          <label htmlFor="identifier">Phone number or email</label>
+          <input id="identifier" name="identifier" type="text" value={identifier} onChange={(event) => setIdentifier(event.target.value)} required autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder="Your phone number or email" aria-describedby={error ? 'login-error' : undefined} />
         </div>
-      </div>
-    </div>
+        <PasswordField id="password" name="password" label="Password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" placeholder="Enter your password" aria-describedby={error ? 'login-error' : undefined} />
+        <Link className="ta-forgot" href="/forgot-password">Forgot password?</Link>
+        <button type="submit" disabled={isSubmitting} className="ta-primary">
+          {isSubmitting ? <><span className="ta-spinner" aria-hidden="true" />Signing in…</> : <>Sign in<ArrowUpRight size={19} aria-hidden="true" /></>}
+        </button>
+      </form>
+      <div className="ta-join"><span>Not a member yet?</span><Link href="/join" className="ta-secondary">Join now<ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+    </AuthShell>
   );
 }

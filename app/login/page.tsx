@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import LoginForm from "@/components/auth/LoginForm";
 import { homeFor } from "@/lib/roles";
+import FullScreenSpinner from "@/components/auth/FullScreenSpinner";
 
 export default function LoginPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -17,5 +18,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, isLoading, router, user]);
 
-  return <LoginForm eyebrow="Members & staff" subtitle="Members, trainers and staff sign in here." />;
+  if (isLoading || (isAuthenticated && user)) return <FullScreenSpinner />;
+
+  return <LoginForm />;
 }

@@ -81,6 +81,8 @@ export default function AccountDropdown() {
     <div className="relative" ref={dropdownRef}>
       {/* Account Icon Button */}
       <button
+        aria-label="Account menu"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter hover:text-white transition-colors"
       >

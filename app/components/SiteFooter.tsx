@@ -84,7 +84,7 @@ export function SiteFooter() {
           <p>
             © {year} {SITE_NAME}
           </p>
-          <Link href="/admin/login" className="hover:text-white">
+          <Link href="/login" className="hover:text-white">
             Staff login ■
           </Link>
         </div>

@@ -27,16 +27,12 @@ export default function StatsCard({
   color = 'primary',
 }: StatsCardProps) {
   return (
-    <div className="group relative overflow-hidden bg-surface-dark rounded-xl border border-white/5 p-6 transition-all hover:border-primary/30 hover:shadow-[0_10px_40px_-15px_rgba(59,140,255,0.45)]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-primary/10 blur-2xl opacity-0 transition-opacity group-hover:opacity-100"
-      />
+    <div className="portal-stat relative overflow-hidden bg-surface-dark rounded-xl p-5 sm:p-6">
       <div className="relative flex items-start justify-between mb-4">
         <div
           className={`size-12 rounded-xl flex items-center justify-center ring-1 ring-inset ring-white/5 ${colorClasses[color]}`}
         >
-          <span className="material-symbols-outlined text-2xl">{icon}</span>
+          <span aria-hidden="true" className="material-symbols-outlined text-2xl">{icon}</span>
         </div>
         {trend && (
           <div
@@ -53,7 +49,7 @@ export default function StatsCard({
       </div>
       <div className="relative">
         <p className="text-white/55 text-sm mb-1">{title}</p>
-        <p className="text-white text-3xl font-bold tracking-tight">{value}</p>
+        <p className="text-white text-2xl sm:text-3xl font-semibold tracking-tight break-words tabular-nums">{value}</p>
         {subtitle && (
           <p className="text-white/40 text-xs mt-1">{subtitle}</p>
         )}

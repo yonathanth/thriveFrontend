@@ -360,22 +360,7 @@ export default function MemberDetailPage({ params }: Props) {
                   </div>
                 </div>
               )}
-              {member.membershipTier && (
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-white/40">workspace_premium</span>
-                  <div>
-                    <p className="text-white/40 text-xs">Membership Tier</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium border capitalize ${
-                      member.membershipTier === 'silver' ? 'bg-gray-500/10 text-gray-400 border-gray-500/20' :
-                      member.membershipTier === 'gold' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
-                      member.membershipTier === 'platinum' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                      'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                    }`}>
-                      {member.membershipTier}
-                    </span>
-                  </div>
-                </div>
-              )}
+
             </div>
           </div>
 

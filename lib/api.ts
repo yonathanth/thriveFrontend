@@ -15,6 +15,8 @@ export interface AdminProfile {
   mustChangePassword?: boolean;
   contactEmail?: string | null;
   telegramUsername?: string | null;
+  /** Linked to a member of staff in the gym app: they have payslips. */
+  isStaff?: boolean;
 }
 
 export interface ProfileUpdate {
@@ -851,6 +853,7 @@ export type NotificationType =
   | 'package_changed'
   | 'start_date_changed'
   | 'expiring_summary'
+  | 'payout_due'
   | 'message'
   | 'membership_expiring'
   | 'membership_expired'
@@ -865,6 +868,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   package_changed: 'Package changes',
   start_date_changed: 'Start date changes and renewals',
   expiring_summary: 'Memberships ending this week',
+  payout_due: 'Staff pay due for approval',
   message: 'Messages from the gym',
   membership_expiring: 'Membership ending soon',
   membership_expired: 'Membership ended',
@@ -877,7 +881,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
 
 /** What each role can receive (the API enforces the same). */
 export const NOTIFICATION_TYPES_BY_ROLE: Record<string, NotificationType[]> = {
-  admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'message'],
+  admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'payout_due', 'message'],
   manager: ['package_changed', 'start_date_changed', 'expiring_summary', 'message'],
   trainer: ['message', 'client_digest'],
   member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed', 'freeze_changed', 'progress_check_due'],
@@ -1069,6 +1073,58 @@ export const siteSettingsApi = {
       method: 'PUT',
       body: JSON.stringify({ date: date ?? '' }),
     }),
+};
+
+// Payroll: payouts the gym app calculates, approved here by admins with what was paid.
+export interface PayoutLine {
+  kind: 'base' | 'deduction' | 'commission' | string;
+  label: string;
+  amount: number;
+}
+
+/**
+ * building: the period is running (an estimate); due: ended, waiting for approval;
+ * approved: waiting for the gym app to record it; recorded: paid and booked.
+ */
+export type PayoutStatus = 'building' | 'due' | 'approved' | 'recorded';
+
+export interface Payout {
+  payoutLocalId: number;
+  staffLocalId: number;
+  staffName: string;
+  periodStart: string;
+  periodLast: string;
+  status: PayoutStatus;
+  calculatedAmount: number;
+  lines: PayoutLine[];
+  approval: {
+    paidAmount: number;
+    paidDate: string;
+    paymentMethod: string | null;
+    note: string | null;
+    approvedByName: string;
+    approvedAt: string;
+    recordedAt: string | null;
+  } | null;
+}
+
+export interface ApprovePayoutInput {
+  paidAmount: number;
+  paidDate: string;
+  paymentMethod?: string | null;
+  note?: string | null;
+}
+
+export const payrollApi = {
+  /** Admins */
+  payouts: () => apiFetch<{ payouts: Payout[]; paymentMethods: string[] }>('/api/payroll/payouts'),
+  approve: (payoutLocalId: number, input: ApprovePayoutInput) =>
+    apiFetch<Payout>(`/api/payroll/payouts/${payoutLocalId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+  /** The signed-in staff member's own payslips */
+  mine: () => apiFetch<Payout[]>('/api/payslips/me'),
 };
 
 // Sync API

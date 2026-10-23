@@ -8,6 +8,8 @@ import AppSidebar, { SidebarItem, SidebarSection, UserAvatar } from '@/component
 interface NavItem extends SidebarItem {
   /** Who sees the link; defaults to admins and managers. The API enforces the same. */
   roles?: Role[];
+  /** Only for logins that belong to a member of staff in the gym app */
+  staffOnly?: boolean;
 }
 
 const navSections: { label: string; items: NavItem[] }[] = [
@@ -16,6 +18,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     items: [
       { name: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
       { name: 'Notifications', href: '/admin/notifications', icon: 'notifications' },
+      { name: 'My pay', href: '/admin/my-pay', icon: 'account_balance_wallet', staffOnly: true },
     ],
   },
   {
@@ -31,6 +34,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: 'Business',
     items: [
       { name: 'Transactions', href: '/admin/transactions', icon: 'payments', roles: ['admin'] },
+      { name: 'Payouts', href: '/admin/payouts', icon: 'account_balance_wallet', roles: ['admin'] },
       { name: 'Services', href: '/admin/services', icon: 'category' },
       { name: 'Catalog', href: '/admin/catalog', icon: 'inventory_2' },
       { name: 'Inventory', href: '/admin/inventory', icon: 'warehouse', exact: true },
@@ -62,7 +66,10 @@ export default function Sidebar({ isOpen, onClose, isCollapsed = false, onToggle
   const sections: SidebarSection[] = navSections
     .map((s) => ({
       label: s.label,
-      items: s.items.filter((item) => !!user && (item.roles ?? ['admin', 'manager']).includes(user.role)),
+      items: s.items.filter(
+        (item) =>
+          !!user && (item.roles ?? ['admin', 'manager']).includes(user.role) && (!item.staffOnly || !!user.isStaff),
+      ),
     }))
     .filter((s) => s.items.length > 0);
 

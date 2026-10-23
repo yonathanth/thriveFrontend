@@ -16,6 +16,8 @@ export function notificationIcon(type: string): string {
   switch (type) {
     case 'payment':
       return 'payments';
+    case 'payout_due':
+      return 'account_balance_wallet';
     case 'package_changed':
       return 'swap_horiz';
     case 'start_date_changed':

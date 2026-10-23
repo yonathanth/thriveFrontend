@@ -24,6 +24,7 @@ const AREA_ICONS: Record<string, string> = {
   accounts: 'manage_accounts',
   sign_in: 'login',
   notifications: 'campaign',
+  payroll: 'account_balance_wallet',
 };
 
 export function areaIcon(area: string): string {

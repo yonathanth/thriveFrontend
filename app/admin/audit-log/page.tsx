@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { auditLogApi, AuditEntry } from '@/lib/api';
+import { auditLogApi, AuditEntry, AuditSource } from '@/lib/api';
 import { areaIcon, formatDateTime, humanize } from '@/lib/audit';
 import { timeAgo } from '@/lib/notifications';
 
@@ -17,6 +17,7 @@ export default function AuditLogPage() {
     actions: [],
     actors: [],
   });
+  const [source, setSource] = useState<AuditSource | ''>('');
   const [area, setArea] = useState('');
   const [action, setAction] = useState('');
   const [actor, setActor] = useState('');
@@ -43,6 +44,7 @@ export default function AuditLogPage() {
         const res = await auditLogApi.list({
           page: nextPage,
           limit: PAGE_SIZE,
+          source: source || undefined,
           area: area || undefined,
           action: action || undefined,
           actor: actor || undefined,
@@ -57,7 +59,7 @@ export default function AuditLogPage() {
         setLoading(false);
       }
     },
-    [area, action, actor, search]
+    [source, area, action, actor, search]
   );
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function AuditLogPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-white text-2xl font-bold">Audit Log</h1>
-        <p className="text-white/60 mt-1">Who changed what in the gym app, and when</p>
+        <p className="text-white/60 mt-1">Who did what in the gym app and on the website, and when</p>
       </div>
 
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4 flex flex-col lg:flex-row gap-4">
@@ -84,6 +86,16 @@ export default function AuditLogPage() {
             className="w-full h-10 pl-10 pr-4 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-primary/50"
           />
         </div>
+        <select
+          value={source}
+          onChange={(e) => setSource(e.target.value as AuditSource | '')}
+          aria-label="Where it was done"
+          className={select}
+        >
+          <option value="">App and website</option>
+          <option value="app">Gym app</option>
+          <option value="web">Website</option>
+        </select>
         <select value={actor} onChange={(e) => setActor(e.target.value)} className={select}>
           <option value="">Everyone</option>
           {filters.actors.map((a) => (
@@ -116,14 +128,14 @@ export default function AuditLogPage() {
         ) : items.length === 0 && !loading ? (
           <div className="p-12 text-center text-white/40">
             <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">history</span>
-            {area || action || actor || search ? 'Nothing matches these filters' : 'No audit entries have synced yet'}
+            {source || area || action || actor || search ? 'Nothing matches these filters' : 'No audit entries yet'}
           </div>
         ) : (
           <div className="divide-y divide-surface-dark-lighter">
             {items.map((e) => (
               <Link
-                key={e.id}
-                href={`/admin/audit-log/${e.id}`}
+                key={`${e.source}-${e.id}`}
+                href={`/admin/audit-log/${e.id}${e.source === 'web' ? '?source=web' : ''}`}
                 className="p-4 flex gap-4 hover:bg-surface-dark-lighter/40 transition-colors"
               >
                 <span className="size-10 shrink-0 rounded-full flex items-center justify-center bg-primary/10 text-primary">
@@ -132,6 +144,13 @@ export default function AuditLogPage() {
                 <span className="flex-1 min-w-0">
                   <span className="block text-white">{e.summary}</span>
                   <span className="block text-white/50 text-sm mt-0.5">
+                    <span
+                      className={`mr-2 inline-block rounded px-1.5 py-px text-[11px] font-medium ${
+                        e.source === 'web' ? 'bg-sky-500/15 text-sky-300' : 'bg-white/10 text-white/60'
+                      }`}
+                    >
+                      {e.source === 'web' ? 'Website' : 'App'}
+                    </span>
                     {e.actorUsername ?? 'The app'}
                     {e.actorRole ? ` · ${e.actorRole}` : ''} · {humanize(e.area)} · {humanize(e.action)}
                   </span>

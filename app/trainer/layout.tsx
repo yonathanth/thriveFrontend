@@ -7,6 +7,7 @@ import PortalShell, { PortalNavItem } from '@/components/portal/PortalShell';
 const nav: PortalNavItem[] = [
   { name: 'My members', href: '/trainer', icon: 'group', exact: true },
   { name: 'Schedule', href: '/trainer/schedule', icon: 'calendar_month' },
+  { name: 'Notifications', href: '/trainer/notifications', icon: 'notifications' },
   { name: 'Profile', href: '/trainer/profile', icon: 'person' },
 ];
 

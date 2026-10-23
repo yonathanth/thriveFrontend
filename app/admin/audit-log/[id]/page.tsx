@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { auditLogApi, AuditEntry } from '@/lib/api';
 import { areaIcon, fieldChanges, formatDateTime, humanize, showValue } from '@/lib/audit';
 
@@ -11,15 +12,16 @@ interface Props {
 
 export default function AuditEntryPage({ params }: Props) {
   const { id } = use(params);
+  const source = useSearchParams().get('source') === 'web' ? 'web' : 'app';
   const [entry, setEntry] = useState<AuditEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     auditLogApi
-      .get(Number(id))
+      .get(Number(id), source)
       .then(setEntry)
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load the audit entry'));
-  }, [id]);
+  }, [id, source]);
 
   const back = (
     <Link href="/admin/audit-log" className="inline-flex items-center gap-1 text-white/60 hover:text-white text-sm">
@@ -33,7 +35,7 @@ export default function AuditEntryPage({ params }: Props) {
       <div className="space-y-6">
         {back}
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-12 text-center text-white/60">
-          {error}. It reaches the website with the gym app&apos;s next sync.
+          {error}.{source === 'app' ? " It reaches the website with the gym app's next sync." : ''}
         </div>
       </div>
     );

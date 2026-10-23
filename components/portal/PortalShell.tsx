@@ -1,8 +1,9 @@
 'use client';
 
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, Suspense, useCallback, useState } from 'react';
 import Link from 'next/link';
-import { Bell, CircleUserRound, LogOut } from 'lucide-react';
+import { CircleUserRound, LogOut } from 'lucide-react';
+import NotificationBell from '@/components/admin/NotificationBell';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS } from '@/lib/roles';
@@ -98,15 +99,10 @@ export default function PortalShell({ nav, children }: { nav: PortalNavItem[]; c
             </div>
             <div className="flex-1" />
             <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-              <button
-                type="button"
-                disabled
-                aria-label="Notifications (coming soon)"
-                title="Notifications coming soon"
-                className="flex size-10 items-center justify-center rounded-lg text-white/40"
-              >
-                <Bell size={20} aria-hidden="true" />
-              </button>
+              {/* Suspense because the bell reads the URL (?notification=) */}
+              <Suspense fallback={null}>
+                <NotificationBell />
+              </Suspense>
               <Link
                 href={profileHref}
                 aria-label="Open your profile"

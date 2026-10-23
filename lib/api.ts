@@ -793,8 +793,12 @@ export const recordsApi = {
 };
 
 // Audit log: who changed what in the desktop app
+export type AuditSource = 'app' | 'web';
+
 export interface AuditEntry {
-  /** Desktop audit_log id */
+  /** Desktop app or website; ids are per source */
+  source: AuditSource;
+  /** Desktop audit_log id, or website audit id */
   id: number;
   actorUsername: string | null;
   actorRole: string | null;
@@ -811,6 +815,8 @@ export interface AuditEntry {
 }
 
 export interface AuditQuery extends PaginationQuery {
+  /** Only the desktop app's entries, or only the website's; both when omitted */
+  source?: AuditSource;
   area?: string;
   action?: string;
   actor?: string;
@@ -823,18 +829,67 @@ export const auditLogApi = {
   list: (query: AuditQuery = {}) =>
     apiFetch<{ data: AuditEntry[]; total: number; page: number; limit: number }>(`/api/audit-log${buildQueryString(query as Record<string, unknown>)}`),
 
-  get: (id: number) => apiFetch<AuditEntry>(`/api/audit-log/${id}`),
+  get: (id: number, source: AuditSource = 'app') =>
+    apiFetch<AuditEntry>(`/api/audit-log/${id}${source === 'web' ? '?source=web' : ''}`),
 
   filters: () => apiFetch<{ areas: string[]; actions: string[]; actors: string[] }>('/api/audit-log/filters'),
 };
 
-// Notifications (from desktop events) and Web Push
-export type NotificationType = 'payment' | 'package_changed' | 'start_date_changed';
+// Notifications and Web Push. Admins and managers also get the gym's desk notifications;
+// every account gets its own.
+export type NotificationType =
+  | 'payment'
+  | 'package_changed'
+  | 'start_date_changed'
+  | 'expiring_summary'
+  | 'message'
+  | 'membership_expiring'
+  | 'membership_expired'
+  | 'payment_received'
+  | 'plan_changed'
+  | 'client_digest';
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   payment: 'Payments',
   package_changed: 'Package changes',
   start_date_changed: 'Start date changes and renewals',
+  expiring_summary: 'Memberships ending this week',
+  message: 'Messages from the gym',
+  membership_expiring: 'Membership ending soon',
+  membership_expired: 'Membership ended',
+  payment_received: 'Payments received',
+  plan_changed: 'Plan changes and renewals',
+  client_digest: 'Clients to check on',
+};
+
+/** What each role can receive (the API enforces the same). */
+export const NOTIFICATION_TYPES_BY_ROLE: Record<string, NotificationType[]> = {
+  admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'message'],
+  manager: ['package_changed', 'start_date_changed', 'expiring_summary', 'message'],
+  trainer: ['message', 'client_digest'],
+  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed'],
+};
+
+/** Who a message from staff can go to. */
+export type MessageAudience =
+  | 'all_members'
+  | 'active_members'
+  | 'expiring_members'
+  | 'inactive_members'
+  | 'trainers'
+  | 'managers'
+  | 'all_staff'
+  | 'everyone';
+
+export const MESSAGE_AUDIENCE_LABELS: Record<MessageAudience, string> = {
+  all_members: 'All members',
+  active_members: 'Active members',
+  expiring_members: 'Members ending within 7 days',
+  inactive_members: 'Inactive members',
+  trainers: 'Trainers',
+  managers: 'Managers',
+  all_staff: 'All staff (admins, managers, trainers)',
+  everyone: 'Everyone',
 };
 
 export interface AppNotification {
@@ -876,6 +931,14 @@ export const notificationsApi = {
     apiFetch<void>('/api/notifications/read', { method: 'POST', body: JSON.stringify({ ids }) }),
 
   markAllRead: () => apiFetch<{ marked: number }>('/api/notifications/read-all', { method: 'POST' }),
+
+  /** How many active accounts a message would reach (admins and managers). */
+  audience: (audience: MessageAudience) =>
+    apiFetch<{ count: number }>(`/api/notifications/audience${buildQueryString({ audience })}`),
+
+  /** Sends a message, in-app and to devices (admins and managers). */
+  send: (input: { title: string; body: string; audience: MessageAudience }) =>
+    apiFetch<{ recipients: number }>('/api/notifications/send', { method: 'POST', body: JSON.stringify(input) }),
 };
 
 export const pushApi = {

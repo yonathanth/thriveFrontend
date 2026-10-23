@@ -5,11 +5,21 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { notificationsApi, AppNotification } from '@/lib/api';
 import { restorePush } from '@/lib/push';
-import { notificationIcon, notifyNotificationsChanged, onNotificationsChanged, timeAgo } from '@/lib/notifications';
+import {
+  notificationIcon,
+  notificationsPath,
+  notifyNotificationsChanged,
+  onNotificationsChanged,
+  timeAgo,
+} from '@/lib/notifications';
+import { useAuth } from '@/contexts/AuthContext';
 
 const POLL_MS = 30_000;
 
+/** The header bell, for every role: unread count, latest few, and a link to all. */
 export default function NotificationBell() {
+  const { user } = useAuth();
+  const allPath = notificationsPath(user?.role);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<AppNotification[] | null>(null);
@@ -101,7 +111,7 @@ export default function NotificationBell() {
       setCount((c) => Math.max(0, c - 1));
       notificationsApi.markRead([n.id]).then(notifyNotificationsChanged).catch(() => undefined);
     }
-    router.push(n.url);
+    router.push(n.url || allPath);
   };
 
   const markAll = async () => {
@@ -168,7 +178,7 @@ export default function NotificationBell() {
             )}
           </div>
           <Link
-            href="/admin/notifications"
+            href={allPath}
             onClick={() => setOpen(false)}
             className="block text-center py-3 text-sm text-primary border-t border-surface-dark-lighter hover:bg-surface-dark-lighter/50"
           >

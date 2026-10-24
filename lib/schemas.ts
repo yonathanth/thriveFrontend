@@ -12,6 +12,7 @@ import {
   GOOGLE_MAPS_URL,
   OPENING_HOURS_SCHEMA,
   PHONE_E164,
+  SITE_ALTERNATE_NAMES,
   SITE_BASE_URL,
   SITE_DESCRIPTION,
   SITE_NAME,
@@ -25,12 +26,24 @@ const address = {
   addressCountry: ADDRESS_SCHEMA.addressCountry,
 };
 
+/** The site, so Google shows "Thrive Gym" as the site name in results. */
+export const websiteSchema = () => ({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_BASE_URL}/#website`,
+  name: SITE_NAME,
+  alternateName: [...SITE_ALTERNATE_NAMES],
+  url: SITE_BASE_URL,
+  publisher: { "@id": `${SITE_BASE_URL}/#organization` },
+});
+
 /** The business itself. */
 export const organizationSchema = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": `${SITE_BASE_URL}/#organization`,
   name: SITE_NAME,
+  alternateName: [...SITE_ALTERNATE_NAMES],
   description: SITE_DESCRIPTION,
   url: SITE_BASE_URL,
   logo: `${SITE_BASE_URL}/logo.png`,
@@ -51,12 +64,14 @@ export const localBusinessSchema = () => ({
   "@type": "ExerciseGym",
   "@id": `${SITE_BASE_URL}/#gym`,
   name: SITE_NAME,
+  alternateName: [...SITE_ALTERNATE_NAMES],
   image: `${SITE_BASE_URL}/og-image.png`,
   logo: `${SITE_BASE_URL}/logo.png`,
   description: SITE_DESCRIPTION,
   url: SITE_BASE_URL,
   telephone: PHONE_E164,
   hasMap: GOOGLE_MAPS_URL,
+  areaServed: ["Ayat", "Ayat Noah", "Meskelegna", "Addis Ababa"],
   address,
   geo: {
     "@type": "GeoCoordinates",
@@ -108,7 +123,7 @@ export const offerCatalogSchema = (plans: CatalogPlan[]) => ({
     ...(p.description ? { description: p.description } : {}),
     price: p.price.toFixed(2),
     priceCurrency: CURRENCY,
-    url: `${SITE_BASE_URL}/register?plan=${p.id}`,
+    url: `${SITE_BASE_URL}/join?plan=${p.id}`,
     seller: { "@id": `${SITE_BASE_URL}/#gym` },
   })),
 });

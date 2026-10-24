@@ -25,7 +25,7 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           <nav aria-label="Visit Thrive"><h2>Visit us</h2>
             <a href="https://www.google.com/maps/dir/?api=1&destination=Thrive+Health+%26+Fitness%2C+Cheers+meskelegna%2C+Ayat+Noah%2C+Addis+Ababa" target="_blank" rel="noopener noreferrer">Get directions</a>
             <a href="tel:+251913814546">091 381 4546</a>
-            <a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa, Ethiopia</a>
+            <a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Ayat Noah, Addis Ababa</a>
             <span>Open 24 hours, every day</span>
           </nav>
         </div>

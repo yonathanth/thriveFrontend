@@ -7,12 +7,18 @@
 export const SITE_NAME = "Thrive Gym";
 /** Short form for tight spots (nav on small screens, PWA name). */
 export const SITE_SHORT_NAME = "Thrive";
-// TODO: domain not decided yet.
-export const SITE_BASE_URL = "https://thrivegym.com";
+export const SITE_BASE_URL = "https://thrivefitnesseth.com";
+/** Other names people search for; listed in structured data so Google ties them to this site. */
+export const SITE_ALTERNATE_NAMES = [
+  "Thrive Health & Fitness",
+  "Thrive Fitness",
+  "Thrive Fitness Gym",
+  "Thrive Gym Ayat",
+] as const;
 
 export const SITE_TAGLINE = "Train like a hybrid. Built for strength, made for everyone.";
 export const SITE_DESCRIPTION =
-  "Thrive Health & Fitness in Addis Ababa: gym memberships, strength training, martial arts and personal coaching, open 24/7.";
+  "Thrive Health & Fitness, a gym in Ayat Noah, Addis Ababa: gym memberships, strength training, martial arts and personal coaching, open 24/7.";
 
 export const BUSINESS_LOCATION_LINE =
   "Cheers meskelegna / Ayat Noah";

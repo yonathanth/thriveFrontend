@@ -10,7 +10,7 @@ export const SHARE_IMAGE = {
   type: "image/png",
   width: 1200,
   height: 630,
-  alt: `${SITE_NAME}, health and fitness in Addis Ababa`,
+  alt: `${SITE_NAME} logo`,
 };
 
 export function shareMeta({

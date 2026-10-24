@@ -2,7 +2,7 @@
 // TODO: domain not decided yet. Set NEXT_PUBLIC_API_URL at build time.
 import type { Role } from './roles';
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.thrivegym.com').replace(/\/+$/, '');
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.thrivefitnesseth.com').replace(/\/+$/, '');
 
 // Types based on gym-api DTOs
 export interface AdminProfile {

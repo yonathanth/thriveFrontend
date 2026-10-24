@@ -35,10 +35,10 @@ export default function MyPay() {
       ) : (
         <>
           {current.map((p) => (
-            <section key={p.payoutLocalId} className="space-y-2">
+            <section key={p.id} className="space-y-2">
               <h2 className="text-white/80 font-semibold">This period so far</h2>
               <p className="text-white/50 text-sm">
-                {money(p.calculatedAmount)} so far. It can still change until the period ends.
+                {money(p.calculatedAmount)} so far. It updates as the period goes on.
               </p>
               <PayoutCard payout={p} defaultOpen />
             </section>
@@ -48,7 +48,7 @@ export default function MyPay() {
               <h2 className="text-white/80 font-semibold">Past periods</h2>
               <div className="space-y-3">
                 {past.map((p) => (
-                  <PayoutCard key={p.payoutLocalId} payout={p} />
+                  <PayoutCard key={p.id} payout={p} />
                 ))}
               </div>
             </section>

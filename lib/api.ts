@@ -868,7 +868,7 @@ export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   package_changed: 'Package changes',
   start_date_changed: 'Start date changes and renewals',
   expiring_summary: 'Memberships ending this week',
-  payout_due: 'Staff pay due for approval',
+  payout_due: 'Staff pay due',
   message: 'Messages from the gym',
   membership_expiring: 'Membership ending soon',
   membership_expired: 'Membership ended',
@@ -1075,21 +1075,19 @@ export const siteSettingsApi = {
     }),
 };
 
-// Payroll: payouts the gym app calculates, approved here by admins with what was paid.
+// Payroll: set up, calculated and paid here by admins. The gym app books each payment
+// as a "Salaries & commissions" expense.
 export interface PayoutLine {
   kind: 'base' | 'deduction' | 'commission' | string;
   label: string;
   amount: number;
 }
 
-/**
- * building: the period is running (an estimate); due: ended, waiting for approval;
- * approved: waiting for the gym app to record it; recorded: paid and booked.
- */
-export type PayoutStatus = 'building' | 'due' | 'approved' | 'recorded';
+/** building: the period is running (an estimate); due: ended, waiting to be paid; paid: paid, figures frozen. */
+export type PayoutStatus = 'building' | 'due' | 'paid';
 
 export interface Payout {
-  payoutLocalId: number;
+  id: number;
   staffLocalId: number;
   staffName: string;
   periodStart: string;
@@ -1097,32 +1095,103 @@ export interface Payout {
   status: PayoutStatus;
   calculatedAmount: number;
   lines: PayoutLine[];
-  approval: {
+  computedAt: string | null;
+  payment: {
     paidAmount: number;
     paidDate: string;
     paymentMethod: string | null;
     note: string | null;
-    approvedByName: string;
-    approvedAt: string;
-    recordedAt: string | null;
+    paidByName: string;
+    paidAt: string;
+    /** The gym app has its copy of this payment */
+    collected: boolean;
   } | null;
 }
 
-export interface ApprovePayoutInput {
+export interface PayPayoutInput {
   paidAmount: number;
   paidDate: string;
   paymentMethod?: string | null;
   note?: string | null;
 }
 
+export type BaseType = 'none' | 'monthly' | 'daily';
+export type ShareScope = 'assigned_members' | 'addon_trainer' | 'drop_in_instructor' | 'service';
+export type ShareTarget = 'plan' | 'addon' | 'drop_in';
+
+export interface PaySetup {
+  baseType: BaseType;
+  baseAmount: number;
+  /** monthly on the start day, or every cycleDays days */
+  cycle: 'monthly' | 'days';
+  cycleDays: number;
+  /** YYYY-MM-DD */
+  cycleStart: string;
+  deductAbsence: boolean;
+  /** ISO weekdays, 1 = Monday */
+  workDays: number[];
+  active: boolean;
+}
+
+export interface RevenueShare {
+  id?: number | null;
+  scope: ShareScope;
+  targetKind: ShareTarget | null;
+  targetLocalId: number | null;
+  rateType: 'percent' | 'fixed';
+  rate: number;
+  /** In words, from the server */
+  description?: string;
+}
+
+export interface StaffPay {
+  staffLocalId: number;
+  name: string;
+  role: string | null;
+  status: string | null;
+  setup: (PaySetup & { updatedAt: string; updatedByName: string | null }) | null;
+  shares: RevenueShare[];
+  current: { periodStart: string; periodLast: string; amount: number } | null;
+  due: { count: number; amount: number };
+}
+
+export type PayTargets = Record<ShareTarget, { id: number; name: string }[]>;
+
 export const payrollApi = {
   /** Admins */
+  staff: () => apiFetch<{ staff: StaffPay[]; targets: PayTargets }>('/api/payroll/staff'),
+  save: (staffLocalId: number, body: { setup: PaySetup; shares: RevenueShare[] }) =>
+    apiFetch<StaffPay>(`/api/payroll/staff/${staffLocalId}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        // Only the setup itself: a saved setup also carries who changed it and when.
+        setup: {
+          baseType: body.setup.baseType,
+          baseAmount: body.setup.baseAmount,
+          cycle: body.setup.cycle,
+          cycleDays: body.setup.cycleDays,
+          cycleStart: body.setup.cycleStart,
+          deductAbsence: body.setup.deductAbsence,
+          workDays: body.setup.workDays,
+          active: body.setup.active,
+        },
+        shares: body.shares.map(({ id, scope, targetKind, targetLocalId, rateType, rate }) => ({
+          id: id ?? null,
+          scope,
+          targetKind,
+          targetLocalId,
+          rateType,
+          rate,
+        })),
+      }),
+    }),
   payouts: () => apiFetch<{ payouts: Payout[]; paymentMethods: string[] }>('/api/payroll/payouts'),
-  approve: (payoutLocalId: number, input: ApprovePayoutInput) =>
-    apiFetch<Payout>(`/api/payroll/payouts/${payoutLocalId}/approve`, {
+  pay: (id: number, input: PayPayoutInput) =>
+    apiFetch<Payout>(`/api/payroll/payouts/${id}/pay`, {
       method: 'POST',
       body: JSON.stringify(input),
     }),
+  unpay: (id: number) => apiFetch<Payout>(`/api/payroll/payouts/${id}/unpay`, { method: 'POST' }),
   /** The signed-in staff member's own payslips */
   mine: () => apiFetch<Payout[]>('/api/payslips/me'),
 };

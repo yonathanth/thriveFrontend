@@ -34,7 +34,7 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: 'Business',
     items: [
       { name: 'Transactions', href: '/admin/transactions', icon: 'payments', roles: ['admin'] },
-      { name: 'Payouts', href: '/admin/payouts', icon: 'account_balance_wallet', roles: ['admin'] },
+      { name: 'Payroll', href: '/admin/payroll', icon: 'account_balance_wallet', roles: ['admin'] },
       { name: 'Services', href: '/admin/services', icon: 'category' },
       { name: 'Catalog', href: '/admin/catalog', icon: 'inventory_2' },
       { name: 'Inventory', href: '/admin/inventory', icon: 'warehouse', exact: true },

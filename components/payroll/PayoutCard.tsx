@@ -17,14 +17,13 @@ export function formatDay(iso: string): string {
 
 const STATUS: Record<PayoutStatus, { label: string; className: string }> = {
   building: { label: 'In progress', className: 'bg-white/5 text-white/60 border-white/10' },
-  due: { label: 'Due for approval', className: 'bg-amber-500/10 text-amber-300 border-amber-500/30' },
-  approved: { label: 'Approved · recording in the gym app', className: 'bg-sky-500/10 text-sky-300 border-sky-500/30' },
-  recorded: { label: 'Paid', className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' },
+  due: { label: 'Due', className: 'bg-amber-500/10 text-amber-300 border-amber-500/30' },
+  paid: { label: 'Paid', className: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30' },
 };
 
 /**
- * One pay period: who, when, status and total, opening to its lines and, once
- * approved, what was actually paid. `children` goes below (e.g. the approve form).
+ * One pay period: who, when, status and total, opening to its lines and, once paid,
+ * what was actually paid. `children` goes below (e.g. the pay form).
  */
 export default function PayoutCard({
   payout,
@@ -39,7 +38,7 @@ export default function PayoutCard({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const status = STATUS[payout.status];
-  const a = payout.approval;
+  const a = payout.payment;
   const paid = a?.paidAmount;
   const differs = paid != null && Math.abs(paid - payout.calculatedAmount) >= 0.005;
 
@@ -89,7 +88,12 @@ export default function PayoutCard({
             </ul>
           )}
           {payout.status === 'building' && (
-            <p className="text-white/40 text-xs">A running estimate; final when the period ends.</p>
+            <p className="text-white/40 text-xs">A running estimate; it updates as attendance and payments sync.</p>
+          )}
+          {payout.status === 'due' && (
+            <p className="text-white/40 text-xs">
+              The period has ended. Figures still update if the gym app syncs late payments, until it is paid.
+            </p>
           )}
           {a && (
             <div className="text-sm text-white/60 bg-surface-dark-lighter/50 rounded-lg p-3 space-y-0.5">
@@ -98,10 +102,10 @@ export default function PayoutCard({
                 {a.paymentMethod ? ` by ${a.paymentMethod}` : ''}
               </div>
               {a.note && <div>Note: {a.note}</div>}
-              {a.approvedByName && (
+              {a.paidByName && (
                 <div className="text-white/40 text-xs">
-                  Approved by {a.approvedByName}
-                  {a.approvedAt ? ` on ${new Date(a.approvedAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}` : ''}
+                  Recorded by {a.paidByName}
+                  {a.paidAt ? ` on ${new Date(a.paidAt).toLocaleDateString('en-US', { dateStyle: 'medium' })}` : ''}
                 </div>
               )}
             </div>

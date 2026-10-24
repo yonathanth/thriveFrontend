@@ -79,11 +79,8 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <head>
-        {/* Material Symbols Font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
+        {/* Icon font, served from this site (see globals.css); fetched early so icons show at once. */}
+        <link rel="preload" href="/fonts/material-symbols-outlined.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* JSON-LD Structured Data */}
         <MultipleSchemaComponent
           schemas={[websiteSchema(), organizationSchema(), localBusinessSchema()]}

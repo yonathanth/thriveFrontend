@@ -10,6 +10,7 @@ import {
 } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import Icon from '@/components/ui/Icon';
 
 export default function AttendancePage() {
   const [attendance, setAttendance] = useState<PaginatedResponse<Attendance> | null>(null);
@@ -86,7 +87,7 @@ export default function AttendancePage() {
       render: (record: Attendance) => (
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
-            <span className="material-symbols-outlined text-lg">person</span>
+            <Icon name="person" className="text-lg" />
           </div>
           <div>
             <p className="text-white font-medium">
@@ -114,9 +115,7 @@ export default function AttendancePage() {
       header: 'Check-in',
       render: (record: Attendance) => (
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-emerald-400 text-lg">
-            login
-          </span>
+          <Icon name="login" className="text-emerald-400 text-lg" />
           <span className="text-white">{formatTime(record.date)}</span>
         </div>
       ),
@@ -138,9 +137,7 @@ export default function AttendancePage() {
       header: '',
       className: 'w-12 text-right',
       render: () => (
-        <span className="material-symbols-outlined text-white/40">
-          chevron_right
-        </span>
+        <Icon name="chevron_right" className="text-white/40" />
       ),
     },
   ];
@@ -210,7 +207,7 @@ export default function AttendancePage() {
                   className="flex items-center gap-2 px-3 py-2 bg-surface-dark-lighter rounded-lg"
                 >
                   <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined text-sm">person</span>
+                    <Icon name="person" className="text-sm" />
                   </div>
                   <div>
                     <p className="text-white text-sm font-medium">
@@ -236,9 +233,7 @@ export default function AttendancePage() {
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4">
         <form onSubmit={handleFilter} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
-              calendar_today
-            </span>
+            <Icon name="calendar_today" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               type="date"
               value={dateFilter}

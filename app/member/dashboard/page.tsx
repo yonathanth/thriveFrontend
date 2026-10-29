@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { ArrowUpRight, CalendarCheck, CreditCard, History, UserRound } from 'lucide-react';
 import { useMemberMembership } from '@/hooks/useMemberMembership';
 import { Card, Detail, ErrorNote, MembershipBadge, formatDate } from '@/components/portal/membership';
+import { Suspense } from 'react';
+import { OnlinePaymentNotice, RenewButton } from '@/components/portal/RenewMembership';
 
 const actions = [
   { title: 'See my attendance', description: 'View your check-ins and gym visits.', href: '/member/attendance', icon: CalendarCheck },
@@ -19,10 +21,14 @@ export default function MemberDashboardPage() {
 
   return <div className="space-y-6">
     <div><h1 className="text-white text-2xl font-semibold">Hi, {m.fullName.split(/\s+/)[0]}</h1><p className="text-white/60 mt-1">Your Thrive dashboard. Everything you need in one place.</p></div>
+    <Suspense fallback={null}><OnlinePaymentNotice /></Suspense>
     <Card title="Membership" action={<MembershipBadge m={m} />}>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div><p className="text-xl font-semibold text-white">{m.plan ?? 'No active plan'}</p><p className="mt-1 text-sm text-white/60">{m.isFrozen ? 'Your membership is frozen.' : m.daysRemaining === 0 ? 'Your membership has ended.' : `${m.daysRemaining} ${m.daysRemaining === 1 ? 'day' : 'days'} remaining.`}</p></div>
-        <Link href="/member" className="inline-flex h-10 items-center gap-2 rounded-full bg-primary px-5 text-sm">{m.daysRemaining === 0 && !m.isFrozen ? 'Renew membership' : 'View membership'}<ArrowUpRight size={17} aria-hidden="true" /></Link>
+        <div className="flex flex-wrap items-center gap-3">
+          {!m.isFrozen && <RenewButton />}
+          <Link href="/member" className="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 px-5 text-sm text-white">View membership<ArrowUpRight size={17} aria-hidden="true" /></Link>
+        </div>
       </div>
     </Card>
     <Card title="Details"><div className="grid grid-cols-2 md:grid-cols-4 gap-6">

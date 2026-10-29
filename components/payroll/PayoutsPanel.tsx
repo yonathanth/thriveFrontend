@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { payrollApi, type Payout } from '@/lib/api';
 import PayoutCard, { money } from './PayoutCard';
+import Icon from '@/components/ui/Icon';
 
 type Tab = 'due' | 'building' | 'paid';
 
@@ -58,7 +59,7 @@ export default function PayoutsPanel({ onSetup }: { onSetup: () => void }) {
     <div className="space-y-5">
       {groups.due.length > 0 && (
         <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
-          <span className="material-symbols-outlined text-amber-300">account_balance_wallet</span>
+          <Icon name="account_balance_wallet" className="text-amber-300" />
           <p className="text-amber-100 text-sm">
             {groups.due.length} payout{groups.due.length === 1 ? '' : 's'} due, {money(dueTotal)} calculated.
           </p>

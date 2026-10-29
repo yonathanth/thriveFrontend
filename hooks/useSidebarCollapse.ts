@@ -1,14 +1,29 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
-/** Sidebar collapse state. Every page load starts expanded. */
+const DESKTOP = '(min-width: 1024px)';
+
+/**
+ * Sidebar collapse state. Every page load starts expanded. Collapsing is a desktop
+ * feature only: below the lg breakpoint the sidebar is a drawer that always opens with
+ * icons and page names, whatever was chosen on a wider screen.
+ */
 export function useSidebarCollapse() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  const toggleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
+  useEffect(() => {
+    const query = window.matchMedia(DESKTOP);
+    const update = () => setIsDesktop(query.matches);
+    update();
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
   }, []);
 
-  return { isCollapsed, toggleCollapse };
+  const toggleCollapse = useCallback(() => {
+    setCollapsed((prev) => !prev);
+  }, []);
+
+  return { isCollapsed: collapsed && isDesktop, toggleCollapse };
 }

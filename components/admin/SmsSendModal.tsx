@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { smsApi, membersApi, Member } from '@/lib/api';
 import { smsLengthNote } from '@/lib/sms';
+import Icon from '@/components/ui/Icon';
 
 interface SmsSendModalProps {
   isOpen: boolean;
@@ -212,7 +213,7 @@ export default function SmsSendModal({
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-white text-xl font-semibold">Send SMS</h2>
             <button onClick={onClose} className="text-white/60 hover:text-white" disabled={isSending}>
-              <span className="material-symbols-outlined">close</span>
+              <Icon name="close" />
             </button>
           </div>
           {form}

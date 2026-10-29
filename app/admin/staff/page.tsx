@@ -9,6 +9,7 @@ import {
 } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import Icon from '@/components/ui/Icon';
 
 function toDateOnly(d: Date): string {
   const y = d.getFullYear();
@@ -161,7 +162,7 @@ export default function StaffPage() {
       render: (s: Staff) => (
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-lg">badge</span>
+            <Icon name="badge" className="text-lg" />
           </div>
           <div>
             <p className="text-white font-medium">{s.fullName}</p>
@@ -295,7 +296,7 @@ export default function StaffPage() {
                 className="flex items-center gap-2 px-3 py-2 bg-surface-dark-lighter rounded-lg"
               >
                 <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined text-sm">badge</span>
+                  <Icon name="badge" className="text-sm" />
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium">
@@ -328,7 +329,7 @@ export default function StaffPage() {
                 onClick={() => setHistoryStaff(null)}
                 className="text-white/60 hover:text-white p-1"
               >
-                <span className="material-symbols-outlined">close</span>
+                <Icon name="close" />
               </button>
             </div>
             <div className="p-6 space-y-4">

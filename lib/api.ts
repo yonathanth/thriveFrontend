@@ -1461,8 +1461,75 @@ export interface MyHistory {
   }[];
 }
 
+export interface RenewalOptions {
+  canPay: boolean;
+  /** Why online renewal is not possible right now */
+  reason: string | null;
+  currentPlanId: number | null;
+  endDate: string;
+  status: string;
+  plans: {
+    id: number;
+    name: string;
+    price: number;
+    periodDays: number;
+    description: string | null;
+    current: boolean;
+  }[];
+}
+
+export interface MyOnlinePayment {
+  reference: string;
+  plan: string;
+  amount: number;
+  /** initiated | paid | failed | cancelled | applied | rejected | refunded */
+  status: string;
+  paidVia: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  note: string | null;
+}
+
+export interface AdminOnlinePayment {
+  reference: string;
+  memberLocalId: number;
+  memberName: string;
+  plan: string;
+  amount: number;
+  status: string;
+  paidVia: string | null;
+  phoneNumber: string | null;
+  providerTxnId: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  note: string | null;
+}
+
+export interface AdminOnlinePayments {
+  data: AdminOnlinePayment[];
+  totals: { status: string; count: number; amount: number }[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}
+
+/** Online renewal payments, read-only for managers; staff decide them in the gym app. */
+export const onlinePaymentsApi = {
+  list: (query: { status?: string; from?: string; to?: string; page?: number; limit?: number }) =>
+    apiFetch<AdminOnlinePayments>(`/api/online-payments${buildQueryString(query as Record<string, unknown>)}`),
+};
+
 export const meApi = {
   membership: () => apiFetch<MyMembership>('/api/me/membership'),
+  renewalOptions: () => apiFetch<RenewalOptions>('/api/me/online-payments/options'),
+  onlinePayments: () => apiFetch<MyOnlinePayment[]>('/api/me/online-payments'),
+  onlinePayment: (reference: string) =>
+    apiFetch<MyOnlinePayment>(`/api/me/online-payments/${encodeURIComponent(reference)}`),
+  startRenewalPayment: (serviceLocalId: number, acceptedTerms: boolean) =>
+    apiFetch<{ reference: string; checkoutUrl: string }>('/api/me/online-payments', {
+      method: 'POST',
+      body: JSON.stringify({ serviceLocalId, acceptedTerms }),
+    }),
   attendance: (page = 1, limit = 20) =>
     apiFetch<Paged<CheckIn>>(`/api/me/attendance${buildQueryString({ page, limit })}`),
   history: () => apiFetch<MyHistory>('/api/me/history'),

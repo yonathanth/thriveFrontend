@@ -10,6 +10,7 @@ import { ROLE_LABELS } from '@/lib/roles';
 import AppSidebar, { SidebarItem, UserAvatar, isActivePath } from '@/components/layout/AppSidebar';
 import PortalFrame from './PortalFrame';
 import { useSidebarCollapse } from '@/hooks/useSidebarCollapse';
+import Icon from '@/components/ui/Icon';
 
 export type PortalNavItem = SidebarItem;
 
@@ -83,14 +84,14 @@ export default function PortalShell({ nav, children }: { nav: PortalNavItem[]; c
                 aria-expanded={sidebarOpen}
                 aria-controls="portal-navigation"
               >
-                <span className="material-symbols-outlined text-2xl">menu</span>
+                <Icon name="menu" className="text-2xl" />
               </button>
             </div>
             <div className="flex min-w-0 items-center gap-2 text-sm">
               <span className="hidden text-white/40 sm:inline">{roleLabel}</span>
               {current && (
                 <>
-                  <span aria-hidden="true" className="material-symbols-outlined text-base text-white/20 hidden sm:inline">chevron_right</span>
+                  <Icon name="chevron_right" className="text-base text-white/20 hidden sm:inline" />
                   <span className="truncate font-medium text-white">{current.name}</span>
                 </>
               )}

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { potentialCustomersApi, type PotentialCustomer } from '@/lib/api';
 import DataTable, { type Column } from '@/components/admin/DataTable';
+import Icon from '@/components/ui/Icon';
 
 export default function PotentialCustomersPage() {
   const [customers, setCustomers] = useState<PotentialCustomer[]>([]);
@@ -72,7 +73,7 @@ export default function PotentialCustomersPage() {
       render: (customer: PotentialCustomer) => (
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-lg">person</span>
+            <Icon name="person" className="text-lg" />
           </div>
           <div>
             <p className="text-white font-medium">{customer.fullName}</p>
@@ -123,9 +124,7 @@ export default function PotentialCustomersPage() {
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
-                  search
-                </span>
+                <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                 <input
                   type="text"
                   placeholder="Search by name, phone, or email..."

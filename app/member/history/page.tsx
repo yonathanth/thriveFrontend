@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { meApi, MyHistory, ApiError } from '@/lib/api';
+import { meApi, MyHistory, MyOnlinePayment, ApiError } from '@/lib/api';
 import { formatETB } from '@/lib/desktop';
 import { Card, ErrorNote, FreezeHistory, PlanHistory, formatDate } from '@/components/portal/membership';
 import { formatFinanceDate } from '@/components/admin/FinanceFromTag';
@@ -9,8 +9,14 @@ import { formatFinanceDate } from '@/components/admin/FinanceFromTag';
 export default function MemberHistoryPage() {
   const [history, setHistory] = useState<MyHistory | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Online payments not (yet) in the payments above: applied ones arrive there from the gym.
+  const [online, setOnline] = useState<MyOnlinePayment[]>([]);
 
   useEffect(() => {
+    meApi
+      .onlinePayments()
+      .then((all) => setOnline(all.filter((p) => ['paid', 'rejected', 'refunded'].includes(p.status))))
+      .catch(() => {});
     meApi
       .history()
       .then(setHistory)
@@ -64,6 +70,31 @@ export default function MemberHistoryPage() {
           </ul>
         )}
       </Card>
+
+      {online.length > 0 && (
+        <Card title="Online payments">
+          <ul className="divide-y divide-surface-dark-lighter">
+            {online.map((p) => (
+              <li key={p.reference} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <div>
+                  <p className="text-white">{p.plan}</p>
+                  <p className="text-white/40 text-xs">
+                    {formatDate(p.paidAt ?? p.createdAt)}
+                    {p.paidVia ? ` · ${p.paidVia}` : ''}
+                    {p.note && p.status !== 'paid' ? ` · ${p.note}` : ''}
+                  </p>
+                </div>
+                <div className="text-left sm:text-right">
+                  <p className="text-white font-medium">{formatETB(p.amount)}</p>
+                  <p className={`text-xs ${p.status === 'paid' ? 'text-amber-300' : p.status === 'rejected' ? 'text-red-300' : 'text-white/50'}`}>
+                    {p.status === 'paid' ? 'Awaiting confirmation' : p.status === 'rejected' ? 'Not accepted · refund on the way' : 'Refunded'}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
     </div>
   );
 }

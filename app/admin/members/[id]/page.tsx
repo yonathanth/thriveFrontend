@@ -20,6 +20,7 @@ import SmsSendModal from '@/components/admin/SmsSendModal';
 import { useAuth } from '@/contexts/AuthContext';
 import FinanceFromTag from '@/components/admin/FinanceFromTag';
 import ProgressView from '@/components/progress/ProgressView';
+import Icon from '@/components/ui/Icon';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -126,9 +127,7 @@ export default function MemberDetailPage({ params }: Props) {
   if (!member) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <span className="material-symbols-outlined text-4xl text-white/40 mb-2">
-          person_off
-        </span>
+        <Icon name="person_off" className="text-4xl text-white/40 mb-2" />
         <p className="text-white/60">Member not found</p>
         <Link
           href="/admin/members"
@@ -147,7 +146,7 @@ export default function MemberDetailPage({ params }: Props) {
         onClick={() => router.back()}
         className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
       >
-        <span className="material-symbols-outlined">arrow_back</span>
+        <Icon name="arrow_back" />
         <span>Back to Members</span>
       </button>
 
@@ -155,7 +154,7 @@ export default function MemberDetailPage({ params }: Props) {
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-6">
           <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-4xl">person</span>
+            <Icon name="person" className="text-4xl" />
           </div>
           <div className="flex-1">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -194,13 +193,13 @@ export default function MemberDetailPage({ params }: Props) {
           {/* Contact Info */}
           <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
             <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">contact_phone</span>
+              <Icon name="contact_phone" className="text-primary" />
               Contact Information
             </h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <span className="material-symbols-outlined text-white/40">phone</span>
+                  <Icon name="phone" className="text-white/40" />
                   <div>
                     <p className="text-white/40 text-xs">Phone</p>
                     <p className="text-white">{member.phone || '-'}</p>
@@ -212,20 +211,20 @@ export default function MemberDetailPage({ params }: Props) {
                     className="px-3 py-1.5 bg-primary text-black rounded-lg hover:bg-primary/90 text-sm font-medium flex items-center gap-2"
                     title="Send SMS"
                   >
-                    <span className="material-symbols-outlined text-sm">sms</span>
+                    <Icon name="sms" className="text-sm" />
                     Send SMS
                   </button>
                 )}
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">email</span>
+                <Icon name="email" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">Email</p>
                   <p className="text-white">{member.email || '-'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">emergency</span>
+                <Icon name="emergency" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">Emergency Contact</p>
                   <p className="text-white">{member.emergencyContact || '-'}</p>
@@ -233,7 +232,7 @@ export default function MemberDetailPage({ params }: Props) {
               </div>
               {member.telegramUsername && (
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-white/40">send</span>
+                  <Icon name="send" className="text-white/40" />
                   <div>
                     <p className="text-white/40 text-xs">Telegram</p>
                     <p className="text-white">{member.telegramUsername}</p>
@@ -247,13 +246,13 @@ export default function MemberDetailPage({ params }: Props) {
           {(member.age || member.height || member.gender || member.bloodType || member.objective) && (
             <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
               <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">person</span>
+                <Icon name="person" className="text-primary" />
                 Profile Information
               </h2>
               <div className="space-y-4">
                 {member.age && (
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-white/40">cake</span>
+                    <Icon name="cake" className="text-white/40" />
                     <div>
                       <p className="text-white/40 text-xs">Age</p>
                       <p className="text-white">{member.age}</p>
@@ -262,7 +261,7 @@ export default function MemberDetailPage({ params }: Props) {
                 )}
                 {member.height && (
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-white/40">height</span>
+                    <Icon name="height" className="text-white/40" />
                     <div>
                       <p className="text-white/40 text-xs">Height</p>
                       <p className="text-white">{member.height}</p>
@@ -271,7 +270,7 @@ export default function MemberDetailPage({ params }: Props) {
                 )}
                 {member.gender && (
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-white/40">wc</span>
+                    <Icon name="wc" className="text-white/40" />
                     <div>
                       <p className="text-white/40 text-xs">Gender</p>
                       <p className="text-white">{member.gender}</p>
@@ -280,7 +279,7 @@ export default function MemberDetailPage({ params }: Props) {
                 )}
                 {member.bloodType && (
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-white/40">bloodtype</span>
+                    <Icon name="bloodtype" className="text-white/40" />
                     <div>
                       <p className="text-white/40 text-xs">Blood Type</p>
                       <p className="text-white">{member.bloodType}</p>
@@ -289,7 +288,7 @@ export default function MemberDetailPage({ params }: Props) {
                 )}
                 {member.objective && (
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-white/40">target</span>
+                    <Icon name="target" className="text-white/40" />
                     <div>
                       <p className="text-white/40 text-xs">Objective</p>
                       <p className="text-white">{member.objective}</p>
@@ -303,19 +302,19 @@ export default function MemberDetailPage({ params }: Props) {
           {/* Membership Info */}
           <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
             <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">card_membership</span>
+              <Icon name="card_membership" className="text-primary" />
               Membership Details
             </h2>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">category</span>
+                <Icon name="category" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">Service Type</p>
                   <p className="text-white">{member.serviceType || '-'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">event</span>
+                <Icon name="event" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">Start Date</p>
                   <p className="text-white">
@@ -324,7 +323,7 @@ export default function MemberDetailPage({ params }: Props) {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">event_busy</span>
+                <Icon name="event_busy" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">End Date</p>
                   <p className="text-white">
@@ -333,7 +332,7 @@ export default function MemberDetailPage({ params }: Props) {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-white/40">calendar_today</span>
+                <Icon name="calendar_today" className="text-white/40" />
                 <div>
                   <p className="text-white/40 text-xs">Registered</p>
                   <p className="text-white">{formatDate(member.registrationDate)}</p>
@@ -341,7 +340,7 @@ export default function MemberDetailPage({ params }: Props) {
               </div>
               {details?.trainer && (
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-white/40">sports</span>
+                  <Icon name="sports" className="text-white/40" />
                   <div>
                     <p className="text-white/40 text-xs">Trainer</p>
                     <p className="text-white">{details.trainer.fullName}</p>
@@ -350,7 +349,7 @@ export default function MemberDetailPage({ params }: Props) {
               )}
               {details?.group && (
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-white/40">groups</span>
+                  <Icon name="groups" className="text-white/40" />
                   <div>
                     <p className="text-white/40 text-xs">Group</p>
                     <p className="text-white">
@@ -370,7 +369,7 @@ export default function MemberDetailPage({ params }: Props) {
           {details && details.relations.length > 0 && (
             <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
               <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">family_restroom</span>
+                <Icon name="family_restroom" className="text-primary" />
                 Linked Members
               </h2>
               <div className="space-y-3">
@@ -397,7 +396,7 @@ export default function MemberDetailPage({ params }: Props) {
           {member.notes && (
             <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6 lg:col-span-2">
               <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">notes</span>
+                <Icon name="notes" className="text-primary" />
                 Notes
               </h2>
               <p className="text-white/80">{member.notes}</p>
@@ -408,7 +407,7 @@ export default function MemberDetailPage({ params }: Props) {
           {member.remark && (
             <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6 lg:col-span-2">
               <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">comment</span>
+                <Icon name="comment" className="text-primary" />
                 Remark
               </h2>
               <p className="text-white/80">{member.remark}</p>
@@ -560,9 +559,7 @@ export default function MemberDetailPage({ params }: Props) {
           <div className="divide-y divide-surface-dark-lighter">
             {attendance?.data.length === 0 ? (
               <div className="p-8 text-center text-white/40">
-                <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">
-                  event_busy
-                </span>
+                <Icon name="event_busy" className="text-4xl mb-2 block opacity-50" />
                 No attendance records
               </div>
             ) : (
@@ -573,7 +570,7 @@ export default function MemberDetailPage({ params }: Props) {
                 >
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
-                      <span className="material-symbols-outlined">login</span>
+                      <Icon name="login" />
                     </div>
                     <div>
                       <p className="text-white">
@@ -617,9 +614,7 @@ export default function MemberDetailPage({ params }: Props) {
           <div className="divide-y divide-surface-dark-lighter">
             {transactions?.data.length === 0 ? (
               <div className="p-8 text-center text-white/40">
-                <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">
-                  receipt_long
-                </span>
+                <Icon name="receipt_long" className="text-4xl mb-2 block opacity-50" />
                 No transactions
               </div>
             ) : (
@@ -645,9 +640,7 @@ export default function MemberDetailPage({ params }: Props) {
                           isInflow ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
                         }`}
                       >
-                        <span className="material-symbols-outlined">
-                          {isInflow ? 'arrow_downward' : 'arrow_upward'}
-                        </span>
+                        <Icon name={isInflow ? 'arrow_downward' : 'arrow_upward'} />
                       </div>
                       <div>
                         <p className="text-white">
@@ -693,9 +686,7 @@ export default function MemberDetailPage({ params }: Props) {
           <div className="divide-y divide-surface-dark-lighter">
             {healthMetrics?.data.length === 0 ? (
               <div className="p-8 text-center text-white/40">
-                <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">
-                  monitoring
-                </span>
+                <Icon name="monitoring" className="text-4xl mb-2 block opacity-50" />
                 No health metrics recorded
               </div>
             ) : (

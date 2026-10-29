@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { auditLogApi, AuditEntry, AuditSource } from '@/lib/api';
 import { areaIcon, formatDateTime, humanize } from '@/lib/audit';
 import { timeAgo } from '@/lib/notifications';
+import Icon from '@/components/ui/Icon';
 
 const PAGE_SIZE = 50;
 
@@ -78,7 +79,7 @@ export default function AuditLogPage() {
 
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4 flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40">search</span>
+          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
           <input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -127,7 +128,7 @@ export default function AuditLogPage() {
           <div className="p-12 text-center text-white/60">{error}</div>
         ) : items.length === 0 && !loading ? (
           <div className="p-12 text-center text-white/40">
-            <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">history</span>
+            <Icon name="history" className="text-4xl mb-2 block opacity-50" />
             {source || area || action || actor || search ? 'Nothing matches these filters' : 'No audit entries yet'}
           </div>
         ) : (
@@ -139,7 +140,7 @@ export default function AuditLogPage() {
                 className="p-4 flex gap-4 hover:bg-surface-dark-lighter/40 transition-colors"
               >
                 <span className="size-10 shrink-0 rounded-full flex items-center justify-center bg-primary/10 text-primary">
-                  <span className="material-symbols-outlined">{areaIcon(e.area)}</span>
+                  <Icon name={areaIcon(e.area)} />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="block text-white">{e.summary}</span>

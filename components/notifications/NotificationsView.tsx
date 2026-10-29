@@ -13,6 +13,7 @@ import {
 import { currentSubscription, disablePush, enablePush, pushSupport, PushSupport } from '@/lib/push';
 import { notificationIcon, notifyNotificationsChanged, onNotificationsChanged, timeAgo } from '@/lib/notifications';
 import { useAuth } from '@/contexts/AuthContext';
+import Icon from '@/components/ui/Icon';
 
 const PAGE_SIZE = 20;
 
@@ -37,6 +38,7 @@ export default function NotificationsView({ children }: { children?: ReactNode }
   const { user } = useAuth();
   const router = useRouter();
   const visibleTypes = useVisibleTypes();
+  const [managing, setManaging] = useState(false);
   const [items, setItems] = useState<AppNotification[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -103,17 +105,26 @@ export default function NotificationsView({ children }: { children?: ReactNode }
           <h1 className="text-white text-2xl font-bold">Notifications</h1>
           <p className="text-white/60 mt-1">{SUBTITLES[user?.role ?? ''] ?? ''}</p>
         </div>
-        <button
-          onClick={markAll}
-          className="h-10 px-4 bg-surface-dark-lighter text-white/80 rounded-lg hover:text-white transition-colors self-start sm:self-auto"
-        >
-          Mark all read
-        </button>
+        <div className="flex gap-2 self-start sm:self-auto">
+          <button
+            onClick={() => setManaging(true)}
+            className="h-10 px-4 inline-flex items-center gap-2 bg-surface-dark-lighter text-white/80 rounded-lg hover:text-white transition-colors"
+          >
+            <Icon name="tune" className="text-[20px]" />
+            Manage
+          </button>
+          <button
+            onClick={markAll}
+            className="h-10 px-4 bg-surface-dark-lighter text-white/80 rounded-lg hover:text-white transition-colors"
+          >
+            Mark all read
+          </button>
+        </div>
       </div>
 
       {children}
 
-      <PushSettings />
+      {managing && <ManageModal onClose={() => setManaging(false)} />}
 
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4 flex flex-col sm:flex-row gap-4">
         <div className="flex rounded-lg bg-surface-dark-lighter p-1">
@@ -148,7 +159,7 @@ export default function NotificationsView({ children }: { children?: ReactNode }
           <div className="p-12 text-center text-white/60">{error}</div>
         ) : items.length === 0 && !loading ? (
           <div className="p-12 text-center text-white/40">
-            <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">notifications_off</span>
+            <Icon name="notifications_off" className="text-4xl mb-2 block opacity-50" />
             {unreadOnly ? 'Nothing unread' : 'No notifications yet'}
           </div>
         ) : (
@@ -164,7 +175,7 @@ export default function NotificationsView({ children }: { children?: ReactNode }
                     n.read ? 'bg-white/5 text-white/40' : 'bg-primary/10 text-primary'
                   }`}
                 >
-                  <span className="material-symbols-outlined">{notificationIcon(n.type)}</span>
+                  <Icon name={notificationIcon(n.type)} />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2">
@@ -195,6 +206,35 @@ export default function NotificationsView({ children }: { children?: ReactNode }
 }
 
 /** This browser's push notifications: on/off, which kinds, and a test. */
+/** Notification settings for this device, opened from the page's Manage button. */
+function ManageModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="manage-notifications-title"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-dark rounded-xl border border-surface-dark-lighter p-6"
+      >
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <h2 id="manage-notifications-title" className="text-white text-lg font-bold">Notification settings</h2>
+          <button onClick={onClose} aria-label="Close" className="text-white/50 hover:text-white">
+            <Icon name="close" />
+          </button>
+        </div>
+        <PushSettings />
+      </div>
+    </div>
+  );
+}
+
 function PushSettings() {
   const visibleTypes = useVisibleTypes();
   const [support, setSupport] = useState<PushSupport | null>(null);
@@ -273,13 +313,14 @@ function PushSettings() {
       return 'Test sent. It should appear in a few seconds.';
     });
 
-  if (support === null || serverEnabled === null) return null;
+  if (support === null || serverEnabled === null)
+    return <div className="h-24 rounded-lg bg-white/5 animate-pulse" />;
 
   return (
-    <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
+    <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="material-symbols-outlined text-primary">phonelink_ring</span>
+          <Icon name="phonelink_ring" className="text-primary" />
           <div>
             <h2 className="text-white font-semibold">Push notifications on this device</h2>
             <p className="text-white/60 text-sm mt-1">
@@ -320,7 +361,7 @@ function PushSettings() {
       </div>
 
       {serverEnabled && support === 'supported' && (
-        <div className="mt-4 pt-4 border-t border-surface-dark-lighter flex flex-wrap gap-x-6 gap-y-2">
+        <div className="mt-4 pt-4 border-t border-surface-dark-lighter grid gap-3 sm:grid-cols-2">
           {visibleTypes.map((t) => (
             <label key={t} className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
               <input

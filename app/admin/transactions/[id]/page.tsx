@@ -4,6 +4,7 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { transactionsApi, Transaction } from '@/lib/api';
 import { formatDateTime, humanize } from '@/lib/audit';
+import Icon from '@/components/ui/Icon';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -36,7 +37,7 @@ export default function TransactionDetailPage({ params }: Props) {
 
   const back = (
     <Link href="/admin/transactions" className="inline-flex items-center gap-1 text-white/60 hover:text-white text-sm">
-      <span className="material-symbols-outlined text-base">arrow_back</span>
+      <Icon name="arrow_back" className="text-base" />
       Transactions
     </Link>
   );
@@ -112,7 +113,7 @@ export default function TransactionDetailPage({ params }: Props) {
                 isIncome ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
               }`}
             >
-              <span className="material-symbols-outlined">{isIncome ? 'south_west' : 'north_east'}</span>
+              <Icon name={isIncome ? 'south_west' : 'north_east'} />
             </span>
             <div>
               <p className="text-white/50 text-sm">Payment #{tx.id}</p>

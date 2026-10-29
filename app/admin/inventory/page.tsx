@@ -23,6 +23,7 @@ import {
   formatEtb,
   formatWhen,
 } from '@/lib/inventory';
+import Icon from '@/components/ui/Icon';
 
 type Tab = 'stock' | 'holders' | 'handovers' | 'assets' | 'history';
 
@@ -47,7 +48,7 @@ function errorText(err: unknown): string {
 function StatusBadge({ status }: { status: AssignmentStatus }) {
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset capitalize ${STATUS_STYLES[status]}`}>
-      {status === 'pending' && <span className="material-symbols-outlined text-[14px] mr-1">schedule</span>}
+      {status === 'pending' && <Icon name="schedule" className="text-[14px] mr-1" />}
       {status}
     </span>
   );
@@ -113,7 +114,7 @@ export default function InventoryPage() {
             href="/admin/inventory/sales"
             className="h-10 px-4 inline-flex items-center gap-2 bg-primary text-black font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
-            <span className="material-symbols-outlined text-lg">point_of_sale</span>
+            <Icon name="point_of_sale" className="text-lg" />
             Sales & reports
           </Link>
         )}

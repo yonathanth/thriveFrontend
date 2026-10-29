@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS } from '@/lib/roles';
 import { Card, Detail } from '@/components/portal/membership';
+import Icon from '@/components/ui/Icon';
 
 const inputClass =
   'w-full h-10 px-3 bg-surface-dark-lighter border border-surface-dark-lighter rounded-lg text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-primary/50 transition-colors';
@@ -180,7 +181,7 @@ export default function AdminProfilePage() {
           href="/change-password"
           className="inline-flex h-10 px-4 items-center gap-2 bg-surface-dark-lighter text-white/90 rounded-lg hover:text-white hover:bg-surface-dark-lighter/80 transition-colors"
         >
-          <span className="material-symbols-outlined text-lg">key</span>
+          <Icon name="key" className="text-lg" />
           Change password
         </Link>
       </Card>
@@ -195,7 +196,7 @@ export default function AdminProfilePage() {
           onClick={handleSignOut}
           className="inline-flex h-10 px-4 items-center gap-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors text-sm font-medium"
         >
-          <span className="material-symbols-outlined text-lg">logout</span>
+          <Icon name="logout" className="text-lg" />
           Sign out of panel
         </button>
       </Card>

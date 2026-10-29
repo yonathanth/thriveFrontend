@@ -14,6 +14,7 @@ import {
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
 import FinanceFromTag from '@/components/admin/FinanceFromTag';
+import Icon from '@/components/ui/Icon';
 
 function sanitizeText(s: string): string {
   return s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '');
@@ -270,9 +271,7 @@ export default function TransactionsPage() {
             transaction.type
           )}`}
         >
-          <span className="material-symbols-outlined text-sm">
-            {isInflow(transaction.type) ? 'arrow_downward' : 'arrow_upward'}
-          </span>
+          <Icon name={isInflow(transaction.type) ? 'arrow_downward' : 'arrow_upward'} className="text-sm" />
           {TRANSACTION_TYPE_LABELS[transaction.type] ?? transaction.type}
         </div>
       ),
@@ -340,9 +339,7 @@ export default function TransactionsPage() {
       header: '',
       className: 'w-12 text-right',
       render: () => (
-        <span className="material-symbols-outlined text-white/40">
-          chevron_right
-        </span>
+        <Icon name="chevron_right" className="text-white/40" />
       ),
     },
   ];
@@ -660,9 +657,9 @@ export default function TransactionsPage() {
             disabled={exporting}
             className="h-10 px-4 flex items-center gap-2 bg-primary text-black font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <span className="material-symbols-outlined text-lg">download</span>
+            <Icon name="download" className="text-lg" />
             {exporting ? 'Exporting...' : 'Export'}
-            <span className="material-symbols-outlined text-lg">expand_more</span>
+            <Icon name="expand_more" className="text-lg" />
           </button>
           {showExportMenu && (
             <div
@@ -676,7 +673,7 @@ export default function TransactionsPage() {
                 className="w-full px-4 py-2 text-left text-white hover:bg-surface-dark-lighter transition-colors flex items-center gap-2 disabled:opacity-60"
                 role="menuitem"
               >
-                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                <Icon name="picture_as_pdf" className="text-lg" />
                 PDF
               </button>
               <button
@@ -686,7 +683,7 @@ export default function TransactionsPage() {
                 className="w-full px-4 py-2 text-left text-white hover:bg-surface-dark-lighter transition-colors flex items-center gap-2 disabled:opacity-60"
                 role="menuitem"
               >
-                <span className="material-symbols-outlined text-lg">table_chart</span>
+                <Icon name="table_chart" className="text-lg" />
                 Excel (CSV)
               </button>
             </div>
@@ -834,7 +831,7 @@ export default function TransactionsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                  <span className="material-symbols-outlined">arrow_downward</span>
+                  <Icon name="arrow_downward" />
                 </div>
                 <span className="text-white/80">Income</span>
               </div>
@@ -845,7 +842,7 @@ export default function TransactionsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
-                  <span className="material-symbols-outlined">arrow_upward</span>
+                  <Icon name="arrow_upward" />
                 </div>
                 <span className="text-white/80">Outflows</span>
               </div>
@@ -877,7 +874,7 @@ export default function TransactionsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                  <span className="material-symbols-outlined">arrow_downward</span>
+                  <Icon name="arrow_downward" />
                 </div>
                 <span className="text-white/80">Income</span>
               </div>
@@ -888,7 +885,7 @@ export default function TransactionsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
-                  <span className="material-symbols-outlined">arrow_upward</span>
+                  <Icon name="arrow_upward" />
                 </div>
                 <span className="text-white/80">Outflows</span>
               </div>
@@ -949,7 +946,7 @@ export default function TransactionsPage() {
                 className="text-white/60 hover:text-white"
                 aria-label="Close export filter modal"
               >
-                <span className="material-symbols-outlined">close</span>
+                <Icon name="close" />
               </button>
             </div>
 

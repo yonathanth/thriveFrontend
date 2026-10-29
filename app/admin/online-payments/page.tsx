@@ -116,7 +116,10 @@ function OnlinePaymentsPage() {
                     <td className="p-3 text-white/80 whitespace-nowrap">{formatDate(p.paidAt ?? p.createdAt, true)}</td>
                     <td className="p-3 text-white">
                       {p.memberName}
-                      <span className="block text-white/40 text-xs">#{p.memberLocalId}{p.phoneNumber ? ` · ${p.phoneNumber}` : ''}</span>
+                      <span className="block text-white/40 text-xs">
+                        {p.kind === 'join' ? (p.memberLocalId != null ? `New member #${p.memberLocalId}` : 'New member (joining)') : `#${p.memberLocalId}`}
+                        {p.phoneNumber ? ` · ${p.phoneNumber}` : ''}
+                      </span>
                     </td>
                     <td className="p-3 text-white/80">{p.plan}</td>
                     <td className="p-3 text-white text-right tabular-nums">{formatETB(p.amount)}</td>

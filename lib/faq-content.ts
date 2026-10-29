@@ -40,7 +40,7 @@ export const faqContent: readonly FaqItem[] = [
     id: 3,
     category: "membership",
     question: "How do I join?",
-    answer: `Explore the training and membership options on the website, then call ${PHONE_DISPLAY} or visit the gym to join. Online registration and payments are currently a preview; submitting the preview does not create a membership.`,
+    answer: `Pick a package on the prices page and press Join now. You can pay online with Telebirr, CBE Birr or your bank, or leave your details and pay at the front desk. You can also call ${PHONE_DISPLAY} or just come in.`,
   },
   {
     id: 4,

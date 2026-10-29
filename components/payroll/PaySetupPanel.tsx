@@ -11,6 +11,7 @@ import {
   type StaffPay,
 } from '@/lib/api';
 import { formatDay, money } from './PayoutCard';
+import Icon from '@/components/ui/Icon';
 
 const SCOPES: { value: ShareScope; label: string; hint: string; target: ShareTarget | null }[] = [
   { value: 'assigned_members', label: 'Members assigned to them', hint: 'Plan payments from members whose trainer they are when they pay', target: 'plan' },
@@ -141,7 +142,7 @@ export default function PaySetupPanel() {
               aria-expanded={isOpen}
               className="w-full flex flex-wrap items-center gap-3 p-4 text-left"
             >
-              <span className="material-symbols-outlined text-white/40 text-xl">{isOpen ? 'expand_less' : 'expand_more'}</span>
+              <Icon name={isOpen ? 'expand_less' : 'expand_more'} className="text-white/40 text-xl" />
               <div className="flex-1 min-w-[12rem]">
                 <div className="text-white font-semibold">
                   {p.name}
@@ -370,7 +371,7 @@ function PayEditor({
           aria-expanded={sharesOpen}
           className="w-full flex items-center gap-3 p-3 text-left"
         >
-          <span className="material-symbols-outlined text-white/40 text-xl">{sharesOpen ? 'expand_less' : 'expand_more'}</span>
+          <Icon name={sharesOpen ? 'expand_less' : 'expand_more'} className="text-white/40 text-xl" />
           <span className="flex-1">
             <span className="text-white font-semibold">Revenue shares</span>
             <span className="ml-2 text-white/40 text-sm">{shares.length || 'none'}</span>
@@ -402,7 +403,7 @@ function PayEditor({
                 }
                 className="h-9 px-3 rounded-lg bg-surface-dark-lighter text-white/80 hover:text-white text-sm inline-flex items-center gap-1.5"
               >
-                <span className="material-symbols-outlined text-base">add</span>
+                <Icon name="add" className="text-base" />
                 Add revenue share
               </button>
             )}

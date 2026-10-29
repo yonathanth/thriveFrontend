@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { siteSettingsApi } from '@/lib/api';
 import RequireRole from '@/components/auth/RequireRole';
 import { formatFinanceDate, notifyFinanceStartChanged } from '@/components/admin/FinanceFromTag';
+import Icon from '@/components/ui/Icon';
 
 /** Website settings (admins). The desktop app keeps its own, separate settings. */
 export default function SettingsPage() {
@@ -58,7 +59,7 @@ function FinanceStartCard() {
   return (
     <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
       <div className="flex items-start gap-3">
-        <span className="material-symbols-outlined text-primary">event</span>
+        <Icon name="event" className="text-primary" />
         <div className="flex-1">
           <h2 className="text-white font-semibold">Count finances from</h2>
           <p className="text-white/60 text-sm mt-1 max-w-2xl">

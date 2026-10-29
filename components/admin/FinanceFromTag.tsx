@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { siteSettingsApi } from '@/lib/api';
+import Icon from '@/components/ui/Icon';
 
 const EVENT = 'finance-start-changed';
 
@@ -43,9 +44,7 @@ export default function FinanceFromTag({ date: given, className = '' }: { date?:
       title="Records before this date are left out"
       className={`inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-0.5 text-xs font-medium text-amber-300 ${className}`}
     >
-      <span className="material-symbols-outlined text-sm" aria-hidden="true">
-        event
-      </span>
+      <Icon name="event" className="text-sm" />
       Showing finances from {formatFinanceDate(date)}
     </span>
   );

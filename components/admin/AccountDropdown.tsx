@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS } from '@/lib/roles';
+import Icon from '@/components/ui/Icon';
 
 export default function AccountDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -86,7 +87,7 @@ export default function AccountDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter hover:text-white transition-colors"
       >
-        <span className="material-symbols-outlined text-xl">account_circle</span>
+        <Icon name="account_circle" className="text-xl" />
       </button>
 
       {/* Dropdown Modal */}
@@ -95,9 +96,7 @@ export default function AccountDropdown() {
           <div className="p-4 border-b border-surface-dark-lighter">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary">
-                  person
-                </span>
+                <Icon name="person" className="text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white text-sm font-medium truncate">
@@ -129,7 +128,7 @@ export default function AccountDropdown() {
                   }}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-white/60 hover:text-white hover:bg-surface-dark-lighter transition-colors"
                 >
-                  <span className="material-symbols-outlined text-xl">edit</span>
+                  <Icon name="edit" className="text-xl" />
                   <span className="font-medium">Update Profile</span>
                 </button>
               </div>
@@ -141,7 +140,7 @@ export default function AccountDropdown() {
                   }}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-surface-dark-lighter text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-xl">logout</span>
+                  <Icon name="logout" className="text-xl" />
                   <span className="font-medium">Sign Out</span>
                 </button>
               </div>

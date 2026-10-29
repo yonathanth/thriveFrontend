@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import Icon from '@/components/ui/Icon';
 
 export interface Column<T> {
   key: string;
@@ -68,9 +69,7 @@ export default function DataTable<T extends object>({
                   colSpan={columns.length}
                   className="px-4 py-12 text-center text-white/40"
                 >
-                  <span className="material-symbols-outlined text-4xl mb-2 block opacity-50">
-                    inbox
-                  </span>
+                  <Icon name="inbox" className="text-4xl mb-2 block opacity-50" />
                   {emptyMessage}
                 </td>
               </tr>
@@ -139,7 +138,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           disabled={currentPage === 1}
           className="p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
-          <span className="material-symbols-outlined text-xl">chevron_left</span>
+          <Icon name="chevron_left" className="text-xl" />
         </button>
         {startPage > 1 && (
           <>
@@ -185,7 +184,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           disabled={currentPage === totalPages}
           className="p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
-          <span className="material-symbols-outlined text-xl">chevron_right</span>
+          <Icon name="chevron_right" className="text-xl" />
         </button>
       </div>
     </div>

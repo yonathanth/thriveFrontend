@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { MESSAGE_AUDIENCE_LABELS, MessageAudience, notificationsApi } from '@/lib/api';
 import { notifyNotificationsChanged } from '@/lib/notifications';
+import Icon from '@/components/ui/Icon';
 
 const AUDIENCES = Object.keys(MESSAGE_AUDIENCE_LABELS) as MessageAudience[];
 
@@ -58,7 +59,7 @@ export default function SendNotificationPanel() {
     <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
-          <span className="material-symbols-outlined text-primary">campaign</span>
+          <Icon name="campaign" className="text-primary" />
           <div>
             <h2 className="text-white font-semibold">Send a notification</h2>
             <p className="text-white/60 text-sm mt-1">

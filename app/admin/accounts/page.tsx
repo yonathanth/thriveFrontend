@@ -5,6 +5,7 @@ import DataTable, { Column, Pagination } from '@/components/admin/DataTable';
 import { useAuth } from '@/contexts/AuthContext';
 import { accountsApi, Account, AccountLinkConflict, ApiError } from '@/lib/api';
 import { ROLE_LABELS, Role } from '@/lib/roles';
+import Icon from '@/components/ui/Icon';
 
 const CONFLICT_TEXT: Record<AccountLinkConflict['kind'], string> = {
   shared_phone: 'Several members share this phone',
@@ -209,7 +210,7 @@ export default function AccountsPage() {
             onClick={() => setShowCreate(true)}
             className="h-10 px-4 bg-primary text-black font-medium rounded-lg hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-lg">person_add</span>
+            <Icon name="person_add" className="text-lg" />
             New admin
           </button>
         )}
@@ -235,7 +236,7 @@ export default function AccountsPage() {
         <div className="flex items-start justify-between gap-4 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-sm">
           <span>{notice}</span>
           <button onClick={() => setNotice(null)} className="text-emerald-300/70 hover:text-emerald-200">
-            <span className="material-symbols-outlined text-lg">close</span>
+            <Icon name="close" className="text-lg" />
           </button>
         </div>
       )}
@@ -530,7 +531,7 @@ function ConflictsPanel() {
           disabled={running}
           className="h-10 px-4 bg-surface-dark-lighter text-white/80 rounded-lg hover:text-white disabled:opacity-50 inline-flex items-center gap-2 whitespace-nowrap"
         >
-          <span className="material-symbols-outlined text-lg">sync</span>
+          <Icon name="sync" className="text-lg" />
           {running ? 'Running…' : 'Re-run provisioning'}
         </button>
       </div>

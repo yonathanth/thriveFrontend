@@ -12,6 +12,7 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
             <Link href="/#home">Home</Link><Link href="/about">About</Link><Link href="/about#facilities">Facilities</Link><Link href="/contact">Contact</Link>
             <Link href="/services">Offerings</Link><Link href="/pricing">Prices</Link>
             <Link href="/faq">FAQ</Link>
+            <Link href="/terms">Terms</Link><Link href="/refund-policy">Refund Policy</Link>
           </nav>
           <nav aria-label="Training services"><h2>Training</h2>
             <Link href="/services#strength-and-conditioning">Strength & conditioning</Link>

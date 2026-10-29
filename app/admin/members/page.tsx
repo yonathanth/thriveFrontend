@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { membersApi, Member, MemberStats, PaginatedResponse } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import Icon from '@/components/ui/Icon';
 
 export default function MembersPage() {
   const router = useRouter();
@@ -82,7 +83,7 @@ export default function MembersPage() {
       render: (member: Member) => (
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-lg">person</span>
+            <Icon name="person" className="text-lg" />
           </div>
           <div>
             <p className="text-white font-medium">{member.fullName}</p>
@@ -122,9 +123,7 @@ export default function MembersPage() {
       header: '',
       className: 'w-12',
       render: () => (
-        <span className="material-symbols-outlined text-white/40">
-          chevron_right
-        </span>
+        <Icon name="chevron_right" className="text-white/40" />
       ),
     },
   ];
@@ -179,9 +178,7 @@ export default function MembersPage() {
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4">
         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
-              search
-            </span>
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               type="text"
               value={search}

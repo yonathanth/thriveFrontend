@@ -15,6 +15,7 @@ import {
   PlanHistory,
   formatDate,
 } from '@/components/portal/membership';
+import Icon from '@/components/ui/Icon';
 
 
 export default function TrainerMemberPage() {
@@ -88,7 +89,7 @@ export default function TrainerMemberPage() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={member.profileImageUrl} alt="" className="size-full object-cover" />
           ) : (
-            <span className="material-symbols-outlined text-3xl">person</span>
+            <Icon name="person" className="text-3xl" />
           )}
         </div>
         <div>

@@ -3,7 +3,8 @@
 import { ErrorNote, MembershipBadge, formatDate } from '@/components/portal/membership';
 import { useMemberMembership } from '@/hooks/useMemberMembership';
 import MembershipPlanHistory from '@/components/portal/MembershipPlanHistory';
-import MembershipRenewal from '@/components/portal/MembershipRenewal';
+import { Suspense } from 'react';
+import { OnlinePaymentNotice, RenewButton } from '@/components/portal/RenewMembership';
 
 export default function MemberMembershipPage() {
   const { membership: m, error } = useMemberMembership();
@@ -17,6 +18,10 @@ export default function MemberMembershipPage() {
         <h1 className="text-white text-2xl font-bold">My membership</h1>
         <p className="text-white/60 mt-1">Your current plan and membership history.</p>
       </div>
+
+      <Suspense fallback={null}>
+        <OnlinePaymentNotice />
+      </Suspense>
 
       {m.isFrozen && (
         <div className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-300 text-sm">
@@ -45,7 +50,12 @@ export default function MemberMembershipPage() {
             <p className="text-white/60 mt-2">{m.daysRemaining === 1 ? 'day left' : 'days left'}</p>
           </div>
         </div>
-        {m.daysRemaining === 0 && !m.isFrozen && <MembershipRenewal />}
+        {!m.isFrozen && (
+          <div className="relative mt-6 flex flex-wrap items-center gap-3 border-t border-white/10 pt-5">
+            <RenewButton />
+            {m.daysRemaining === 0 && <p className="text-sm text-orange-300">Your membership has ended.</p>}
+          </div>
+        )}
       </section>
 
       <MembershipPlanHistory />

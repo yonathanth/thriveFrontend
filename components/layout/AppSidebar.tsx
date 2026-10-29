@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ReactNode, useEffect, useRef } from 'react';
 import BrandLogo from '@/components/public/BrandLogo';
+import Icon from '@/components/ui/Icon';
 
 export interface SidebarItem {
   name: string;
@@ -110,7 +111,7 @@ export default function AppSidebar({
                   aria-label="Collapse sidebar"
                   className="hidden lg:flex items-center justify-center size-8 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_left</span>
+                  <Icon name="chevron_left" className="text-lg" />
                 </button>
               )}
             </>
@@ -127,13 +128,13 @@ export default function AppSidebar({
                   aria-label="Expand sidebar"
                   className="hidden lg:flex mt-3 items-center justify-center size-8 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-lg">chevron_right</span>
+                  <Icon name="chevron_right" className="text-lg" />
                 </button>
               )}
             </>
           )}
           <button ref={closeButton} type="button" onClick={onClose} aria-label="Close menu" className="absolute right-2 top-3 rounded-lg p-2 text-white/60 hover:bg-white/5 lg:hidden">
-            <span className="material-symbols-outlined">close</span>
+            <Icon name="close" />
           </button>
         </div>
 
@@ -162,14 +163,7 @@ export default function AppSidebar({
                             : 'gap-3 px-3 py-2.5'
                         } ${active ? 'text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
                       >
-                        <span
-                          aria-hidden="true"
-                          className={`material-symbols-outlined text-[20px] transition-colors shrink-0 ${
-                            active ? 'text-primary' : 'text-white/40 group-hover:text-white/80'
-                          }`}
-                        >
-                          {item.icon}
-                        </span>
+                        <Icon name={item.icon} className={`text-[20px] transition-colors shrink-0 ${ active ? 'text-primary' : 'text-white/40 group-hover:text-white/80' }`} />
                         {!isCollapsed && <span className="truncate">{item.name}</span>}
                       </Link>
                     </li>

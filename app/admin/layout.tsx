@@ -11,6 +11,7 @@ import { homeFor, PANEL_ROLES } from '@/lib/roles';
 import FullScreenSpinner from '@/components/auth/FullScreenSpinner';
 import PortalFrame from '@/components/portal/PortalFrame';
 import { useSidebarCollapse } from '@/hooks/useSidebarCollapse';
+import Icon from '@/components/ui/Icon';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -101,13 +102,13 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 onClick={() => setSidebarOpen(true)}
                 className="lg:hidden p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter transition-colors"
               >
-                <span className="material-symbols-outlined text-2xl">menu</span>
+                <Icon name="menu" className="text-2xl" />
               </button>
             </div>
 
             <div className="flex min-w-0 flex-1 items-center gap-2 text-sm">
               <span className="hidden text-white/40 sm:inline">{user?.role === 'manager' ? 'Manager' : 'Admin'}</span>
-              <span className="material-symbols-outlined hidden text-base text-white/20 sm:inline">chevron_right</span>
+              <Icon name="chevron_right" className="hidden text-base text-white/20 sm:inline" />
               <span className="truncate font-medium capitalize">{sectionName}</span>
             </div>
 
@@ -115,7 +116,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2 sm:gap-4">
               {/* Last Sync Time */}
               <div className="flex items-center gap-1 sm:gap-2 text-white/60 text-xs sm:text-sm">
-                <span className="material-symbols-outlined text-base sm:text-lg">sync</span>
+                <Icon name="sync" className="text-base sm:text-lg" />
                 <span>{formatLastSync(lastSyncTime)}</span>
               </div>
 
@@ -133,7 +134,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   pathname === '/admin/profile' ? 'text-primary bg-primary/10' : ''
                 }`}
               >
-                <span className="material-symbols-outlined text-xl">account_circle</span>
+                <Icon name="account_circle" className="text-xl" />
               </Link>
 
               {/* Sign Out Button */}
@@ -144,7 +145,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 title="Sign out"
                 className="p-2 rounded-lg text-white/60 hover:bg-red-500/10 hover:text-red-400 transition-colors"
               >
-                <span className="material-symbols-outlined text-xl">logout</span>
+                <Icon name="logout" className="text-xl" />
               </button>
             </div>
           </div>

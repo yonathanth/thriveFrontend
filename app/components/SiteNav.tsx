@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PHONE_DISPLAY, PHONE_E164, SITE_NAME } from "@/lib/site";
+import Icon from '@/components/ui/Icon';
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -64,7 +65,7 @@ export function SiteNav() {
             href={`tel:${PHONE_E164}`}
             className="hidden h-full items-center gap-2 rounded-[0.75rem] px-3 text-[0.9rem] text-white transition-colors hover:bg-white/10 xl:flex"
           >
-            <span className="material-symbols-outlined text-[18px] text-lime">call</span>
+            <Icon name="call" className="text-[18px] text-lime" />
             {PHONE_DISPLAY}
           </a>
           <Link
@@ -83,7 +84,7 @@ export function SiteNav() {
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
-            <span className="material-symbols-outlined text-[24px]">{open ? "close" : "menu"}</span>
+            <Icon name={open ? "close" : "menu"} className="text-[24px]" />
           </button>
         </div>
       </nav>

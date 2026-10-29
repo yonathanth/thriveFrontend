@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { auditLogApi, AuditEntry } from '@/lib/api';
 import { areaIcon, fieldChanges, formatDateTime, humanize, showValue } from '@/lib/audit';
+import Icon from '@/components/ui/Icon';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -25,7 +26,7 @@ export default function AuditEntryPage({ params }: Props) {
 
   const back = (
     <Link href="/admin/audit-log" className="inline-flex items-center gap-1 text-white/60 hover:text-white text-sm">
-      <span className="material-symbols-outlined text-base">arrow_back</span>
+      <Icon name="arrow_back" className="text-base" />
       Audit log
     </Link>
   );
@@ -80,7 +81,7 @@ export default function AuditEntryPage({ params }: Props) {
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
         <div className="flex items-start gap-4">
           <span className="size-12 shrink-0 rounded-full flex items-center justify-center bg-primary/10 text-primary">
-            <span className="material-symbols-outlined">{areaIcon(entry.area)}</span>
+            <Icon name={areaIcon(entry.area)} />
           </span>
           <div className="min-w-0">
             <p className="text-white/50 text-sm">Audit entry #{entry.id}</p>

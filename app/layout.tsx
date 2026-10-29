@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { MultipleSchemaComponent } from "@/lib/schema-component";
 import { organizationSchema, localBusinessSchema, websiteSchema } from "@/lib/schemas";
 import { BUSINESS_AREA, SITE_ALTERNATE_NAMES, SITE_BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import Icon from '@/components/ui/Icon';
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
@@ -79,11 +80,6 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <head>
-        {/* Material Symbols Font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
         {/* JSON-LD Structured Data */}
         <MultipleSchemaComponent
           schemas={[websiteSchema(), organizationSchema(), localBusinessSchema()]}

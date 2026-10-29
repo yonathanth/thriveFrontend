@@ -4,6 +4,7 @@ import { useState } from 'react';
 import SmsSendModal from '@/components/admin/SmsSendModal';
 import SmsGroupSend from '@/components/admin/SmsGroupSend';
 import SmsHistoryTable from '@/components/admin/SmsHistoryTable';
+import Icon from '@/components/ui/Icon';
 
 type Tab = 'one' | 'same' | 'personalized' | 'history';
 
@@ -52,7 +53,7 @@ export default function SmsPage() {
                       : 'text-white/60 hover:text-white hover:bg-surface-dark-lighter'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+                  <Icon name={tab.icon} className="text-lg" />
                   {tab.label}
                 </button>
               ))}

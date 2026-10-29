@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Payout, PayoutStatus } from '@/lib/api';
+import Icon from '@/components/ui/Icon';
 
 export function money(n: number): string {
   return `${n.toLocaleString('en-US', { maximumFractionDigits: 2 })} ETB`;
@@ -50,7 +51,7 @@ export default function PayoutCard({
         aria-expanded={open}
         className="w-full flex flex-wrap items-center gap-3 p-4 text-left"
       >
-        <span className="material-symbols-outlined text-white/40 text-xl">{open ? 'expand_less' : 'expand_more'}</span>
+        <Icon name={open ? 'expand_less' : 'expand_more'} className="text-white/40 text-xl" />
         <div className="flex-1 min-w-[10rem]">
           {showName && <div className="text-white font-semibold">{payout.staffName}</div>}
           <div className={showName ? 'text-white/50 text-sm' : 'text-white font-medium'}>

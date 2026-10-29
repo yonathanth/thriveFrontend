@@ -14,6 +14,7 @@ import {
   shown,
   Standard,
 } from '@/lib/progress';
+import Icon from '@/components/ui/Icon';
 
 const STATUS_STYLE: Record<RangeStatus, string> = {
   Low: 'bg-amber-400/10 text-amber-300',
@@ -170,7 +171,7 @@ export default function ProgressView({ memberId }: { memberId: number | 'me' }) 
             className="absolute top-4 right-4 size-10 rounded-full bg-white/10 text-white flex items-center justify-center"
             aria-label="Close"
           >
-            <span className="material-symbols-outlined">close</span>
+            <Icon name="close" />
           </button>
         </div>
       )}
@@ -288,7 +289,7 @@ function Schedule({ data, onChanged }: { data: ProgressData; onChanged: () => vo
   return (
     <div className="rounded-xl border border-surface-dark-lighter bg-surface-dark p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div className="flex items-start gap-3">
-        <span className="material-symbols-outlined text-primary">event_repeat</span>
+        <Icon name="event_repeat" className="text-primary" />
         <div>
           <p className="text-white font-medium">Progress checks</p>
           <p className={`text-sm ${overdue ? 'text-amber-300' : 'text-white/50'}`}>{text}</p>
@@ -372,7 +373,7 @@ function MeasurementRow({
         </div>
         {isMember && photos.length < 5 && !adding && (
           <button onClick={() => setAdding(true)} className="self-start h-9 px-3 rounded-lg bg-surface-dark-lighter text-white/80 text-sm hover:text-white">
-            <span className="material-symbols-outlined text-base align-middle mr-1">add_a_photo</span>
+            <Icon name="add_a_photo" className="text-base align-middle mr-1" />
             Add photo
           </button>
         )}

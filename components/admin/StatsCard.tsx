@@ -1,3 +1,4 @@
+import Icon from '@/components/ui/Icon';
 interface StatsCardProps {
   title: string;
   value: string | number;
@@ -32,7 +33,7 @@ export default function StatsCard({
         <div
           className={`size-12 rounded-xl flex items-center justify-center ring-1 ring-inset ring-white/5 ${colorClasses[color]}`}
         >
-          <span aria-hidden="true" className="material-symbols-outlined text-2xl">{icon}</span>
+          <Icon name={icon} className="text-2xl" />
         </div>
         {trend && (
           <div
@@ -40,9 +41,7 @@ export default function StatsCard({
               trend.isPositive ? 'text-emerald-400' : 'text-red-400'
             }`}
           >
-            <span className="material-symbols-outlined text-lg">
-              {trend.isPositive ? 'trending_up' : 'trending_down'}
-            </span>
+            <Icon name={trend.isPositive ? 'trending_up' : 'trending_down'} className="text-lg" />
             <span>{Math.abs(trend.value)}%</span>
           </div>
         )}

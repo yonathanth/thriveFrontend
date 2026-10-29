@@ -11,7 +11,7 @@ export const offerings = [
     photo: '/tour-thumbnail.jpg', alt: 'A trainer guiding a member through strength training in the gym',
     summary: 'Your goals, a clear direction, and expert guidance. Train with someone in your corner.',
     details: ['One-to-one expert guidance', 'Technique & progression', 'Training around your goals'],
-    prompt: 'See coaching prices', href: '/pricing#personal-training',
+    prompt: 'See coaching prices', href: '/pricing#memberships',
   },
   {
     slug: 'muay-thai', title: 'Muay Thai',
@@ -25,13 +25,13 @@ export const offerings = [
     photo: '/services/karate.jpg', alt: 'A martial artist practicing a stance outdoors at sunset',
     summary: 'A place for young people to build confidence, practice discipline, and learn new skills.',
     details: ['Karate classes for children', 'Movement, focus & confidence', 'Call for ages, schedules, and enrolment'],
-    prompt: 'See karate prices', href: '/pricing#kids-karate',
+    prompt: 'See karate prices', href: '/pricing#classes',
   },
   {
     slug: 'kickboxing', title: 'Kickboxing',
     photo: '/services/muay-thai.jpg', alt: 'Boxing gloves ready for a combat sports training session',
     summary: 'Bring energy to your training with kickboxing classes focused on technique and conditioning.',
     details: ['Kickboxing classes', 'Technique, movement & conditioning', 'Call for schedules and enrolment'],
-    prompt: 'See kickboxing prices', href: '/pricing#kickboxing',
+    prompt: 'See kickboxing prices', href: '/pricing#classes',
   },
 ] as const;

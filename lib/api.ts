@@ -591,6 +591,7 @@ export interface PotentialCustomer {
   convertedAt?: string | null;
   convertedToMemberId?: number | null;
   serviceId?: number | null;
+  serviceName?: string | null;
   notes?: string | null;
   age?: number | null;
   height?: string | null;
@@ -1492,7 +1493,10 @@ export interface MyOnlinePayment {
 
 export interface AdminOnlinePayment {
   reference: string;
-  memberLocalId: number;
+  /** renewal (a member) | join (someone new, from the website) */
+  kind: 'renewal' | 'join';
+  /** Empty for a join until the gym registers them */
+  memberLocalId: number | null;
   memberName: string;
   plan: string;
   amount: number;
@@ -1517,6 +1521,35 @@ export interface AdminOnlinePayments {
 export const onlinePaymentsApi = {
   list: (query: { status?: string; from?: string; to?: string; page?: number; limit?: number }) =>
     apiFetch<AdminOnlinePayments>(`/api/online-payments${buildQueryString(query as Record<string, unknown>)}`),
+};
+
+export interface JoinPaymentStatus {
+  reference: string;
+  plan: string;
+  amount: number;
+  /** initiated | paid | failed | cancelled | applied | rejected | refunded */
+  status: string;
+  paidVia: string | null;
+}
+
+/**
+ * Joining from the website without an account: pay for a first plan online, or leave
+ * details for the front desk. The gym registers the member when it confirms.
+ */
+export const publicJoinApi = {
+  available: () => apiFetch<{ available: boolean }>('/api/public/join/available'),
+  startPayment: (body: { fullName: string; phoneNumber: string; email?: string; serviceLocalId: number; acceptedTerms: boolean }) =>
+    apiFetch<{ reference: string; checkoutUrl: string }>('/api/public/join', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  payment: (reference: string) => apiFetch<JoinPaymentStatus>(`/api/public/join/${encodeURIComponent(reference)}`),
+  /** Details only; the desk calls them and they pay there. `serviceId` is the catalog plan id. */
+  register: (body: { fullName: string; phoneNumber: string; email?: string; serviceId?: number; notes?: string }) =>
+    apiFetch<{ id: number }>('/api/public/register', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 };
 
 export const meApi = {

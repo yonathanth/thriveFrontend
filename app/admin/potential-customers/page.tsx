@@ -93,7 +93,7 @@ export default function PotentialCustomersPage() {
       key: 'serviceId',
       header: 'Service',
       render: (customer: PotentialCustomer) => (
-        <span className="text-white/80">{customer.serviceId ? `Service #${customer.serviceId}` : '-'}</span>
+        <span className="text-white/80">{customer.serviceName ?? (customer.serviceId ? `Service #${customer.serviceId}` : '-')}</span>
       ),
     },
     {

@@ -30,7 +30,11 @@ export function RenewButton({ className = '' }: { className?: string }) {
   );
 }
 
-function RenewModal({ onClose }: { onClose: () => void }) {
+/**
+ * The renewal modal. `initialPlanId` opens it on that plan (from the pricing page);
+ * a plan that cannot be paid for online falls back to the member's own.
+ */
+export function RenewModal({ onClose, initialPlanId }: { onClose: () => void; initialPlanId?: number }) {
   const [options, setOptions] = useState<RenewalOptions | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'start' | 'choose'>('start');
@@ -44,12 +48,13 @@ function RenewModal({ onClose }: { onClose: () => void }) {
       .then((o) => {
         setOptions(o);
         const current = o.plans.find((p) => p.current);
-        setChosen(current?.id ?? o.plans[0]?.id ?? null);
-        // No current plan on sale: straight to choosing one.
-        if (!current) setStep('choose');
+        const asked = o.plans.find((p) => p.id === initialPlanId);
+        setChosen(asked?.id ?? current?.id ?? o.plans[0]?.id ?? null);
+        // No current plan on sale, or another plan asked for: straight to choosing.
+        if (!current || (asked && !asked.current)) setStep('choose');
       })
       .catch((e) => setError(e instanceof ApiError ? e.message : 'Could not load plans'));
-  }, []);
+  }, [initialPlanId]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !paying && onClose();

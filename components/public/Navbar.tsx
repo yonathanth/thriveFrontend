@@ -153,7 +153,7 @@ export default function Navbar({ onJoinClick }: NavbarProps) {
             ))}
           </nav>
           <button type="button" className="landing-mobile-join" onClick={() => { closeMobileMenu(); onJoinClick?.(); }}>Join Now<ArrowUpRight size={20} aria-hidden="true" /></button>
-          <div className="landing-mobile-menu-bottom"><a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa</a><a href="tel:+251913814546">091 381 4546</a><span>Open 24/7</span></div>
+          <div className="landing-mobile-menu-bottom"><a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa</a><a href="tel:+251970084408">097 008 4408</a><a href="tel:+251912190603">091 219 0603</a><span>Open 24/7</span></div>
         </div>
       </dialog>
       </div>

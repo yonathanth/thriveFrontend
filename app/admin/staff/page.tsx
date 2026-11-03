@@ -9,6 +9,7 @@ import {
 } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 function toDateOnly(d: Date): string {
   const y = d.getFullYear();
@@ -35,6 +36,9 @@ function getWeekRange(): { from: string; to: string } {
 }
 
 export default function StaffPage() {
+  // Staff phone numbers need staff.contact.view; the API strips them too.
+  const { can } = useAuth();
+  const showPhones = can('staff.contact.view');
   const [staff, setStaff] = useState<PaginatedResponse<Staff> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -154,7 +158,7 @@ export default function StaffPage() {
   const isToday = dateInput === todayStr;
   const todayCount = isToday ? dailyRecords.length : undefined;
 
-  const columns: Column<Staff>[] = [
+  const allColumns: Column<Staff>[] = [
     {
       key: 'staff',
       header: 'Staff',
@@ -256,7 +260,7 @@ export default function StaffPage() {
           </form>
         </div>
         <DataTable<Staff>
-          columns={columns}
+          columns={showPhones ? allColumns : allColumns.filter((c) => c.key !== 'phone')}
           data={staff?.data ?? []}
           keyExtractor={(s) => s.id}
           isLoading={isLoading}

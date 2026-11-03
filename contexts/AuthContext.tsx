@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { authApi, AdminProfile, ApiError, AuthResponse, AUTH_EXPIRED_EVENT, ProfileUpdate } from '@/lib/api';
 import { disablePushOnSignOut } from '@/lib/push';
+import { hasAny, Permission } from '@/lib/permissions';
 
 interface AuthState {
   user: AdminProfile | null;
@@ -17,7 +18,15 @@ interface AuthContextType extends AuthState {
   checkAuth: () => Promise<void>;
   updateProfile: (data: ProfileUpdate) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<AdminProfile>;
+  /**
+   * Whether the signed-in account holds any of these permissions. Only shapes what
+   * the website shows; the API enforces the same permissions on every request.
+   */
+  can: (permission: Permission | Permission[]) => boolean;
 }
+
+/** How often an open tab re-reads the profile, so revoked permissions disappear. */
+const PROFILE_REFRESH_MS = 5 * 60 * 1000;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -54,6 +63,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(id);
   }, [checkAuth]);
 
+  // Permissions can change while a tab stays open (an admin revokes one). Re-read the
+  // profile when the tab regains focus and every few minutes; the API already refuses
+  // the revoked calls, this just stops showing what no longer works.
+  useEffect(() => {
+    const refresh = async () => {
+      if (!localStorage.getItem('accessToken')) return;
+      try {
+        const user = await authApi.getProfile();
+        setState((prev) => (prev.isAuthenticated ? { ...prev, user } : prev));
+      } catch {
+        // A 401 signs out through AUTH_EXPIRED_EVENT; anything else keeps what we had.
+      }
+    };
+    const onFocus = () => void refresh();
+    window.addEventListener('focus', onFocus);
+    const timer = setInterval(() => void refresh(), PROFILE_REFRESH_MS);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      clearInterval(timer);
+    };
+  }, []);
+
   // The API rejected the token (expired, or password changed/reset elsewhere).
   useEffect(() => {
     const onExpired = () => setState({ user: null, isAuthenticated: false, isLoading: false });
@@ -61,11 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(AUTH_EXPIRED_EVENT, onExpired);
   }, []);
 
-  const storeSession = (response: AuthResponse) => {
+  const storeSession = async (response: AuthResponse) => {
     localStorage.setItem('accessToken', response.accessToken);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    setState({ user: response.user, isAuthenticated: true, isLoading: false });
-    return response.user;
+    // The sign-in response has no permissions; the profile does.
+    const user = await authApi.getProfile().catch(() => response.user);
+    localStorage.setItem('user', JSON.stringify(user));
+    setState({ user, isAuthenticated: true, isLoading: false });
+    return user;
   };
 
   // No isLoading here: the admin layout swaps in a spinner while it is set, which
@@ -74,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const value = identifier.trim();
       const credentials = value.includes('@') ? { email: value } : { phone: value };
-      return storeSession(await authApi.login(credentials, password));
+      return await storeSession(await authApi.login(credentials, password));
     } catch (error) {
       if (error instanceof ApiError) {
         throw new Error(error.message);
@@ -85,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const changePassword = async (currentPassword: string, newPassword: string) => {
     try {
-      return storeSession(await authApi.changePassword(currentPassword, newPassword));
+      return await storeSession(await authApi.changePassword(currentPassword, newPassword));
     } catch (error) {
       if (error instanceof ApiError) {
         throw new Error(error.message);
@@ -108,7 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setState(prev => ({
         ...prev,
-        user: updatedUser,
+        // The update response has no permissions; keep the ones we hold.
+        user: { ...updatedUser, permissions: updatedUser.permissions ?? prev.user?.permissions },
       }));
     } catch (error) {
       if (error instanceof ApiError) {
@@ -118,8 +152,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const can = useCallback(
+    (permission: Permission | Permission[]) => hasAny(state.user?.permissions, permission),
+    [state.user],
+  );
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, checkAuth, updateProfile, changePassword }}>
+    <AuthContext.Provider value={{ ...state, login, logout, checkAuth, updateProfile, changePassword, can }}>
       {children}
     </AuthContext.Provider>
   );

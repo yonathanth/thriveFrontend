@@ -7,6 +7,13 @@ export const offerings = [
     prompt: 'See membership prices', href: '/pricing#memberships',
   },
   {
+    slug: 'circuit', title: 'Circuit', coach: 'Awet',
+    photo: '/facilities/training-space.jpg', alt: 'Open training space set up for a circuit session',
+    summary: 'High-energy circuits led by Awet, the founder of Thrive. Strength, stamina, and sweat in one session.',
+    details: ['Wednesday mornings', 'Saturday afternoons', 'Full-body strength & conditioning'],
+    prompt: 'See circuit prices', href: '/pricing#circuit',
+  },
+  {
     slug: 'personal-training', title: 'Personal training',
     photo: '/tour-thumbnail.jpg', alt: 'A trainer guiding a member through strength training in the gym',
     summary: 'Your goals, a clear direction, and expert guidance. Train with someone in your corner.',
@@ -14,11 +21,18 @@ export const offerings = [
     prompt: 'See coaching prices', href: '/pricing#personal-training',
   },
   {
-    slug: 'muay-thai', title: 'Muay Thai',
+    slug: 'muay-thai', title: 'Muay Thai', coach: 'Duressa',
     photo: '/services/muay-thai.jpg', alt: 'Boxing gloves resting on the floor of a martial arts gym',
     summary: 'Build skill, focus, and confidence through Muay Thai classes led by Duressa.',
     details: ['Classes with Duressa', 'Technique, discipline & conditioning', 'Call for schedules and class details'],
     prompt: 'See Muay Thai prices', href: '/pricing#muay-thai',
+  },
+  {
+    slug: 'taekwondo', title: 'Taekwondo', coach: 'Birtukan',
+    photo: '/services/karate.jpg', alt: 'A martial artist practicing a stance outdoors at sunset',
+    summary: 'Kicks, forms, and discipline. Build speed and control in Taekwondo classes led by Birtukan.',
+    details: ['Classes with Birtukan', 'Kicks, forms & flexibility', 'Call for schedules and class details'],
+    prompt: 'See Taekwondo prices', href: '/pricing#taekwondo',
   },
   {
     slug: 'kids-karate', title: 'Karate for kids',

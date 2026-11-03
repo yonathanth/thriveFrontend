@@ -9,6 +9,7 @@ import {
   BUSINESS_LOCATION_LINE,
   OPENING_HOURS,
   PHONE_DISPLAY,
+  PHONE_2_DISPLAY,
   SITE_NAME,
 } from "@/lib/site";
 
@@ -40,7 +41,7 @@ export const faqContent: readonly FaqItem[] = [
     id: 3,
     category: "membership",
     question: "How do I join?",
-    answer: `Explore the training and membership options on the website, then call ${PHONE_DISPLAY} or visit the gym to join. Online registration and payments are currently a preview; submitting the preview does not create a membership.`,
+    answer: `Explore the training and membership options on the website, then call ${PHONE_DISPLAY} or ${PHONE_2_DISPLAY}, or visit the gym to join. Online registration and payments are currently a preview; submitting the preview does not create a membership.`,
   },
   {
     id: 4,

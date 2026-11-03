@@ -23,6 +23,8 @@
 .to-photo-index { position: absolute; left: 20px; top: 20px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #071b2dd9; backdrop-filter: blur(8px); color: #b6eaff; font-size: 13px; }
 .thrive-offerings-page .tm-offering-copy { display: flex; flex-direction: column; align-items: flex-start; padding: 26px 4px 0; flex: 1; }
 .thrive-offerings-page .tm-offering h3 { font-size: clamp(29px, 3vw, 41px); }
+.to-coach { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #8aa3b1; margin-bottom: 4px; }
+.to-coach em { font-size: clamp(20px, 1.8vw, 25px); letter-spacing: -.01em; text-transform: none; color: #8ddfff; margin-left: 2px; }
 .thrive-offerings-page .tm-offering-copy > p { max-width: 460px; font-size: 16px; line-height: 1.8; margin-top: 14px; }
 .thrive-offerings-page .tm-offering ul { gap: 9px; margin-top: 22px; margin-bottom: 27px; }
 .thrive-offerings-page .tm-offering li { font-size: 14px; line-height: 1.65; color: #c5d3db; }

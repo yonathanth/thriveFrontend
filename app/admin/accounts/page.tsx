@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, FormEvent } from 'react';
+import Link from 'next/link';
 import DataTable, { Column, Pagination } from '@/components/admin/DataTable';
 import { useAuth } from '@/contexts/AuthContext';
 import { accountsApi, Account, AccountLinkConflict, ApiError } from '@/lib/api';
@@ -32,8 +33,10 @@ function errorText(err: unknown, fallback: string) {
 }
 
 export default function AccountsPage() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  // Admin-only actions (creating admins, managing permissions) are fixed to admins;
+  // the API enforces the same.
+  const { can } = useAuth();
+  const isAdmin = can('accounts.create_admin');
 
   const [tab, setTab] = useState<'accounts' | 'conflicts'>('accounts');
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -175,6 +178,14 @@ export default function AccountsPage() {
             >
               Reset password
             </button>
+          )}
+          {a.canManagePermissions && (
+            <Link
+              href={`/admin/accounts/${a.id}/permissions`}
+              className="text-primary hover:text-primary/80 text-sm font-medium"
+            >
+              Permissions
+            </Link>
           )}
           {a.canSetStatus && (
             <button
@@ -433,6 +444,8 @@ function CreateAdminModal({ onClose, onCreated }: { onClose: () => void; onCreat
 }
 
 function ConflictsPanel() {
+  const { can } = useAuth();
+  const canResolve = can('accounts.conflicts.resolve');
   const [rows, setRows] = useState<AccountLinkConflict[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -510,11 +523,12 @@ function ConflictsPanel() {
       key: 'actions',
       header: '',
       className: 'text-right',
-      render: (c) => (
-        <button onClick={() => resolve(c.id)} className="text-primary hover:text-primary/80 text-sm font-medium">
-          Mark handled
-        </button>
-      ),
+      render: (c) =>
+        canResolve ? (
+          <button onClick={() => resolve(c.id)} className="text-primary hover:text-primary/80 text-sm font-medium">
+            Mark handled
+          </button>
+        ) : null,
     },
   ];
 
@@ -525,6 +539,7 @@ function ConflictsPanel() {
           These desktop records did not get a login automatically. Fix the phone number on the desktop and sync again,
           or re-run provisioning.
         </p>
+        {canResolve && (
         <button
           onClick={reconcile}
           disabled={running}
@@ -533,6 +548,7 @@ function ConflictsPanel() {
           <span className="material-symbols-outlined text-lg">sync</span>
           {running ? 'Running…' : 'Re-run provisioning'}
         </button>
+        )}
       </div>
       {message && <p className="text-emerald-400 text-sm">{message}</p>}
       {error && <p className="text-red-400 text-sm">{error}</p>}

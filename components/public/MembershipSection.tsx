@@ -30,7 +30,7 @@ export default function MembershipSection() {
                 <Link href={`/join?offering=gym&access=${membershipType}&period=${plan.months}`} className="tm-plan-action" aria-label={`Choose ${plan.name.toLowerCase()} ${selectedMembership.label.toLowerCase()} membership`}>Choose plan<ArrowUpRight size={18} aria-hidden="true" /></Link>
               </article>)}
             </div>
-            <p className="tm-plan-help">Need a hand choosing? <a href="tel:+251913814546">Call 091 381 4546<ArrowUpRight size={14} aria-hidden="true" /></a></p>
+            <p className="tm-plan-help">Need a hand choosing? <a href="tel:+251970084408">Call 097 008 4408<ArrowUpRight size={14} aria-hidden="true" /></a><a href="tel:+251912190603">Call 091 219 0603<ArrowUpRight size={14} aria-hidden="true" /></a></p>
           </div>
         </section>
   );

@@ -4,9 +4,13 @@ import { ArrowUpRight } from 'lucide-react';
 import { offerings } from '@/lib/public/offerings';
 import './services.css';
 
-const featuredServices = [offerings[0], offerings[1], {
-  ...offerings[2], title: 'Muay Thai & kids’ karate',
-  summary: 'Muay Thai with Duressa. Karate for kids. Find your discipline.',
+const offering = (slug: string) => offerings.find((service) => service.slug === slug)!;
+const featuredServices = [offering('strength-and-conditioning'), {
+  ...offering('circuit'), title: 'Circuit with Awet',
+  summary: 'Wednesday mornings. Saturday afternoons. Train with the founder.',
+}, {
+  ...offering('muay-thai'), title: 'Muay Thai & Taekwondo',
+  summary: 'Muay Thai with Duressa. Taekwondo with Birtukan. Find your discipline.',
   prompt: 'Explore the classes',
 }];
 

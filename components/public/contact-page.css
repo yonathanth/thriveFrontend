@@ -7,6 +7,8 @@
 .tc-call { container-type: inline-size; display: flex; flex-direction: column; position: relative; padding: clamp(30px, 3.5vw, 50px); border-radius: 22px; background: #09b2f7; color: #062332; min-width: 0; }
 .tc-call-label { font-size: 17px; }
 .tc-number { display: flex; align-items: center; gap: 12px; width: fit-content; max-width: 100%; white-space: nowrap; font-size: clamp(26px, 14cqi, 76px); font-weight: 600; letter-spacing: -.045em; line-height: 1.04; margin-top: 48px; }
+/* Two numbers: the second sits right under the first. */
+.tc-number + .tc-number { margin-top: 10px; }
 .tc-number > svg { width: clamp(21px, 5cqi, 34px); height: auto; flex-shrink: 0; }
 .tc-call-button { display: inline-flex; align-items: center; gap: 45px; align-self: flex-start; margin-top: 35px; padding: 15px 22px; border-radius: 40px; background: #062332; color: #f4faff; font-size: 15px; transition: background 200ms; }
 .tc-call-button:hover { background: #123d52; }

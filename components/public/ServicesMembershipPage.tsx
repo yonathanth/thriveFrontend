@@ -10,11 +10,11 @@ import Link from 'next/link';
 import './memberships.css';
 import './offerings-page.css';
 
-const orderedOfferings = ['strength-and-conditioning', 'muay-thai', 'personal-training', 'kids-karate', 'kickboxing'].map((slug) => offerings.find((service) => service.slug === slug)!);
+const orderedOfferings = ['strength-and-conditioning', 'circuit', 'muay-thai', 'taekwondo', 'personal-training', 'kids-karate', 'kickboxing'].map((slug) => offerings.find((service) => service.slug === slug)!);
 
 const questions = [
   { question: 'Is Thrive a good place to start as a beginner?', answer: 'Yes. Whether you are starting fresh or returning to training, our team can help you find a starting point and explain the equipment.' },
-  { question: 'Which martial arts classes can I join?', answer: 'Thrive offers Muay Thai classes with Duressa, kickboxing, and karate classes for kids. Call 091 381 4546 for class times, age groups, and enrolment details. See Prices for membership and class pricing enquiries.' },
+  { question: 'Which martial arts classes can I join?', answer: 'Thrive offers Muay Thai with Duressa, Taekwondo with Birtukan, kickboxing, and karate classes for kids. For conditioning, join Circuit with Awet on Wednesday mornings and Saturday afternoons. Call 097 008 4408 or 091 219 0603 for class times, age groups, and enrolment details. See Prices for membership and class pricing enquiries.' },
   { question: 'Can I train early in the morning or late at night?', answer: 'Yes. Thrive is open 24 hours, every day, so you can fit your workout around your schedule.' },
 ];
 
@@ -37,7 +37,7 @@ export default function ServicesMembershipPage() {
           <div className="tm-offering-list">
             {orderedOfferings.map((service, index) => <article key={service.slug} id={service.slug} className={`tm-offering${index === 0 ? ' to-featured' : ''}${service.slug === 'muay-thai' || service.slug === 'kickboxing' ? ' to-immersive' : ''}`}>
               <div className="tm-offering-photo"><Image src={service.photo} alt={service.alt} fill sizes={index === 0 ? '100vw' : '(max-width: 699px) 100vw, 50vw'} /><span className="to-photo-index" aria-hidden="true">0{index + 1}</span>{index === 0 && <h3>{service.title}</h3>}</div>
-              <div className="tm-offering-copy">{index !== 0 && <h3>{service.title}</h3>}<p>{service.summary}</p><ul>{service.details.map((detail) => <li key={detail}>{detail}</li>)}</ul><Link href={service.href} className="tm-text-link">{service.prompt}<span><ArrowUpRight size={19} aria-hidden="true" /></span></Link></div>
+              <div className="tm-offering-copy">{'coach' in service && <span className="to-coach">with <em>{service.coach}</em></span>}{index !== 0 && <h3>{service.title}</h3>}<p>{service.summary}</p><ul>{service.details.map((detail) => <li key={detail}>{detail}</li>)}</ul><Link href={service.href} className="tm-text-link">{service.prompt}<span><ArrowUpRight size={19} aria-hidden="true" /></span></Link></div>
             </article>)}
           </div>
         </section>
@@ -56,7 +56,7 @@ export default function ServicesMembershipPage() {
           <div className="tm-questions">{questions.map((item) => <details key={item.question}><summary>{item.question}<Plus size={19} aria-hidden="true" /></summary><p>{item.answer}</p></details>)}</div>
         </section>
 
-        <section className="tm-closing landing-container" aria-labelledby="tm-closing-heading"><div><h2 id="tm-closing-heading">Your next chapter<br /><em>starts with you.</em></h2><button type="button" onClick={() => router.push('/join')} className="tm-button">Join Now<ArrowUpRight size={19} aria-hidden="true" /></button></div><div className="tm-closing-contact"><span>Let&apos;s talk about your goals.</span><a href="tel:+251913814546">091 381 4546<ArrowUpRight size={24} aria-hidden="true" /></a><p>Cheers meskelegna / Ayat Noah<br />Addis Ababa, Ethiopia</p></div></section>
+        <section className="tm-closing landing-container" aria-labelledby="tm-closing-heading"><div><h2 id="tm-closing-heading">Your next chapter<br /><em>starts with you.</em></h2><button type="button" onClick={() => router.push('/join')} className="tm-button">Join Now<ArrowUpRight size={19} aria-hidden="true" /></button></div><div className="tm-closing-contact"><span>Let&apos;s talk about your goals.</span><a href="tel:+251970084408">097 008 4408<ArrowUpRight size={24} aria-hidden="true" /></a><a href="tel:+251912190603">091 219 0603<ArrowUpRight size={24} aria-hidden="true" /></a><p>Cheers meskelegna / Ayat Noah<br />Addis Ababa, Ethiopia</p></div></section>
       </main>
       <SiteFooter onJoinClick={() => router.push('/join')} />
     </div>

@@ -25,7 +25,7 @@ export default function AboutContactSection({ onJoinClick }: AboutContactSection
             <div className="thrive-contact-details">
               <div className="thrive-contact-item thrive-contact-call">
                 <h3>Call us</h3>
-                <a href="tel:+251913814546" className="thrive-contact-phone">091 381 4546<ArrowUpRight size={28} aria-hidden="true" /></a>
+                <a href="tel:+251970084408" className="thrive-contact-phone">097 008 4408<ArrowUpRight size={28} aria-hidden="true" /></a><a href="tel:+251912190603" className="thrive-contact-phone">091 219 0603<ArrowUpRight size={28} aria-hidden="true" /></a>
               </div>
               <div className="thrive-contact-item thrive-contact-location">
                 <h3>Find us</h3>

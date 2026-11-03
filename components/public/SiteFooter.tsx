@@ -16,7 +16,9 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           <nav aria-label="Training services"><h2>Training</h2>
             <Link href="/services#strength-and-conditioning">Strength & conditioning</Link>
             <Link href="/services#personal-training">Personal training</Link>
+            <Link href="/services#circuit">Circuit with Awet</Link>
             <Link href="/services#muay-thai">Muay Thai</Link>
+            <Link href="/services#taekwondo">Taekwondo</Link>
             <Link href="/services#kickboxing">Kickboxing</Link>
             <Link href="/services#kids-karate">Kids’ karate</Link>
             <Link href="/pricing#memberships">Memberships</Link>
@@ -24,7 +26,7 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           </nav>
           <nav aria-label="Visit Thrive"><h2>Visit us</h2>
             <a href="https://www.google.com/maps/dir/?api=1&destination=Thrive+Health+%26+Fitness%2C+Cheers+meskelegna%2C+Ayat+Noah%2C+Addis+Ababa" target="_blank" rel="noopener noreferrer">Get directions</a>
-            <a href="tel:+251913814546">091 381 4546</a>
+            <a href="tel:+251970084408">097 008 4408</a><a href="tel:+251912190603">091 219 0603</a>
             <a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa, Ethiopia</a>
             <span>Open 24 hours, every day</span>
           </nav>

@@ -78,9 +78,11 @@
 .tm-plan-amount > span > span { color: #9cabb3; }
 .tm-plan-help { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; line-height: 1.7; color: #9cabb3; margin-top: 30px; }
 .tm-plan-help a { display: inline-flex; align-items: center; gap: 8px; color: #8ddfff; }
-.tm-class-prices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
+.tm-class-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
 .tm-class-price { min-width: 0; overflow: hidden; border-radius: 17px; background: #1b2429; scroll-margin-top: 115px; display: flex; flex-direction: column; }
 .tm-class-price-copy { display: flex; flex-direction: column; padding: 32px 25px; flex: 1; }
+.tm-class-coach { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #879ba6; margin-bottom: 6px; }
+.tm-class-coach em { display: block; margin-top: 2px; font-size: 38px; letter-spacing: -.02em; line-height: 1.05; text-transform: none; color: #8ddfff; }
 .tm-class-price h3 { font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -.035em; }
 .tm-class-price-copy > p { color: #a9b4ba; font-size: 14px; line-height: 1.7; margin-top: 10px; margin-bottom: 26px; }
 .tm-class-price .tm-plan-price { margin-top: auto; margin-bottom: 25px; }
@@ -157,3 +159,5 @@
 .tm-class-kickboxing { background: #152f3e; }
 .tm-class-kids-karate { background: #263431; }
 .tm-class-personal-training { background: #2a2d39; }
+.tm-class-circuit { background: #1f2c27; }
+.tm-class-taekwondo { background: #2b2733; }

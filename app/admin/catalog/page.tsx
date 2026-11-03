@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { recordsApi, DesktopRow, RecordEntity } from '@/lib/api';
 import { desktopDate, formatDesktopDate, formatETB, humanize, num, str } from '@/lib/desktop';
 import StatsCard from '@/components/admin/StatsCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Tab = 'addons' | 'dropins' | 'discounts' | 'groups';
 
@@ -49,6 +50,10 @@ function Empty({ text }: { text: string }) {
 }
 
 export default function CatalogPage() {
+  // Amounts paid, subscription counts and discount usage need catalog.money.view; the
+  // API strips them too.
+  const { can } = useAuth();
+  const showMoney = can('catalog.money.view');
   const [tab, setTab] = useState<Tab>('addons');
   const [rows, setRows] = useState<Partial<Record<RecordEntity, DesktopRow[]>>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +67,9 @@ export default function CatalogPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const entities = TAB_ENTITIES[tab];
+        const entities = TAB_ENTITIES[tab].filter(
+          (e) => showMoney || e !== 'member_additional_subscription',
+        );
         const results = await Promise.all(entities.map((e) => recordsApi.list(e, { limit: 500 })));
         if (!cancelled) {
           setRows((prev) => {
@@ -82,7 +89,7 @@ export default function CatalogPage() {
     return () => {
       cancelled = true;
     };
-  }, [tab]);
+  }, [tab, showMoney]);
 
   const get = (e: RecordEntity) => rows[e] ?? [];
 
@@ -126,11 +133,12 @@ export default function CatalogPage() {
           variants={get('additional_service_variant')}
           subscriptions={get('member_additional_subscription')}
           now={now}
+          showMoney={showMoney}
         />
       ) : tab === 'dropins' ? (
-        <DropInsTab services={get('usage_service')} sales={get('service_usage')} />
+        <DropInsTab services={get('usage_service')} sales={get('service_usage')} showMoney={showMoney} />
       ) : tab === 'discounts' ? (
-        <DiscountsTab discounts={get('discount')} />
+        <DiscountsTab discounts={get('discount')} showMoney={showMoney} />
       ) : (
         <GroupsTab groups={get('member_group')} links={get('member_group_member')} />
       )}
@@ -143,11 +151,13 @@ function AddonsTab({
   variants,
   subscriptions,
   now,
+  showMoney,
 }: {
   addons: DesktopRow[];
   variants: DesktopRow[];
   subscriptions: DesktopRow[];
   now: number;
+  showMoney: boolean;
 }) {
   if (addons.length === 0) return <Empty text="No add-ons yet" />;
   const activeCount = (addonId: number) =>
@@ -164,13 +174,17 @@ function AddonsTab({
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatsCard title="Add-ons" value={addons.length} icon="add_circle" color="primary" />
-        <StatsCard title="Active subscriptions" value={totalActive} icon="check_circle" color="green" />
-        <StatsCard
-          title="Frozen subscriptions"
-          value={subscriptions.filter((s) => num(s.frozen)).length}
-          icon="ac_unit"
-          color="blue"
-        />
+        {showMoney && (
+          <>
+            <StatsCard title="Active subscriptions" value={totalActive} icon="check_circle" color="green" />
+            <StatsCard
+              title="Frozen subscriptions"
+              value={subscriptions.filter((s) => num(s.frozen)).length}
+              icon="ac_unit"
+              color="blue"
+            />
+          </>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {addons.map((a) => {
@@ -200,9 +214,11 @@ function AddonsTab({
                   {num(a.is_free) ? 'Free' : formatETB(num(a.price) ?? 0)}
                 </p>
               )}
-              <p className="text-white/60 text-sm pt-4 border-t border-surface-dark-lighter">
-                {activeCount(a.id)} active subscriptions
-              </p>
+              {showMoney && (
+                <p className="text-white/60 text-sm pt-4 border-t border-surface-dark-lighter">
+                  {activeCount(a.id)} active subscriptions
+                </p>
+              )}
             </div>
           );
         })}
@@ -211,7 +227,15 @@ function AddonsTab({
   );
 }
 
-function DropInsTab({ services, sales }: { services: DesktopRow[]; sales: DesktopRow[] }) {
+function DropInsTab({
+  services,
+  sales,
+  showMoney,
+}: {
+  services: DesktopRow[];
+  sales: DesktopRow[];
+  showMoney: boolean;
+}) {
   if (services.length === 0) return <Empty text="No drop-in services yet" />;
   const names = new Map(services.map((s) => [s.id, str(s.name)]));
   const recent = [...sales]
@@ -259,7 +283,7 @@ function DropInsTab({ services, sales }: { services: DesktopRow[]; sales: Deskto
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-white">{formatETB(num(v.total_amount) ?? 0)}</p>
+                  {showMoney && <p className="text-white">{formatETB(num(v.total_amount) ?? 0)}</p>}
                   <p className="text-white/40 text-xs capitalize">{str(v.payment_status)}</p>
                 </div>
               </div>
@@ -271,7 +295,7 @@ function DropInsTab({ services, sales }: { services: DesktopRow[]; sales: Deskto
   );
 }
 
-function DiscountsTab({ discounts }: { discounts: DesktopRow[] }) {
+function DiscountsTab({ discounts, showMoney }: { discounts: DesktopRow[]; showMoney: boolean }) {
   if (discounts.length === 0) return <Empty text="No discounts yet" />;
   return (
     <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-x-auto">
@@ -282,7 +306,7 @@ function DiscountsTab({ discounts }: { discounts: DesktopRow[] }) {
             <th className="p-4 font-medium">Name</th>
             <th className="p-4 font-medium">Value</th>
             <th className="p-4 font-medium">Valid</th>
-            <th className="p-4 font-medium">Used</th>
+            {showMoney && <th className="p-4 font-medium">Used</th>}
             <th className="p-4 font-medium">Status</th>
           </tr>
         </thead>
@@ -304,10 +328,12 @@ function DiscountsTab({ discounts }: { discounts: DesktopRow[] }) {
                       }`
                     : 'Always'}
                 </td>
-                <td className="p-4 text-white/60">
-                  {num(d.times_used) ?? 0}
-                  {maxUses != null ? ` / ${maxUses}` : ''}
-                </td>
+                {showMoney && (
+                  <td className="p-4 text-white/60">
+                    {num(d.times_used) ?? 0}
+                    {maxUses != null ? ` / ${maxUses}` : ''}
+                  </td>
+                )}
                 <td className="p-4">
                   <StatusBadge active={isActiveFlag(d.is_active)} />
                 </td>

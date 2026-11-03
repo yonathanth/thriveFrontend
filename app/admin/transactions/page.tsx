@@ -13,6 +13,7 @@ import {
 } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 function sanitizeText(s: string): string {
   return s.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '');
@@ -100,6 +101,10 @@ function getRangeFromPreset(preset: ExportRangePreset): { startDate?: string; en
 
 export default function TransactionsPage() {
   const router = useRouter();
+  // Exporting needs finance.export on top of finance.view. The file is built in the
+  // browser from data this account can already list, so this is a visibility choice.
+  const { can } = useAuth();
+  const canExport = can('finance.export');
   const [transactions, setTransactions] = useState<PaginatedResponse<Transaction> | null>(null);
   const [stats, setStats] = useState<TransactionStats | null>(null);
   const [filteredCardTotals, setFilteredCardTotals] = useState<{
@@ -651,6 +656,7 @@ export default function TransactionsPage() {
           <h1 className="text-white text-2xl font-bold">Transactions</h1>
           <p className="text-white/60 mt-1">Manage income, outflows, and returns</p>
         </div>
+        {canExport && (
         <div className="relative" ref={exportMenuRef}>
           <button
             type="button"
@@ -690,6 +696,7 @@ export default function TransactionsPage() {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Filter Bar */}

@@ -15,6 +15,11 @@ export interface AdminProfile {
   mustChangePassword?: boolean;
   contactEmail?: string | null;
   telegramUsername?: string | null;
+  /**
+   * Effective website permissions, worked out by the API (role defaults plus this
+   * account's overrides). Only the profile endpoint returns them.
+   */
+  permissions?: string[];
 }
 
 export interface ProfileUpdate {
@@ -227,14 +232,16 @@ export interface ServiceStats {
 }
 
 export interface DashboardOverview {
-  totalMembers: number;
-  activeMembers: number;
+  /** null without dashboard.business. */
+  totalMembers: number | null;
+  /** null without dashboard.business. */
+  activeMembers: number | null;
   totalServices: number;
   attendanceToday: number;
-  /** null for managers: money is admin-only. */
+  /** null without dashboard.business. */
   totalRevenue: number | null;
   revenueThisMonth: number | null;
-  newMembersThisMonth: number;
+  newMembersThisMonth: number | null;
   averageDailyAttendance: number;
 }
 
@@ -376,6 +383,11 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+/** The API refused because this account lacks the permission (not a bug). */
+export function isForbidden(err: unknown): boolean {
+  return err instanceof ApiError && err.status === 403;
 }
 
 /** Fired when the API rejects the stored token; AuthContext signs the user out. */
@@ -1003,6 +1015,28 @@ export interface Account {
   createdAt: string;
   canResetPassword: boolean;
   canSetStatus: boolean;
+  /** Admins may adjust permissions of manager and trainer accounts. */
+  canManagePermissions?: boolean;
+}
+
+export type PermissionAction = 'view' | 'create' | 'edit' | 'delete' | 'approve' | 'manage';
+
+export interface AccountPermissionRow {
+  key: string;
+  label: string;
+  area: string;
+  action: PermissionAction;
+  adminOnly: boolean;
+  /** Whether an admin may override this key for this account's role. */
+  grantable: boolean;
+  roleDefault: boolean;
+  override: 'grant' | 'deny' | null;
+  effective: boolean;
+}
+
+export interface AccountPermissions {
+  account: { id: number; name: string; role: Role };
+  permissions: AccountPermissionRow[];
 }
 
 export interface AccountQuery {
@@ -1049,6 +1083,13 @@ export const accountsApi = {
   reconcile: () =>
     apiFetch<{ created: number; updated: number; conflicts: number }>('/api/accounts/reconcile', {
       method: 'POST',
+    }),
+  getPermissions: (id: number) => apiFetch<AccountPermissions>(`/api/accounts/${id}/permissions`),
+  /** null resets a key to the role default; keys left out stay as they are. */
+  setPermissions: (id: number, overrides: Record<string, 'grant' | 'deny' | null>) =>
+    apiFetch<AccountPermissions>(`/api/accounts/${id}/permissions`, {
+      method: 'PUT',
+      body: JSON.stringify({ overrides }),
     }),
 };
 

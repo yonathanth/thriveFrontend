@@ -2,46 +2,49 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { ROLE_LABELS, Role } from '@/lib/roles';
+import type { Permission } from '@/lib/permissions';
 import AppSidebar, { SidebarItem, SidebarSection, UserAvatar } from '@/components/layout/AppSidebar';
 
 interface NavItem extends SidebarItem {
   /** Who sees the link; defaults to admins and managers. The API enforces the same. */
   roles?: Role[];
+  /** Also needs one of these permissions. The API enforces the same. */
+  permission?: Permission | Permission[];
 }
 
 const navSections: { label: string; items: NavItem[] }[] = [
   {
     label: 'Overview',
     items: [
-      { name: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
+      { name: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard', permission: ['dashboard.operational', 'dashboard.business'] },
       { name: 'Notifications', href: '/admin/notifications', icon: 'notifications' },
     ],
   },
   {
     label: 'People',
     items: [
-      { name: 'Members', href: '/admin/members', icon: 'group' },
-      { name: 'Attendance', href: '/admin/attendance', icon: 'fact_check' },
-      { name: 'Staff', href: '/admin/staff', icon: 'badge' },
-      { name: 'Potential Customers', href: '/admin/potential-customers', icon: 'person_add' },
+      { name: 'Members', href: '/admin/members', icon: 'group', permission: 'members.view' },
+      { name: 'Attendance', href: '/admin/attendance', icon: 'fact_check', permission: 'attendance.view' },
+      { name: 'Staff', href: '/admin/staff', icon: 'badge', permission: 'staff.view' },
+      { name: 'Potential Customers', href: '/admin/potential-customers', icon: 'person_add', permission: 'prospects.view' },
     ],
   },
   {
     label: 'Business',
     items: [
-      { name: 'Transactions', href: '/admin/transactions', icon: 'payments', roles: ['admin'] },
-      { name: 'Services', href: '/admin/services', icon: 'category' },
-      { name: 'Catalog', href: '/admin/catalog', icon: 'inventory_2' },
-      { name: 'Inventory', href: '/admin/inventory', icon: 'warehouse', exact: true },
-      { name: 'Inventory Sales', href: '/admin/inventory/sales', icon: 'point_of_sale', roles: ['admin'] },
-      { name: 'Schedule', href: '/admin/schedule', icon: 'calendar_month' },
-      { name: 'SMS', href: '/admin/sms', icon: 'sms' },
+      { name: 'Transactions', href: '/admin/transactions', icon: 'payments', permission: 'finance.view' },
+      { name: 'Services', href: '/admin/services', icon: 'category', permission: 'services.view' },
+      { name: 'Catalog', href: '/admin/catalog', icon: 'inventory_2', permission: 'services.view' },
+      { name: 'Inventory', href: '/admin/inventory', icon: 'warehouse', exact: true, permission: 'inventory.view' },
+      { name: 'Inventory Sales', href: '/admin/inventory/sales', icon: 'point_of_sale', permission: 'inventory.money.view' },
+      { name: 'Schedule', href: '/admin/schedule', icon: 'calendar_month', permission: 'staff.view' },
+      { name: 'SMS', href: '/admin/sms', icon: 'sms', permission: ['sms.send', 'sms.bulk', 'sms.history.view'] },
     ],
   },
   {
     label: 'Administration',
     items: [
-      { name: 'Accounts', href: '/admin/accounts', icon: 'manage_accounts' },
+      { name: 'Accounts', href: '/admin/accounts', icon: 'manage_accounts', permission: 'accounts.view' },
       { name: 'Audit Log', href: '/admin/audit-log', icon: 'history', roles: ['admin'] },
     ],
   },
@@ -53,12 +56,17 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { user } = useAuth();
+  const { user, can } = useAuth();
 
   const sections: SidebarSection[] = navSections
     .map((s) => ({
       label: s.label,
-      items: s.items.filter((item) => !!user && (item.roles ?? ['admin', 'manager']).includes(user.role)),
+      items: s.items.filter(
+        (item) =>
+          !!user &&
+          (item.roles ?? ['admin', 'manager']).includes(user.role) &&
+          (!item.permission || can(item.permission)),
+      ),
     }))
     .filter((s) => s.items.length > 0);
 

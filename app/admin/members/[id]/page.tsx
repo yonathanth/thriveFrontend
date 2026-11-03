@@ -18,6 +18,7 @@ import {
 import { formatDesktopDate, humanize, num, str } from '@/lib/desktop';
 import SmsSendModal from '@/components/admin/SmsSendModal';
 import { useAuth } from '@/contexts/AuthContext';
+import NoAccess from '@/components/auth/NoAccess';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -32,8 +33,13 @@ export default function MemberDetailPage({ params }: Props) {
   const [healthMetrics, setHealthMetrics] = useState<PaginatedResponse<HealthMetric> | null>(null);
   const [details, setDetails] = useState<MemberDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  // Payments, contact details and health records each need a permission; the API
+  // refuses or strips them too, so this only decides what to show.
+  const { can } = useAuth();
+  const isAdmin = can(['members.payments.view', 'finance.view']);
+  const showContact = can('members.contact.view');
+  const showHealth = can('members.health.view');
+  const canSms = can('sms.send');
   const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'attendance' | 'transactions' | 'health'>('overview');
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
 
@@ -45,9 +51,9 @@ export default function MemberDetailPage({ params }: Props) {
         const [memberData, attendanceData, transactionsData, healthMetricsData, detailsData] = await Promise.all([
           membersApi.getOne(memberId),
           attendanceApi.getByMember(memberId, { limit: 10 }),
-          // Payments are admin-only; managers skip them.
+          // Payments and health records need permissions; skip what can't be shown.
           isAdmin ? transactionsApi.getByMember(memberId, { limit: 10 }) : Promise.resolve(null),
-          healthMetricsApi.getByMember(memberId, { limit: 10 }),
+          showHealth ? healthMetricsApi.getByMember(memberId, { limit: 10 }) : Promise.resolve(null),
           // The page still works without these extras, e.g. against an older API.
           membersApi.getDetails(memberId).catch((err) => {
             console.error('Failed to fetch member details:', err);
@@ -67,7 +73,7 @@ export default function MemberDetailPage({ params }: Props) {
     }
 
     fetchMemberData();
-  }, [id, isAdmin]);
+  }, [id, isAdmin, showHealth]);
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -169,7 +175,7 @@ export default function MemberDetailPage({ params }: Props) {
       <div className="border-b border-surface-dark-lighter">
         <nav className="flex gap-6">
           {(['overview', 'history', 'attendance', 'transactions', 'health'] as const)
-            .filter((tab) => tab !== 'transactions' || isAdmin)
+            .filter((tab) => (tab !== 'transactions' || isAdmin) && (tab !== 'health' || showHealth))
             .map((tab) => (
             <button
               key={tab}
@@ -195,6 +201,9 @@ export default function MemberDetailPage({ params }: Props) {
               <span className="material-symbols-outlined text-primary">contact_phone</span>
               Contact Information
             </h2>
+            {!showContact ? (
+              <NoAccess compact message="Contact details are hidden for your account." />
+            ) : (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
@@ -204,7 +213,7 @@ export default function MemberDetailPage({ params }: Props) {
                     <p className="text-white">{member.phone || '-'}</p>
                   </div>
                 </div>
-                {member.phone && (
+                {member.phone && canSms && (
                   <button
                     onClick={() => setIsSmsModalOpen(true)}
                     className="px-3 py-1.5 bg-primary text-black rounded-lg hover:bg-primary/90 text-sm font-medium flex items-center gap-2"
@@ -239,6 +248,7 @@ export default function MemberDetailPage({ params }: Props) {
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* Profile Information */}
@@ -551,7 +561,9 @@ export default function MemberDetailPage({ params }: Props) {
                             {str(d.trainer_name) ? ` • ${str(d.trainer_name)}` : ''}
                           </p>
                         </div>
-                        <span className="text-white/80">{formatCurrency(num(d.total_amount) ?? 0)}</span>
+                        {num(d.total_amount) != null && (
+                          <span className="text-white/80">{formatCurrency(num(d.total_amount) ?? 0)}</span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -692,7 +704,7 @@ export default function MemberDetailPage({ params }: Props) {
         </div>
       )}
 
-      {activeTab === 'health' && (
+      {activeTab === 'health' && showHealth && (
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter overflow-hidden">
           <div className="p-4 border-b border-surface-dark-lighter">
             <h2 className="text-white font-semibold">Health Metrics History</h2>

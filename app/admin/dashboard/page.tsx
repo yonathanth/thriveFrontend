@@ -6,14 +6,16 @@ import {
   DashboardOverview,
   RevenueBreakdown,
   MemberGrowth,
+  isForbidden,
 } from '@/lib/api';
 import StatsCard from '@/components/admin/StatsCard';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function DashboardPage() {
-  // Revenue and transactions are admin-only; the API refuses them to managers too.
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  // Business figures (member totals, growth, revenue) need dashboard.business; the
+  // API strips or refuses them too, so this only decides what to draw.
+  const { can } = useAuth();
+  const isAdmin = can('dashboard.business');
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
   const [revenue, setRevenue] = useState<RevenueBreakdown | null>(null);
   const [growth, setGrowth] = useState<MemberGrowth | null>(null);
@@ -24,10 +26,17 @@ export default function DashboardPage() {
     async function fetchDashboardData() {
       try {
         setIsLoading(true);
+        // A widget the account may not see comes back 403: leave it empty rather
+        // than failing the whole dashboard.
+        const orNull = <T,>(p: Promise<T>) =>
+          p.catch((err: unknown) => {
+            if (isForbidden(err)) return null;
+            throw err;
+          });
         const [overviewData, revenueData, growthData] = await Promise.all([
-          dashboardApi.getOverview(),
-          isAdmin ? dashboardApi.getRevenue() : Promise.resolve(null),
-          dashboardApi.getMemberGrowth(),
+          orNull(dashboardApi.getOverview()),
+          isAdmin ? orNull(dashboardApi.getRevenue()) : Promise.resolve(null),
+          isAdmin ? orNull(dashboardApi.getMemberGrowth()) : Promise.resolve(null),
         ]);
         setOverview(overviewData);
         setRevenue(revenueData);
@@ -93,19 +102,23 @@ export default function DashboardPage() {
           ))
         ) : (
           <>
-            <StatsCard
-              title="Total Members"
-              value={overview?.totalMembers || 0}
-              icon="group"
-              color="primary"
-              trend={growth ? { value: growth.monthOverMonthGrowth, isPositive: growth.monthOverMonthGrowth > 0 } : undefined}
-            />
-            <StatsCard
-              title="Active Members"
-              value={overview?.activeMembers || 0}
-              icon="verified"
-              color="green"
-            />
+            {isAdmin && (
+              <StatsCard
+                title="Total Members"
+                value={overview?.totalMembers || 0}
+                icon="group"
+                color="primary"
+                trend={growth ? { value: growth.monthOverMonthGrowth, isPositive: growth.monthOverMonthGrowth > 0 } : undefined}
+              />
+            )}
+            {isAdmin && (
+              <StatsCard
+                title="Active Members"
+                value={overview?.activeMembers || 0}
+                icon="verified"
+                color="green"
+              />
+            )}
             <StatsCard
               title="Today's Check-ins"
               value={overview?.attendanceToday || 0}
@@ -122,10 +135,11 @@ export default function DashboardPage() {
               />
             ) : (
               <StatsCard
-                title="New This Month"
-                value={overview?.newMembersThisMonth || 0}
-                icon="person_add"
+                title="Avg. Daily Check-ins"
+                value={overview?.averageDailyAttendance || 0}
+                icon="insights"
                 color="orange"
+                subtitle="Last 30 days"
               />
             )}
           </>
@@ -177,10 +191,10 @@ export default function DashboardPage() {
       </div>
       )}
 
-      {/* Quick Stats - Revenue by Category (admins only) & Member Growth */}
-      <div className={`grid grid-cols-1 gap-6 ${isAdmin ? 'md:grid-cols-2' : ''}`}>
+      {/* Quick Stats - Revenue by Category & Member Growth (business figures) */}
+      {isAdmin && (
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Revenue by Category */}
-        {isAdmin && (
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
             <span className="material-symbols-outlined text-orange-400">category</span>
@@ -215,7 +229,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-        )}
 
         {/* Member Growth */}
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
@@ -264,11 +277,7 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
-
-
-
-
-

@@ -7,19 +7,24 @@ import SmsBalanceCard from '@/components/admin/SmsBalanceCard';
 import SmsHistoryTable from '@/components/admin/SmsHistoryTable';
 import SmsOutreach from '@/components/admin/SmsOutreach';
 import { smsApi } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import type { Permission } from '@/lib/permissions';
 
 type Tab = 'send' | 'bulk' | 'outreach' | 'history';
 
 export default function SmsPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('send');
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
-
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: 'send', label: 'Send SMS', icon: 'send' },
-    { id: 'bulk', label: 'Bulk SMS', icon: 'campaign' },
-    { id: 'outreach', label: 'Absent & Inactive', icon: 'person_search' },
-    { id: 'history', label: 'History', icon: 'history' },
+  // Each tab needs its permission; the API refuses the same calls.
+  const { can } = useAuth();
+  const allTabs: { id: Tab; label: string; icon: string; permission: Permission }[] = [
+    { id: 'send', label: 'Send SMS', icon: 'send', permission: 'sms.send' },
+    { id: 'bulk', label: 'Bulk SMS', icon: 'campaign', permission: 'sms.bulk' },
+    { id: 'outreach', label: 'Absent & Inactive', icon: 'person_search', permission: 'sms.bulk' },
+    { id: 'history', label: 'History', icon: 'history', permission: 'sms.history.view' },
   ];
+  const tabs = allTabs.filter((t) => can(t.permission));
+  const [selectedTab, setActiveTab] = useState<Tab>('send');
+  const activeTab: Tab = tabs.some((t) => t.id === selectedTab) ? selectedTab : (tabs[0]?.id ?? 'send');
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
 
 
   return (

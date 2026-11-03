@@ -5,9 +5,15 @@ import { useRouter } from 'next/navigation';
 import { membersApi, Member, MemberStats, PaginatedResponse } from '@/lib/api';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MembersPage() {
   const router = useRouter();
+  // Member totals and contact details need their own permissions; the API strips or
+  // refuses them as well.
+  const { can } = useAuth();
+  const showStats = can('members.stats.view');
+  const showContact = can('members.contact.view');
   const [members, setMembers] = useState<PaginatedResponse<Member> | null>(null);
   const [stats, setStats] = useState<MemberStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,13 +40,14 @@ export default function MembersPage() {
   }, [page, search, statusFilter]);
 
   const fetchStats = useCallback(async () => {
+    if (!showStats) return;
     try {
       const data = await membersApi.getStats();
       setStats(data);
     } catch (err) {
       console.error('Failed to fetch stats:', err);
     }
-  }, []);
+  }, [showStats]);
 
   useEffect(() => {
     fetchMembers();
@@ -75,7 +82,7 @@ export default function MembersPage() {
     );
   };
 
-  const columns: Column<Member>[] = [
+  const allColumns: Column<Member>[] = [
     {
       key: 'fullName',
       header: 'Member',
@@ -150,6 +157,7 @@ export default function MembersPage() {
       ),
     },
   ];
+  const columns = showContact ? allColumns : allColumns.filter((c) => c.key !== 'phone');
 
   return (
     <div className="space-y-8">
@@ -164,6 +172,7 @@ export default function MembersPage() {
       </div>
 
       {/* Stats Grid */}
+      {showStats && (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatsCard
           title="Total Members"
@@ -196,6 +205,7 @@ export default function MembersPage() {
           color="blue"
         />
       </div>
+      )}
 
       {/* Filters */}
       <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-4">

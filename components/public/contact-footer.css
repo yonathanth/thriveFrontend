@@ -16,6 +16,9 @@
 .thrive-contact-call { grid-column: 1 / -1; }
 .thrive-contact-item .thrive-contact-phone { display: inline-flex; align-items: center; gap: 20px; font-size: clamp(34px, 3.4vw, 48px); font-weight: 700; line-height: 1.1; white-space: nowrap; }
 .thrive-contact-phone svg { color: #09b2f7; flex-shrink: 0; }
+/* Two numbers, one per line. */
+.thrive-contact-item .thrive-contact-phone { display: flex; width: fit-content; }
+.thrive-contact-phone + .thrive-contact-phone { margin-top: 10px; }
 .thrive-contact a:focus-visible, .thrive-contact button:focus-visible, .thrive-footer a:focus-visible { outline: 2px solid #09b2f7; outline-offset: 6px; }
 
 .thrive-contact-map { margin-top: 70px; }

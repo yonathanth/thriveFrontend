@@ -28,8 +28,11 @@ export const GOOGLE_MAPS_DIRECTIONS_URL =
 export const GOOGLE_MAPS_EMBED_URL =
   "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3693.721137117307!2d38.87770681154753!3d9.010670927637438!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b9b356c51b3d5%3A0x26c6e63263243def!2sThrive%20Health%20%26%20Fitness!5e0!3m2!1sen!2set!4v1792592141508!5m2!1sen!2set";
 
-export const PHONE_DISPLAY = "091 381 4546";
-export const PHONE_E164 = "+251913814546";
+// Two lines: the first is the main one (single buttons, search-engine data).
+export const PHONE_DISPLAY = "097 008 4408";
+export const PHONE_E164 = "+251970084408";
+export const PHONE_2_DISPLAY = "091 219 0603";
+export const PHONE_2_E164 = "+251912190603";
 
 /** Only networks with a real link are shown anywhere on the site. */
 export const SOCIAL_LINKS: ReadonlyArray<{ label: string; href: string; icon: string }> = [

@@ -13,6 +13,7 @@ import {
   type PaginatedResponse,
 } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import NoAccess from '@/components/auth/NoAccess';
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
 import {
@@ -60,8 +61,11 @@ function Notice({ text }: { text: string }) {
 }
 
 export default function InventoryPage() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === 'admin';
+  // Inventory money (sales, history amounts) needs inventory.money.view; the API
+  // strips or refuses it too.
+  const { can } = useAuth();
+  const isAdmin = can('inventory.money.view');
+  const canStock = can('inventory.view');
   const [tab, setTab] = useState<Tab>('stock');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
@@ -70,6 +74,7 @@ export default function InventoryPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!canStock) return;
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -93,7 +98,23 @@ export default function InventoryPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [canStock]);
+
+  // Reached with only the money permission: the sales page is all they can use.
+  if (!canStock) {
+    return isAdmin ? (
+      <div className="space-y-4">
+        <NoAccess message="You can see inventory sales, but not the stock pages." />
+        <div className="text-center">
+          <Link href="/admin/inventory/sales" className="text-primary hover:text-primary/80 text-sm font-medium">
+            Go to sales & reports
+          </Link>
+        </div>
+      </div>
+    ) : (
+      <NoAccess />
+    );
+  }
 
   const sellable = items.filter((i) => i.kind === 'sellable');
   const assets = items.filter((i) => i.kind === 'asset');

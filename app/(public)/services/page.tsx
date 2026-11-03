@@ -4,7 +4,7 @@ import { publicMetadata } from '@/lib/public/metadata';
 
 export const metadata: Metadata = publicMetadata({
   title: 'Offerings | Thrive Health & Fitness',
-  description: 'Explore gym training, personal coaching, Muay Thai with Duressa, kickboxing, and kids’ karate at Thrive Health & Fitness in Addis Ababa.',
+  description: 'Explore gym training, personal coaching, Circuit with Awet, Muay Thai with Duressa, Taekwondo with Birtukan, kickboxing, and kids’ karate at Thrive Health & Fitness in Addis Ababa.',
 }, '/services');
 
 export default function ServicesPage() {

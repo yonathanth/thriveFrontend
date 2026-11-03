@@ -2,10 +2,10 @@
 
 import RequireRole from '@/components/auth/RequireRole';
 
-/** Money is admin-only; the API refuses managers too. */
+/** Inventory money needs inventory.money.view; the API checks too. */
 export default function InventorySalesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <RequireRole roles={['admin']} loginPath="/admin/login">
+    <RequireRole roles={['admin', 'manager']} permission="inventory.money.view" loginPath="/admin/login">
       {children}
     </RequireRole>
   );

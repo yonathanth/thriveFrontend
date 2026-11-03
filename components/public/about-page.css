@@ -40,6 +40,10 @@
 .ts-founder-years { display: flex; align-items: center; gap: 23px; margin-top: 34px; }
 .ts-founder-years strong { font-size: 75px; color: #09b2f7; line-height: 1; letter-spacing: -.06em; font-weight: 600; }
 .ts-founder-years span { font-size: 14px; color: #b4c3cc; line-height: 1.7; }
+.ts-founder-credentials { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 34px; padding-top: 28px; border-top: 1px solid #8ddfff26; }
+.ts-founder-credentials dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #8ddfff; }
+.ts-founder-credentials dd { margin-top: 9px; font-size: clamp(19px, 1.7vw, 23px); line-height: 1.3; letter-spacing: -.03em; color: #f4f4f0; }
+.ts-founder-credentials dd em { color: #8ddfff; }
 .ts-inside-intro { padding-top: 20px; padding-bottom: 30px; }
 .ts-inside-intro .ts-label { margin-bottom: 15px; }
 .ts-inside-intro > p { color: #b4c1c9; font-size: 16px; line-height: 1.8; }
@@ -85,6 +89,7 @@
   .ts-founder-identity { min-height: 400px; padding: 30px; }
   .ts-founder-story { padding: 32px 26px; }
   .ts-founder-years { gap: 18px; }
+  .ts-founder-credentials { grid-template-columns: 1fr; gap: 20px; }
   .ts-inside-intro > p br { display: none; }
   .ts-people { padding-block: 35px 45px; }
   .ts-people-heading { flex-direction: column; align-items: flex-start; gap: 22px; }

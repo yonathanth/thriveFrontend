@@ -60,7 +60,7 @@ export default function HeroSection({
 
           {/* Training options and location */}
           <p className="text-zinc-300 text-xs sm:text-sm md:text-base font-normal max-w-md leading-relaxed mt-2 sm:mt-2.5 mb-3.5 sm:mb-5">
-            24/7 gym access, expert coaching, and martial arts classes in Addis Ababa.
+            24/7 gym access, expert coaching, and martial arts classes in Ayat, Addis Ababa.
           </p>
 
           {/* Dual Action Buttons */}

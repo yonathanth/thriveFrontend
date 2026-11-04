@@ -1,4 +1,4 @@
-/** Display helpers for the desktop app's audit log. */
+/** Display helpers for the audit log (desktop app and website). */
 
 /** "plan_change" → "Plan change" */
 export function humanize(value: string | null | undefined): string {
@@ -20,6 +20,11 @@ const AREA_ICONS: Record<string, string> = {
   device: 'door_front',
   discount: 'sell',
   group: 'groups',
+  // Website areas
+  accounts: 'manage_accounts',
+  sign_in: 'login',
+  notifications: 'campaign',
+  payroll: 'account_balance_wallet',
 };
 
 export function areaIcon(area: string): string {

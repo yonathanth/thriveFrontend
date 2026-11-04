@@ -1,9 +1,11 @@
-// Web Push for the admin: one subscription per browser, saved on the server for the
-// signed-in admin. The service worker (public/sw.js) shows what arrives.
+// Web Push for every role: one subscription per browser, saved on the server for the
+// signed-in account. The service worker (public/sw.js) shows what arrives.
 import { pushApi, NotificationType } from './api';
 
 const SW_URL = '/sw.js';
-const SW_SCOPE = '/admin/';
+const SW_SCOPE = '/';
+/** Where the worker used to be registered, when push was for the admin panel only. */
+const OLD_SCOPE = '/admin/';
 /** Set while this browser should be subscribed, so a lost subscription is restored. */
 const WANTED_KEY = 'pushWanted';
 
@@ -36,7 +38,26 @@ function base64UrlToBytes(base64Url: string): Uint8Array<ArrayBuffer> {
   return bytes;
 }
 
+/**
+ * Retires a registration left from when push covered /admin/ only. Its subscription
+ * is removed here and on the server, or the browser would show everything twice.
+ */
+async function retireOldRegistration(): Promise<void> {
+  const old = await navigator.serviceWorker.getRegistration(OLD_SCOPE);
+  if (!old || !old.scope.endsWith(OLD_SCOPE)) return;
+  try {
+    const sub = await old.pushManager.getSubscription();
+    if (sub) {
+      await pushApi.unsubscribe(sub.endpoint).catch(() => undefined);
+      await sub.unsubscribe();
+    }
+  } finally {
+    await old.unregister();
+  }
+}
+
 async function registration(): Promise<ServiceWorkerRegistration> {
+  await retireOldRegistration();
   const existing = await navigator.serviceWorker.getRegistration(SW_SCOPE);
   if (existing) return existing;
   await navigator.serviceWorker.register(SW_URL, { scope: SW_SCOPE });
@@ -46,6 +67,7 @@ async function registration(): Promise<ServiceWorkerRegistration> {
 /** The browser's current subscription, if any. */
 export async function currentSubscription(): Promise<PushSubscription | null> {
   if (pushSupport() !== 'supported') return null;
+  await retireOldRegistration().catch(() => undefined);
   const reg = await navigator.serviceWorker.getRegistration(SW_SCOPE);
   return reg ? reg.pushManager.getSubscription() : null;
 }
@@ -113,7 +135,7 @@ export async function disablePush(authToken?: string): Promise<void> {
 }
 
 /**
- * Called on sign-out: this browser must stop receiving the admin's notifications
+ * Called on sign-out: this browser must stop receiving the account's notifications
  * before the next person uses it. Takes the token because sign-out clears it at once.
  * Best effort; never blocks signing out.
  */

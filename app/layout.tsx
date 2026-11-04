@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { shareMeta } from "@/lib/seo";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { MultipleSchemaComponent } from "@/lib/schema-component";
-import { organizationSchema, localBusinessSchema } from "@/lib/schemas";
-import { BUSINESS_AREA, SITE_BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { organizationSchema, localBusinessSchema, websiteSchema } from "@/lib/schemas";
+import { BUSINESS_AREA, SITE_ALTERNATE_NAMES, SITE_BASE_URL, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import Icon from '@/components/ui/Icon';
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
@@ -35,10 +37,14 @@ export const metadata: Metadata = {
   applicationName: SITE_NAME,
   keywords: [
     SITE_NAME,
+    ...SITE_ALTERNATE_NAMES,
+    "gym in Ayat",
     "gym Ayat Noah",
     "gym Meskelegna",
-    "gym Addis Ababa",
+    "gym in Addis Ababa",
     "fitness Addis Ababa",
+    "24/7 gym Addis Ababa",
+    "Muay Thai Addis Ababa",
     "gym membership",
   ],
   robots: "index, follow",
@@ -74,20 +80,16 @@ export default function RootLayout({
       className={`dark ${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable}`}
     >
       <head>
-        {/* Material Symbols Font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
         {/* JSON-LD Structured Data */}
         <MultipleSchemaComponent
-          schemas={[organizationSchema(), localBusinessSchema()]}
+          schemas={[websiteSchema(), organizationSchema(), localBusinessSchema()]}
         />
       </head>
       <body
         className={`bg-background text-on-background overflow-x-hidden antialiased`}
       >
-        {children}
+        {/* One sign-in state for the whole site, so moving between areas never re-checks it. */}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

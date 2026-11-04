@@ -2,9 +2,12 @@
 Builds the site's brand images.
 
   python scripts/brand_assets.py icons [path/to/logo.png]
-      Favicons, PWA icons, apple-touch icon, the social share image (og-image.png)
-      and public/logo.png, from the logo. Without a path, uses public/logo-source.png,
+      Favicons, PWA icons and apple-touch icon from the logo, then runs "share". Without a path, uses public/logo-source.png,
       or draws a text placeholder if that is missing too.
+
+  python scripts/brand_assets.py share
+      The social share image (og-image.png) and public/logo.png, from the navbar logo
+      public/brand/thrive-logo.png (white and blue on black).
 
   python scripts/brand_assets.py placeholders
       Placeholder photos under public/images/ (hero, facilities, story, staff).
@@ -85,34 +88,33 @@ def square_icon(logo: Image.Image, size: int, bg=(255, 255, 255), pad_ratio=0.12
     return canvas
 
 
+def ink_box(img: Image.Image, pad: int = 0):
+    """Bounding box of the non-black part of a logo drawn on black."""
+    l, t, r, b = img.convert("L").point(lambda v: 255 if v > 40 else 0).getbbox()
+    return max(0, l - pad), max(0, t - pad), min(img.width, r + pad), min(img.height, b + pad)
+
+
 def og_image(logo: Image.Image) -> Image.Image:
-    """1200x630 social share card: the logo over a darkened gym photo, plus hours and place."""
+    """1200x630 social share card: the navbar logo centred on black."""
     w, h = 1200, 630
-    img = Image.new("RGBA", (w, h), BLACK + (255,))
-    photo_path = PUBLIC / "images" / "hero.jpg"
-    if photo_path.exists():
-        from PIL import ImageOps, ImageEnhance
-        photo = ImageOps.fit(Image.open(photo_path).convert("RGB"), (w, h), Image.LANCZOS)
-        photo = ImageEnhance.Brightness(photo).enhance(0.45)
-        img.paste(photo.convert("RGBA"), (0, 0))
-    # Darken towards the bottom so the text reads.
-    shade = Image.new("L", (1, h))
-    for y in range(h):
-        shade.putpixel((0, y), int(40 + 170 * (y / h) ** 1.4))
-    img.alpha_composite(Image.merge("RGBA", (
-        Image.new("L", (w, h), 0), Image.new("L", (w, h), 0), Image.new("L", (w, h), 0),
-        shade.resize((w, h)),
-    )))
-
-    mark = trim(logo).copy()
-    mark.thumbnail((640, 300), Image.LANCZOS)
-    img.alpha_composite(mark, ((w - mark.width) // 2, 70))
-
-    d = ImageDraw.Draw(img)
-    centered(d, (0, 400, w, 470), "Community-focused gym in Haile Garment, Addis Ababa", font(34), (255, 255, 255))
-    centered(d, (0, 470, w, 520), "Open every day  ·  6 AM – 9 PM  ·  091 070 4845", font(26, bold=False), (200, 200, 200))
-    d.rectangle([0, h - 16, w, h], fill=PRIMARY)
+    img = Image.new("RGB", (w, h), BLACK)
+    mark = logo.convert("RGB").crop(ink_box(logo))
+    mark.thumbnail((860, 380), Image.LANCZOS)
+    img.paste(mark, ((w - mark.width) // 2, (h - mark.height) // 2))
     return img
+
+
+def build_share():
+    logo = Image.open(PUBLIC / "brand" / "thrive-logo.png").convert("RGBA")
+    og_image(logo).save(PUBLIC / "og-image.png", optimize=True)
+    # Square logo for search results and structured data (Google wants at least 112px).
+    size = 512
+    square = Image.new("RGB", (size, size), BLACK)
+    mark = logo.convert("RGB").crop(ink_box(logo))
+    mark.thumbnail((int(size * 0.86), int(size * 0.86)), Image.LANCZOS)
+    square.paste(mark, ((size - mark.width) // 2, (size - mark.height) // 2))
+    square.save(PUBLIC / "logo.png", optimize=True)
+    print("og-image.png and logo.png written.")
 
 
 def build_icons(path: Path | None):
@@ -139,8 +141,8 @@ def build_icons(path: Path | None):
     ico.save(fav / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
     ico.save(ROOT / "app" / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
 
-    og_image(logo).convert("RGB").save(PUBLIC / "og-image.png", optimize=True)
-    print("Icons, logo.png and og-image.png written.")
+    build_share()
+    print("Icons written.")
 
 
 # --------------------------------------------------------------------------- placeholders
@@ -206,10 +208,12 @@ def build_placeholders(force: bool):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if not args or args[0] not in ("icons", "placeholders"):
+    if not args or args[0] not in ("icons", "share", "placeholders"):
         print(__doc__)
         sys.exit(1)
     if args[0] == "icons":
         build_icons(Path(args[1]) if len(args) > 1 else None)
+    elif args[0] == "share":
+        build_share()
     else:
         build_placeholders("--force" in args)

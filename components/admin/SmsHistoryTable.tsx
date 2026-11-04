@@ -27,6 +27,15 @@ export default function SmsHistoryTable() {
     fetchHistory();
   }, [fetchHistory]);
 
+  // The server looks up delivery whenever the history is loaded; while something is
+  // still on its way, load it again every 30 seconds.
+  const hasPending = (history?.data ?? []).some((m) => m.status === 'queued' || m.status === 'sent');
+  useEffect(() => {
+    if (!hasPending) return;
+    const id = setInterval(fetchHistory, 30_000);
+    return () => clearInterval(id);
+  }, [hasPending, fetchHistory]);
+
   const getStatusBadge = (status: string) => {
     const statusLower = status.toLowerCase();
     const styles: Record<string, string> = {
@@ -78,13 +87,18 @@ export default function SmsHistoryTable() {
     {
       key: 'status',
       header: 'Status',
-      render: (item: SmsHistory) => getStatusBadge(item.status),
+      render: (item: SmsHistory) => (
+        <div className="max-w-xs">
+          {getStatusBadge(item.status)}
+          {item.errorMessage && <p className="text-red-300 text-xs mt-1 whitespace-normal">{item.errorMessage}</p>}
+        </div>
+      ),
     },
     {
       key: 'sentAt',
-      header: 'Sent At',
+      header: 'Date',
       render: (item: SmsHistory) => (
-        <span className="text-white/60 text-sm">{formatDate(item.sentAt)}</span>
+        <span className="text-white/60 text-sm">{formatDate(item.sentAt ?? item.createdAt)}</span>
       ),
     },
   ];

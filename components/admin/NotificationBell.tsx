@@ -5,11 +5,22 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { notificationsApi, AppNotification } from '@/lib/api';
 import { restorePush } from '@/lib/push';
-import { notificationIcon, notifyNotificationsChanged, onNotificationsChanged, timeAgo } from '@/lib/notifications';
+import {
+  notificationIcon,
+  notificationsPath,
+  notifyNotificationsChanged,
+  onNotificationsChanged,
+  timeAgo,
+} from '@/lib/notifications';
+import { useAuth } from '@/contexts/AuthContext';
+import Icon from '@/components/ui/Icon';
 
 const POLL_MS = 30_000;
 
+/** The header bell, for every role: unread count, latest few, and a link to all. */
 export default function NotificationBell() {
+  const { user } = useAuth();
+  const allPath = notificationsPath(user?.role);
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<AppNotification[] | null>(null);
@@ -101,7 +112,7 @@ export default function NotificationBell() {
       setCount((c) => Math.max(0, c - 1));
       notificationsApi.markRead([n.id]).then(notifyNotificationsChanged).catch(() => undefined);
     }
-    router.push(n.url);
+    router.push(n.url || allPath);
   };
 
   const markAll = async () => {
@@ -122,7 +133,7 @@ export default function NotificationBell() {
         className="relative p-2 rounded-lg text-white/60 hover:bg-surface-dark-lighter hover:text-white transition-colors"
         aria-label={count ? `Notifications, ${count} unread` : 'Notifications'}
       >
-        <span className="material-symbols-outlined text-2xl">notifications</span>
+        <Icon name="notifications" className="text-2xl" />
         {count > 0 && (
           <span className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
             {count > 99 ? '99+' : count}
@@ -154,7 +165,7 @@ export default function NotificationBell() {
                     n.read ? 'opacity-60' : ''
                   }`}
                 >
-                  <span className="material-symbols-outlined text-primary mt-0.5">{notificationIcon(n.type)}</span>
+                  <Icon name={notificationIcon(n.type)} className="text-primary mt-0.5" />
                   <span className="flex-1 min-w-0">
                     <span className="flex items-center gap-2">
                       <span className="text-white text-sm font-medium truncate">{n.title}</span>
@@ -168,7 +179,7 @@ export default function NotificationBell() {
             )}
           </div>
           <Link
-            href="/admin/notifications"
+            href={allPath}
             onClick={() => setOpen(false)}
             className="block text-center py-3 text-sm text-primary border-t border-surface-dark-lighter hover:bg-surface-dark-lighter/50"
           >

@@ -20,7 +20,7 @@ export function homeFor(role: Role | string | undefined): string {
     case 'trainer':
       return '/trainer';
     case 'member':
-      return '/member';
+      return '/member/dashboard';
     default:
       return '/login';
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import Icon from '@/components/ui/Icon';
 
 /**
  * A row of cards with one card centred and highlighted at a time; its neighbours sit
@@ -152,7 +153,7 @@ export function Carousel({
             aria-label="Previous"
             className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors disabled:cursor-default ${arrow}`}
           >
-            <span className="material-symbols-outlined text-[22px]">chevron_left</span>
+            <Icon name="chevron_left" className="text-[22px]" />
           </button>
           <span className={`mono w-14 text-center ${tone === "dark" ? "text-white/50" : "text-night/50"}`}>
             {index + 1} / {count}
@@ -164,7 +165,7 @@ export function Carousel({
             aria-label="Next"
             className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors disabled:cursor-default ${arrow}`}
           >
-            <span className="material-symbols-outlined text-[22px]">chevron_right</span>
+            <Icon name="chevron_right" className="text-[22px]" />
           </button>
         </div>
       )}

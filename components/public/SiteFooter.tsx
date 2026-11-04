@@ -11,7 +11,8 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           <nav aria-label="Explore Thrive"><h2>Explore</h2>
             <Link href="/#home">Home</Link><Link href="/about">About</Link><Link href="/about#facilities">Facilities</Link><Link href="/contact">Contact</Link>
             <Link href="/services">Offerings</Link><Link href="/pricing">Prices</Link>
-            <Link href="/faq">FAQ</Link><Link href="/login">Member & staff sign in</Link>
+            <Link href="/faq">FAQ</Link>
+            <Link href="/terms">Terms</Link><Link href="/refund-policy">Refund Policy</Link>
           </nav>
           <nav aria-label="Training services"><h2>Training</h2>
             <Link href="/services#strength-and-conditioning">Strength & conditioning</Link>
@@ -27,7 +28,7 @@ export default function SiteFooter({ onJoinClick }: { onJoinClick: () => void })
           <nav aria-label="Visit Thrive"><h2>Visit us</h2>
             <a href="https://www.google.com/maps/dir/?api=1&destination=Thrive+Health+%26+Fitness%2C+Cheers+meskelegna%2C+Ayat+Noah%2C+Addis+Ababa" target="_blank" rel="noopener noreferrer">Get directions</a>
             <a href="tel:+251970084408">097 008 4408</a><a href="tel:+251912190603">091 219 0603</a>
-            <a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Addis Ababa, Ethiopia</a>
+            <a href="https://maps.google.com/?cid=2794173722916044271" target="_blank" rel="noopener noreferrer">Ayat Noah, Addis Ababa</a>
             <span>Open 24 hours, every day</span>
           </nav>
         </div>

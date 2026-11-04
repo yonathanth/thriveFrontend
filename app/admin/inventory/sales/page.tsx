@@ -12,6 +12,8 @@ import {
 import DataTable, { Pagination, type Column } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
 import { dayValue, describeQty, formatEtb, formatWhen } from '@/lib/inventory';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
+import Icon from '@/components/ui/Icon';
 
 type Preset = 'today' | 'month' | 'year' | 'custom';
 
@@ -154,7 +156,7 @@ export default function InventorySalesPage() {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <Link href="/admin/inventory" className="text-white/50 hover:text-white text-sm inline-flex items-center gap-1">
-            <span className="material-symbols-outlined text-base">arrow_back</span>
+            <Icon name="arrow_back" className="text-base" />
             Inventory
           </Link>
           <h1 className="text-white text-2xl font-bold mt-1">Inventory sales</h1>
@@ -162,6 +164,7 @@ export default function InventorySalesPage() {
             Sales booked from staff stock reports. They are part of the income on the Transactions page, shown here on
             their own.
           </p>
+          <FinanceFromTag className="mt-2" />
         </div>
       </div>
 

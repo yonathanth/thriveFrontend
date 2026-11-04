@@ -8,6 +8,7 @@ import {
   PaginatedResponse,
 } from '@/lib/api';
 import StatsCard from '@/components/admin/StatsCard';
+import Icon from '@/components/ui/Icon';
 
 export default function ServicesPage() {
   const [services, setServices] = useState<PaginatedResponse<Service> | null>(null);
@@ -150,9 +151,7 @@ export default function ServicesPage() {
         </div>
       ) : services?.data.length === 0 ? (
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-12 text-center">
-          <span className="material-symbols-outlined text-4xl text-white/40 mb-2">
-            category
-          </span>
+          <Icon name="category" className="text-4xl text-white/40 mb-2" />
           <p className="text-white/60">No services found</p>
         </div>
       ) : (
@@ -167,9 +166,7 @@ export default function ServicesPage() {
                 <div className="p-6">
                   <div className="flex items-start mb-4">
                     <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-2xl">
-                        fitness_center
-                      </span>
+                      <Icon name="fitness_center" className="text-2xl" />
                     </div>
                   </div>
 
@@ -198,7 +195,7 @@ export default function ServicesPage() {
                   )}
 
                   <div className="flex items-center gap-2 text-white/60 text-sm mb-4">
-                    <span className="material-symbols-outlined text-lg">schedule</span>
+                    <Icon name="schedule" className="text-lg" />
                     <span>{formatDuration(service.duration, service.durationUnit)}</span>
                   </div>
 

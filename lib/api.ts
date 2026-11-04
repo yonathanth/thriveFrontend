@@ -2,7 +2,7 @@
 // TODO: domain not decided yet. Set NEXT_PUBLIC_API_URL at build time.
 import type { Role } from './roles';
 
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.thrivegym.com').replace(/\/+$/, '');
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.thrivefitnesseth.com').replace(/\/+$/, '');
 
 // Types based on gym-api DTOs
 export interface AdminProfile {
@@ -20,6 +20,8 @@ export interface AdminProfile {
    * account's overrides). Only the profile endpoint returns them.
    */
   permissions?: string[];
+  /** Linked to a member of staff in the gym app: they have payslips. */
+  isStaff?: boolean;
 }
 
 export interface ProfileUpdate {
@@ -342,9 +344,11 @@ export interface SmsResponse {
   to: string;
 }
 
-export interface SmsBalance {
-  balance: string;
-  estimatedMessages: number;
+/** How a batch went; each failure reason is in the history. */
+export interface SmsBatchResult {
+  sent: number;
+  failed: number;
+  firstError: string | null;
 }
 
 export interface SmsHistory {
@@ -354,14 +358,16 @@ export interface SmsHistory {
   status: string;
   sentAt: Date | null;
   memberId?: number | null;
+  /** Why a failed message failed */
+  errorMessage?: string | null;
+  createdAt: Date;
 }
 
 export interface SmsStatus {
   messageId: string;
-  cost: string;
-  parts: number;
+  /** queued, sent, delivered or failed */
   status: string;
-  description: string;
+  segments: number | null;
 }
 
 export interface SmsTemplate {
@@ -400,6 +406,9 @@ function getToken(): string | null {
 }
 
 // Base fetch wrapper with auth
+/** How long a request may take before it is given up on. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
 async function apiFetch<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -420,8 +429,14 @@ async function apiFetch<T>(
     response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
+      // A request never waits forever: a sleeping server would otherwise leave the
+      // page spinning with no way out.
+      signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (err) {
+    if (err instanceof DOMException && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+      throw new ApiError(0, 'The server is taking too long to answer. Please try again in a moment.');
+    }
     const message =
       err instanceof TypeError && err.message === 'Failed to fetch'
         ? `Cannot reach the API at ${API_URL}. Make sure the gym-api server is running (e.g. \`npm run start:dev\` in gym-api) and that NEXT_PUBLIC_API_URL matches its port.`
@@ -588,6 +603,7 @@ export interface PotentialCustomer {
   convertedAt?: string | null;
   convertedToMemberId?: number | null;
   serviceId?: number | null;
+  serviceName?: string | null;
   notes?: string | null;
   age?: number | null;
   height?: string | null;
@@ -801,8 +817,12 @@ export const recordsApi = {
 };
 
 // Audit log: who changed what in the desktop app
+export type AuditSource = 'app' | 'web';
+
 export interface AuditEntry {
-  /** Desktop audit_log id */
+  /** Desktop app or website; ids are per source */
+  source: AuditSource;
+  /** Desktop audit_log id, or website audit id */
   id: number;
   actorUsername: string | null;
   actorRole: string | null;
@@ -819,6 +839,8 @@ export interface AuditEntry {
 }
 
 export interface AuditQuery extends PaginationQuery {
+  /** Only the desktop app's entries, or only the website's; both when omitted */
+  source?: AuditSource;
   area?: string;
   action?: string;
   actor?: string;
@@ -831,18 +853,73 @@ export const auditLogApi = {
   list: (query: AuditQuery = {}) =>
     apiFetch<{ data: AuditEntry[]; total: number; page: number; limit: number }>(`/api/audit-log${buildQueryString(query as Record<string, unknown>)}`),
 
-  get: (id: number) => apiFetch<AuditEntry>(`/api/audit-log/${id}`),
+  get: (id: number, source: AuditSource = 'app') =>
+    apiFetch<AuditEntry>(`/api/audit-log/${id}${source === 'web' ? '?source=web' : ''}`),
 
   filters: () => apiFetch<{ areas: string[]; actions: string[]; actors: string[] }>('/api/audit-log/filters'),
 };
 
-// Notifications (from desktop events) and Web Push
-export type NotificationType = 'payment' | 'package_changed' | 'start_date_changed';
+// Notifications and Web Push. Admins and managers also get the gym's desk notifications;
+// every account gets its own.
+export type NotificationType =
+  | 'payment'
+  | 'package_changed'
+  | 'start_date_changed'
+  | 'expiring_summary'
+  | 'payout_due'
+  | 'message'
+  | 'membership_expiring'
+  | 'membership_expired'
+  | 'payment_received'
+  | 'plan_changed'
+  | 'freeze_changed'
+  | 'progress_check_due'
+  | 'client_digest';
 
 export const NOTIFICATION_TYPE_LABELS: Record<NotificationType, string> = {
   payment: 'Payments',
   package_changed: 'Package changes',
   start_date_changed: 'Start date changes and renewals',
+  expiring_summary: 'Memberships ending this week',
+  payout_due: 'Staff pay due',
+  message: 'Messages from the gym',
+  membership_expiring: 'Membership ending soon',
+  membership_expired: 'Membership ended',
+  payment_received: 'Payments received',
+  plan_changed: 'Plan changes and renewals',
+  freeze_changed: 'Membership frozen or unfrozen',
+  progress_check_due: 'Progress check reminders',
+  client_digest: 'Clients to check on',
+};
+
+/** What each role can receive (the API enforces the same). */
+export const NOTIFICATION_TYPES_BY_ROLE: Record<string, NotificationType[]> = {
+  admin: ['payment', 'package_changed', 'start_date_changed', 'expiring_summary', 'payout_due', 'message'],
+  manager: ['package_changed', 'start_date_changed', 'expiring_summary', 'message'],
+  trainer: ['message', 'client_digest'],
+  member: ['message', 'membership_expiring', 'membership_expired', 'payment_received', 'plan_changed', 'freeze_changed', 'progress_check_due'],
+};
+
+/** Who a message from staff can go to. */
+export type MessageAudience =
+  | 'all_members'
+  | 'active_members'
+  | 'expiring_members'
+  | 'inactive_members'
+  | 'trainers'
+  | 'managers'
+  | 'all_staff'
+  | 'everyone';
+
+export const MESSAGE_AUDIENCE_LABELS: Record<MessageAudience, string> = {
+  all_members: 'All members',
+  active_members: 'Active members',
+  expiring_members: 'Members ending within 7 days',
+  inactive_members: 'Inactive members',
+  trainers: 'Trainers',
+  managers: 'Managers',
+  all_staff: 'All staff (admins, managers, trainers)',
+  everyone: 'Everyone',
 };
 
 export interface AppNotification {
@@ -884,6 +961,14 @@ export const notificationsApi = {
     apiFetch<void>('/api/notifications/read', { method: 'POST', body: JSON.stringify({ ids }) }),
 
   markAllRead: () => apiFetch<{ marked: number }>('/api/notifications/read-all', { method: 'POST' }),
+
+  /** How many active accounts a message would reach (admins and managers). */
+  audience: (audience: MessageAudience) =>
+    apiFetch<{ count: number }>(`/api/notifications/audience${buildQueryString({ audience })}`),
+
+  /** Sends a message, in-app and to devices (admins and managers). */
+  send: (input: { title: string; body: string; audience: MessageAudience }) =>
+    apiFetch<{ recipients: number }>('/api/notifications/send', { method: 'POST', body: JSON.stringify(input) }),
 };
 
 export const pushApi = {
@@ -918,6 +1003,212 @@ export const pushApi = {
     }),
 };
 
+// Progress: measurements from the gym app, photos, goals and check reminders
+export interface ProgressMeasurement {
+  id: number;
+  measuredAt: string;
+  bodyType: string | null;
+  weight: number | null;
+  bmi: number | null;
+  bodyFatPercent: number | null;
+  heartRate: number | null;
+  muscleMass: number | null;
+  leanBodyMass: number | null;
+  boneMass: number | null;
+  skeletalMuscleMass: number | null;
+  visceralFat: number | null;
+  subcutaneousFatPercent: number | null;
+  proteinPercent: number | null;
+  bmr: number | null;
+  bodyAge: number | null;
+}
+
+export interface ProgressPhoto {
+  id: number;
+  healthMetricId: number;
+  createdAt: string;
+  /** Only for the member's own photos */
+  visibleToTrainer?: boolean;
+  visibleToStaff?: boolean;
+}
+
+export interface ProgressData {
+  member: { id: number; fullName: string; gender: string | null; age: number | null };
+  measurements: ProgressMeasurement[];
+  photos: ProgressPhoto[];
+  goals: { metric: string; target: number; setByName: string | null }[];
+  schedule: { intervalDays: number; setByName: string | null; nextDue: string | null } | null;
+  standards: Record<string, unknown>[];
+  canSetSchedule: boolean;
+}
+
+export const progressApi = {
+  mine: () => apiFetch<ProgressData>('/api/progress/me'),
+  ofMember: (memberId: number) => apiFetch<ProgressData>(`/api/progress/member/${memberId}`),
+  /** target in the units shown (kg for masses); null removes the goal */
+  setGoal: (memberId: number | 'me', metric: string, target: number | null) =>
+    apiFetch<{ metric: string; target: number | null }>(
+      memberId === 'me' ? '/api/progress/me/goal' : `/api/progress/member/${memberId}/goal`,
+      { method: 'PUT', body: JSON.stringify({ metric, target }) },
+    ),
+  setSchedule: (memberId: number, intervalDays: number | null) =>
+    apiFetch<{ intervalDays: number | null }>(`/api/progress/member/${memberId}/schedule`, {
+      method: 'PUT',
+      body: JSON.stringify({ intervalDays }),
+    }),
+  addPhoto: (input: { healthMetricId: number; image: string; thumb: string; visibleToTrainer: boolean; visibleToStaff: boolean }) =>
+    apiFetch<{ id: number }>('/api/progress/photos', { method: 'POST', body: JSON.stringify(input) }),
+  setVisibility: (id: number, visibleToTrainer: boolean, visibleToStaff: boolean) =>
+    apiFetch<ProgressPhoto>(`/api/progress/photos/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ visibleToTrainer, visibleToStaff }),
+    }),
+  deletePhoto: (id: number) => apiFetch<void>(`/api/progress/photos/${id}`, { method: 'DELETE' }),
+  /** A photo as a local URL: images need the sign-in, so they are fetched, not linked. */
+  photoUrl: async (id: number, size: 'thumb' | 'full'): Promise<string> => {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/api/progress/photos/${id}/${size}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new ApiError(response.status, 'Could not load the photo');
+    return URL.createObjectURL(await response.blob());
+  },
+};
+
+// Website-only settings
+export const siteSettingsApi = {
+  /** The date website finances are counted from, or null (admins and managers). */
+  financeStart: () => apiFetch<{ date: string | null }>('/api/site-settings/finance-start'),
+  /** Sets (YYYY-MM-DD) or clears it (admins). */
+  setFinanceStart: (date: string | null) =>
+    apiFetch<{ date: string | null }>('/api/site-settings/finance-start', {
+      method: 'PUT',
+      body: JSON.stringify({ date: date ?? '' }),
+    }),
+};
+
+// Payroll: set up, calculated and paid here by admins. The gym app books each payment
+// as a "Salaries & commissions" expense.
+export interface PayoutLine {
+  kind: 'base' | 'deduction' | 'commission' | string;
+  label: string;
+  amount: number;
+}
+
+/** building: the period is running (an estimate); due: ended, waiting to be paid; paid: paid, figures frozen. */
+export type PayoutStatus = 'building' | 'due' | 'paid';
+
+export interface Payout {
+  id: number;
+  staffLocalId: number;
+  staffName: string;
+  periodStart: string;
+  periodLast: string;
+  status: PayoutStatus;
+  calculatedAmount: number;
+  lines: PayoutLine[];
+  computedAt: string | null;
+  payment: {
+    paidAmount: number;
+    paidDate: string;
+    paymentMethod: string | null;
+    note: string | null;
+    paidByName: string;
+    paidAt: string;
+    /** The gym app has its copy of this payment */
+    collected: boolean;
+  } | null;
+}
+
+export interface PayPayoutInput {
+  paidAmount: number;
+  paidDate: string;
+  paymentMethod?: string | null;
+  note?: string | null;
+}
+
+export type BaseType = 'none' | 'monthly' | 'daily';
+export type ShareScope = 'assigned_members' | 'addon_trainer' | 'drop_in_instructor' | 'service';
+export type ShareTarget = 'plan' | 'addon' | 'drop_in';
+
+export interface PaySetup {
+  baseType: BaseType;
+  baseAmount: number;
+  /** monthly on the start day, or every cycleDays days */
+  cycle: 'monthly' | 'days';
+  cycleDays: number;
+  /** YYYY-MM-DD */
+  cycleStart: string;
+  deductAbsence: boolean;
+  /** ISO weekdays, 1 = Monday */
+  workDays: number[];
+  active: boolean;
+}
+
+export interface RevenueShare {
+  id?: number | null;
+  scope: ShareScope;
+  targetKind: ShareTarget | null;
+  targetLocalId: number | null;
+  rateType: 'percent' | 'fixed';
+  rate: number;
+  /** In words, from the server */
+  description?: string;
+}
+
+export interface StaffPay {
+  staffLocalId: number;
+  name: string;
+  role: string | null;
+  status: string | null;
+  setup: (PaySetup & { updatedAt: string; updatedByName: string | null }) | null;
+  shares: RevenueShare[];
+  current: { periodStart: string; periodLast: string; amount: number } | null;
+  due: { count: number; amount: number };
+}
+
+export type PayTargets = Record<ShareTarget, { id: number; name: string }[]>;
+
+export const payrollApi = {
+  /** Admins */
+  staff: () => apiFetch<{ staff: StaffPay[]; targets: PayTargets }>('/api/payroll/staff'),
+  save: (staffLocalId: number, body: { setup: PaySetup; shares: RevenueShare[] }) =>
+    apiFetch<StaffPay>(`/api/payroll/staff/${staffLocalId}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        // Only the setup itself: a saved setup also carries who changed it and when.
+        setup: {
+          baseType: body.setup.baseType,
+          baseAmount: body.setup.baseAmount,
+          cycle: body.setup.cycle,
+          cycleDays: body.setup.cycleDays,
+          cycleStart: body.setup.cycleStart,
+          deductAbsence: body.setup.deductAbsence,
+          workDays: body.setup.workDays,
+          active: body.setup.active,
+        },
+        shares: body.shares.map(({ id, scope, targetKind, targetLocalId, rateType, rate }) => ({
+          id: id ?? null,
+          scope,
+          targetKind,
+          targetLocalId,
+          rateType,
+          rate,
+        })),
+      }),
+    }),
+  payouts: () => apiFetch<{ payouts: Payout[]; paymentMethods: string[] }>('/api/payroll/payouts'),
+  pay: (id: number, input: PayPayoutInput) =>
+    apiFetch<Payout>(`/api/payroll/payouts/${id}/pay`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+  unpay: (id: number) => apiFetch<Payout>(`/api/payroll/payouts/${id}/unpay`, { method: 'POST' }),
+  /** The signed-in staff member's own payslips */
+  mine: () => apiFetch<Payout[]>('/api/payslips/me'),
+};
+
 // Sync API
 export const syncApi = {
   getLastSync: () => apiFetch<{ lastSyncAt: string | null }>('/api/sync/last-sync'),
@@ -934,8 +1225,10 @@ export const healthMetricsApi = {
     apiFetch<HealthMetric | null>(`/api/health-metrics/member/${memberId}/latest`),
 };
 
-// SMS API
-export type OutreachKind = 'absent' | 'inactive';
+// SMS API (sent through SMS Ethiopia; the website only sends by hand)
+
+/** Member lists to text: everyone, active, expiring soon, absent, or inactive. */
+export type OutreachKind = 'all' | 'active' | 'expiring' | 'absent' | 'inactive';
 
 export interface OutreachCandidate {
   /** Website member id */
@@ -943,17 +1236,23 @@ export interface OutreachCandidate {
   fullName: string;
   phoneNumber: string;
   serviceName: string | null;
-  /** Days since last visit (absent) or since the membership ended (inactive) */
+  status: string;
+  /** Local date the membership ends, YYYY-MM-DD */
+  expiryDate: string | null;
+  /** Days until the membership ends (negative once it has) */
+  daysLeft: number | null;
+  /** Days since last visit (absent), since the membership ended (inactive), or until it ends (others) */
   days: number;
 }
 
 export const smsOutreachApi = {
-  /** Members absent / inactive between minDays and maxDays (either end open when omitted). */
+  /** Members on a list, with `days` between minDays and maxDays (each list has its own default). */
   candidates: (kind: OutreachKind, minDays?: number, maxDays?: number) =>
     apiFetch<OutreachCandidate[]>(`/api/sms/outreach${buildQueryString({ kind, minDays, maxDays })}`),
 
+  /** Each chosen member gets the template with their own details filled in. */
   send: (kind: OutreachKind, memberIds: number[], minDays?: number, template?: string, maxDays?: number) =>
-    apiFetch<{ sent: number; skipped: number; campaignIds: string[] }>('/api/sms/outreach/send', {
+    apiFetch<SmsBatchResult & { skipped: number }>('/api/sms/outreach/send', {
       method: 'POST',
       body: JSON.stringify({ kind, memberIds, minDays, maxDays, template: template || undefined }),
     }),
@@ -966,22 +1265,17 @@ export const smsApi = {
       body: JSON.stringify({ phone, message, memberId }),
     }),
 
-  sendBulk: (phones: string[], message: string, campaign?: string) =>
-    apiFetch<{ campaignId: string | null; count: number }>('/api/sms/bulk', {
+  sendBulk: (phones: string[], message: string) =>
+    apiFetch<SmsBatchResult>('/api/sms/bulk', {
       method: 'POST',
-      body: JSON.stringify({ phones, message, campaign }),
+      body: JSON.stringify({ phones, message }),
     }),
 
-  sendPersonalized: (
-    recipients: Array<{ phone: string; message: string }>,
-    campaign?: string
-  ) =>
-    apiFetch<{ campaignId: string | null; count: number }>('/api/sms/personalized', {
+  sendPersonalized: (recipients: Array<{ phone: string; message: string; memberId?: number }>) =>
+    apiFetch<SmsBatchResult>('/api/sms/personalized', {
       method: 'POST',
-      body: JSON.stringify({ recipients, campaign }),
+      body: JSON.stringify({ recipients }),
     }),
-
-  getBalance: () => apiFetch<SmsBalance>('/api/sms/balance'),
 
   getStatus: (messageId: string) =>
     apiFetch<SmsStatus>(`/api/sms/status/${encodeURIComponent(messageId)}`),
@@ -1194,6 +1488,8 @@ export interface MyMembership extends MembershipSummary {
 export interface MyHistory {
   planHistory: DesktopRow[];
   freezeHistory: DesktopRow[];
+  /** Payments before this date (YYYY-MM-DD) are left out; null when all are shown */
+  financeFrom: string | null;
   payments: {
     id: number;
     date: string;
@@ -1207,8 +1503,107 @@ export interface MyHistory {
   }[];
 }
 
+export interface RenewalOptions {
+  canPay: boolean;
+  /** Why online renewal is not possible right now */
+  reason: string | null;
+  currentPlanId: number | null;
+  endDate: string;
+  status: string;
+  plans: {
+    id: number;
+    name: string;
+    price: number;
+    periodDays: number;
+    description: string | null;
+    current: boolean;
+  }[];
+}
+
+export interface MyOnlinePayment {
+  reference: string;
+  plan: string;
+  amount: number;
+  /** initiated | paid | failed | cancelled | applied | rejected | refunded */
+  status: string;
+  paidVia: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  note: string | null;
+}
+
+export interface AdminOnlinePayment {
+  reference: string;
+  /** renewal (a member) | join (someone new, from the website) */
+  kind: 'renewal' | 'join';
+  /** Empty for a join until the gym registers them */
+  memberLocalId: number | null;
+  memberName: string;
+  plan: string;
+  amount: number;
+  status: string;
+  paidVia: string | null;
+  phoneNumber: string | null;
+  providerTxnId: string | null;
+  paidAt: string | null;
+  createdAt: string;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  note: string | null;
+}
+
+export interface AdminOnlinePayments {
+  data: AdminOnlinePayment[];
+  totals: { status: string; count: number; amount: number }[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}
+
+/** Online renewal payments, read-only for managers; staff decide them in the gym app. */
+export const onlinePaymentsApi = {
+  list: (query: { status?: string; from?: string; to?: string; page?: number; limit?: number }) =>
+    apiFetch<AdminOnlinePayments>(`/api/online-payments${buildQueryString(query as Record<string, unknown>)}`),
+};
+
+export interface JoinPaymentStatus {
+  reference: string;
+  plan: string;
+  amount: number;
+  /** initiated | paid | failed | cancelled | applied | rejected | refunded */
+  status: string;
+  paidVia: string | null;
+}
+
+/**
+ * Joining from the website without an account: pay for a first plan online, or leave
+ * details for the front desk. The gym registers the member when it confirms.
+ */
+export const publicJoinApi = {
+  available: () => apiFetch<{ available: boolean }>('/api/public/join/available'),
+  startPayment: (body: { fullName: string; phoneNumber: string; email?: string; serviceLocalId: number; acceptedTerms: boolean }) =>
+    apiFetch<{ reference: string; checkoutUrl: string }>('/api/public/join', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  payment: (reference: string) => apiFetch<JoinPaymentStatus>(`/api/public/join/${encodeURIComponent(reference)}`),
+  /** Details only; the desk calls them and they pay there. `serviceId` is the catalog plan id. */
+  register: (body: { fullName: string; phoneNumber: string; email?: string; serviceId?: number; notes?: string }) =>
+    apiFetch<{ id: number }>('/api/public/register', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+};
+
 export const meApi = {
   membership: () => apiFetch<MyMembership>('/api/me/membership'),
+  renewalOptions: () => apiFetch<RenewalOptions>('/api/me/online-payments/options'),
+  onlinePayments: () => apiFetch<MyOnlinePayment[]>('/api/me/online-payments'),
+  onlinePayment: (reference: string) =>
+    apiFetch<MyOnlinePayment>(`/api/me/online-payments/${encodeURIComponent(reference)}`),
+  startRenewalPayment: (serviceLocalId: number, acceptedTerms: boolean) =>
+    apiFetch<{ reference: string; checkoutUrl: string }>('/api/me/online-payments', {
+      method: 'POST',
+      body: JSON.stringify({ serviceLocalId, acceptedTerms }),
+    }),
   attendance: (page = 1, limit = 20) =>
     apiFetch<Paged<CheckIn>>(`/api/me/attendance${buildQueryString({ page, limit })}`),
   history: () => apiFetch<MyHistory>('/api/me/history'),

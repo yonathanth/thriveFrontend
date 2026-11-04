@@ -10,6 +10,8 @@ import {
 } from '@/lib/api';
 import StatsCard from '@/components/admin/StatsCard';
 import { useAuth } from '@/contexts/AuthContext';
+import FinanceFromTag from '@/components/admin/FinanceFromTag';
+import Icon from '@/components/ui/Icon';
 
 export default function DashboardPage() {
   // Business figures (member totals, growth, revenue) need dashboard.business; the
@@ -64,9 +66,7 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <span className="material-symbols-outlined text-4xl text-red-400 mb-2">
-            error
-          </span>
+          <Icon name="error" className="text-4xl text-red-400 mb-2" />
           <p className="text-white/60">{error}</p>
           <button
             onClick={() => window.location.reload()}
@@ -85,6 +85,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-white text-2xl font-bold">Dashboard</h1>
         <p className="text-white/60 mt-1">Welcome back! Here&apos;s your gym overview.</p>
+        <FinanceFromTag className="mt-2" />
       </div>
 
       {/* Stats Grid */}
@@ -197,7 +198,7 @@ export default function DashboardPage() {
         {/* Revenue by Category */}
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-orange-400">category</span>
+            <Icon name="category" className="text-orange-400" />
             Revenue by Category
           </h3>
           {isLoading ? (
@@ -233,7 +234,7 @@ export default function DashboardPage() {
         {/* Member Growth */}
         <div className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6">
           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-emerald-400">trending_up</span>
+            <Icon name="trending_up" className="text-emerald-400" />
             Growth Metrics
           </h3>
           {isLoading ? (

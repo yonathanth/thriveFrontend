@@ -40,7 +40,7 @@ export default function AboutPage() {
         <FacilitiesSection onOpenVideo={() => setTourOpen(true)} />
 
         <section className="ts-people landing-container" aria-labelledby="people-title">
-          <div className="ts-people-heading"><h2 id="people-title">The people<br /><em>in your corner.</em></h2><div><p>Meet the Thrive team.<br />Different strengths. The same commitment to you.</p><Link className="ts-team-prices" href="/pricing#class-prices">See class prices<ArrowUpRight size={18} aria-hidden="true" /></Link></div></div>
+          <div className="ts-people-heading"><h2 id="people-title">The people<br /><em>in your corner.</em></h2><div><p>Meet the Thrive team.<br />Different strengths. The same commitment to you.</p><Link className="ts-team-prices" href="/pricing#classes">See class prices<ArrowUpRight size={18} aria-hidden="true" /></Link></div></div>
           <div className="ts-coaches">
             <article className="ts-coach"><div className="ts-coach-photo"><Image src="/facilities/training-space.jpg" alt="Open training space set up for circuit training" fill sizes="(max-width: 699px) 100vw, 33vw" /></div><div className="ts-coach-copy"><span>Circuit · Founder</span><h3>Awet</h3><p>Strength, stamina, and sweat. Wednesday mornings and Saturday afternoons.</p></div></article>
             <article className="ts-coach"><div className="ts-coach-photo"><Image src="/services/muay-thai.jpg" alt="Gloves representing the Muay Thai team" fill sizes="(max-width: 699px) 100vw, 33vw" /></div><div className="ts-coach-copy"><span>Muay Thai coach</span><h3>Duressa</h3><p>Technique, focus, and confidence. One session at a time.</p></div></article>

@@ -13,8 +13,6 @@ interface RequireRoleProps {
   /** Also needs at least one of these permissions; otherwise a "no access" notice. */
   permission?: Permission | Permission[];
   children: ReactNode;
-  /** Where to send signed-out visitors. */
-  loginPath?: string;
 }
 
 /**
@@ -22,7 +20,7 @@ interface RequireRoleProps {
  * password change; everyone else is sent where they belong. The backend enforces
  * the same rules; this only keeps people out of pages they cannot use.
  */
-export default function RequireRole({ roles, permission, children, loginPath = '/login' }: RequireRoleProps) {
+export default function RequireRole({ roles, permission, children }: RequireRoleProps) {
   const { user, isAuthenticated, isLoading, can } = useAuth();
   const router = useRouter();
 
@@ -30,10 +28,10 @@ export default function RequireRole({ roles, permission, children, loginPath = '
 
   useEffect(() => {
     if (isLoading || allowed) return;
-    if (!isAuthenticated || !user) router.replace(loginPath);
+    if (!isAuthenticated || !user) router.replace('/login');
     else if (user.mustChangePassword) router.replace('/change-password');
     else router.replace(homeFor(user.role));
-  }, [allowed, isAuthenticated, isLoading, loginPath, router, user]);
+  }, [allowed, isAuthenticated, isLoading, router, user]);
 
   if (!allowed) return <FullScreenSpinner />;
   // Right role, missing permission: say so rather than bouncing them around.

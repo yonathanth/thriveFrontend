@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Pagination } from '@/components/admin/DataTable';
+import ProgressView from '@/components/progress/ProgressView';
 import { trainerApi, AssignedMemberProfile, CheckIn, ApiError } from '@/lib/api';
 import {
   Card,
@@ -14,8 +15,8 @@ import {
   PlanHistory,
   formatDate,
 } from '@/components/portal/membership';
+import Icon from '@/components/ui/Icon';
 
-const num = (v: number | null, unit = '') => (v == null ? '—' : `${Math.round(v * 10) / 10}${unit}`);
 
 export default function TrainerMemberPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,7 +76,6 @@ export default function TrainerMemberPage() {
     return <div className="h-40 bg-surface-dark rounded-xl border border-surface-dark-lighter animate-pulse" />;
   }
 
-  const latest = member.healthMetrics[0];
 
   return (
     <div className="space-y-6">
@@ -89,7 +89,7 @@ export default function TrainerMemberPage() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={member.profileImageUrl} alt="" className="size-full object-cover" />
           ) : (
-            <span className="material-symbols-outlined text-3xl">person</span>
+            <Icon name="person" className="text-3xl" />
           )}
         </div>
         <div>
@@ -149,31 +149,7 @@ export default function TrainerMemberPage() {
         </Card>
 
         <Card title="Progress">
-          {!latest ? (
-            <p className="text-white/40 text-sm">No measurements yet.</p>
-          ) : (
-            <>
-              <p className="text-white/40 text-xs mb-4">Latest: {formatDate(latest.measuredAt)}</p>
-              <div className="grid grid-cols-2 gap-6">
-                <Detail label="Weight" value={num(latest.weight, ' kg')} />
-                <Detail label="BMI" value={num(latest.bmi)} />
-                <Detail label="Body fat" value={num(latest.bodyFatPercent, '%')} />
-                <Detail label="Muscle mass" value={num(latest.muscleMass, ' kg')} />
-              </div>
-              {member.healthMetrics.length > 1 && (
-                <ul className="mt-6 divide-y divide-surface-dark-lighter text-sm">
-                  {member.healthMetrics.slice(1).map((h) => (
-                    <li key={h.id} className="py-2 flex justify-between text-white/70">
-                      <span>{formatDate(h.measuredAt)}</span>
-                      <span>
-                        {num(h.weight, ' kg')} · BMI {num(h.bmi)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          )}
+          <ProgressView memberId={memberId} />
         </Card>
       </div>
 

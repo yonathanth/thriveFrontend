@@ -6,6 +6,7 @@ import DataTable, { Column, Pagination } from '@/components/admin/DataTable';
 import StatsCard from '@/components/admin/StatsCard';
 import { trainerApi, MembershipSummary, TrainerStats, ApiError } from '@/lib/api';
 import { ErrorNote, MembershipBadge, formatDate } from '@/components/portal/membership';
+import Icon from '@/components/ui/Icon';
 
 export default function TrainerHomePage() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function TrainerHomePage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={m.profileImageUrl} alt="" className="size-full object-cover" />
             ) : (
-              <span className="material-symbols-outlined text-lg">person</span>
+              <Icon name="person" className="text-lg" />
             )}
           </div>
           <div>

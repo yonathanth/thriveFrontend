@@ -140,6 +140,39 @@ export default function TransactionDetailPage({ params }: Props) {
           ))}
         </dl>
       </div>
+
+      <section className="bg-surface-dark rounded-xl border border-surface-dark-lighter p-6" aria-labelledby="notes-heading">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 id="notes-heading" className="text-white text-lg font-semibold">
+            Notes{tx.notes && tx.notes.length > 0 ? <span className="text-white/40 font-normal"> · {tx.notes.length}</span> : null}
+          </h2>
+          <p className="text-white/40 text-xs">Added in the gym app</p>
+        </div>
+        {!tx.notes || tx.notes.length === 0 ? (
+          <p className="text-white/50 text-sm mt-4">No notes on this payment.</p>
+        ) : (
+          <ol className="mt-4 space-y-4">
+            {tx.notes.map((note) => (
+              <li key={note.id} className="flex gap-3">
+                <span
+                  aria-hidden="true"
+                  className="size-8 shrink-0 rounded-full bg-surface-dark-lighter text-white/80 text-sm font-semibold uppercase flex items-center justify-center"
+                >
+                  {note.authorName.slice(0, 1)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm">
+                    <span className="text-white font-medium">{note.authorName}</span>
+                    {note.authorRole && <span className="text-white/40 capitalize"> · {note.authorRole}</span>}
+                    <time dateTime={note.createdAt} className="text-white/40"> · {formatDateTime(note.createdAt)}</time>
+                  </p>
+                  <p className="text-white/80 text-sm mt-1 whitespace-pre-wrap break-words">{note.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
     </div>
   );
 }

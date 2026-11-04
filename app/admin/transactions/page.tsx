@@ -288,6 +288,15 @@ export default function TransactionsPage() {
         <div>
           <p className="text-white font-medium">
             {transaction.description || transaction.category}
+            {(transaction.noteCount ?? 0) > 0 && (
+              <span
+                title={`${transaction.noteCount} note${transaction.noteCount === 1 ? '' : 's'}`}
+                className="ml-2 inline-flex items-center gap-1 rounded-full border border-surface-dark-lighter px-2 py-0.5 align-middle text-xs font-normal text-white/60"
+              >
+                <Icon name="notes" className="text-sm" />
+                {transaction.noteCount}
+              </span>
+            )}
           </p>
           {transaction.member && (
             <p className="text-white/40 text-xs">{transaction.member.fullName}</p>

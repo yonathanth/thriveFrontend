@@ -199,6 +199,19 @@ export interface Transaction {
   createdAt: string;
   /** Who took the payment in the gym app; only on a single transaction */
   recordedBy?: { username: string; role: string | null; auditId: number | null } | null;
+  /** How many notes it has; on lists */
+  noteCount?: number;
+  /** Notes added in the gym app, oldest first; only on a single transaction */
+  notes?: TransactionNote[];
+}
+
+/** A note added to a transaction in the gym app. Notes are never edited or deleted. */
+export interface TransactionNote {
+  id: number;
+  body: string;
+  authorName: string;
+  authorRole: string | null;
+  createdAt: string;
 }
 
 export interface TransactionStats {

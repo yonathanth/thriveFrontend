@@ -8,7 +8,7 @@ import Navbar from './Navbar';
 import SiteFooter from './SiteFooter';
 import { useAuth } from '@/contexts/AuthContext';
 import { RenewModal } from '@/components/portal/RenewMembership';
-import { DAY_NAMES, formatTime, type CatalogAddon, type CatalogClass, type CatalogPlan } from '@/lib/catalog';
+import { DAY_NAMES, formatTime, type CatalogClass, type CatalogPlan } from '@/lib/catalog';
 import { formatBirr, formatPeriod, perMonth, type Package, type PricingSection } from '@/lib/public/packages';
 import { BUSINESS_CITY, BUSINESS_LOCATION_LINE, PHONE_2_DISPLAY, PHONE_2_E164, PHONE_DISPLAY, PHONE_E164 } from '@/lib/site';
 import './memberships.css';
@@ -23,11 +23,10 @@ const questions = [
 
 interface Props {
   sections: PricingSection[];
-  addons: CatalogAddon[];
   classes: CatalogClass[];
 }
 
-export default function PricingPage({ sections, addons, classes }: Props) {
+export default function PricingPage({ sections, classes }: Props) {
   const router = useRouter();
   const [renewPlan, setRenewPlan] = useState<number | null>(null);
 
@@ -37,12 +36,10 @@ export default function PricingPage({ sections, addons, classes }: Props) {
     [sections],
   );
   const groups = useMemo(() => sections.flatMap((s) => s.packages.filter((p) => p.group)), [sections]);
-  const addonsShown = addons.filter((a) => a.isFree || a.price > 0 || a.variants.some((v) => v.price > 0));
 
   const nav = [
     ...individual.map((s) => ({ id: s.id, label: s.label })),
     ...(groups.length ? [{ id: 'groups', label: 'Couples & groups' }] : []),
-    ...(addonsShown.length ? [{ id: 'add-ons', label: 'Add-ons' }] : []),
     ...(classes.length ? [{ id: 'class-prices', label: 'Timetable' }] : []),
     { id: 'questions', label: 'Questions' },
   ];
@@ -86,26 +83,6 @@ export default function PricingPage({ sections, addons, classes }: Props) {
             packages={groups}
             onRenew={setRenewPlan}
           />
-        )}
-
-        {addonsShown.length > 0 && (
-          <section id="add-ons" className="tm-section landing-container tp-section" aria-labelledby="add-ons-heading">
-            <div className="tp-section-heading"><h2 id="add-ons-heading">Add-<em>ons.</em></h2><p>Extras on top of a membership, added at the front desk.</p></div>
-            <div className="tp-addons">
-              {addonsShown.map((a) => (
-                <article key={a.id} className="tp-addon">
-                  <h3>{a.name}</h3>
-                  {a.description && <p>{a.description}</p>}
-                  <ul>
-                    {a.isFree ? <li><span>Included</span><strong>Free</strong></li>
-                      : a.variants.length ? a.variants.map((v) => <li key={v.name}><span>{formatPeriod(v.periodDays)}</span><strong>{formatBirr(v.price)} birr</strong></li>)
-                        : <li><span>Price</span><strong>{formatBirr(a.price)} birr</strong></li>}
-                  </ul>
-                  <a href={`tel:${PHONE_E164}`} className="tp-addon-link">Add at the desk<ArrowUpRight size={16} aria-hidden="true" /></a>
-                </article>
-              ))}
-            </div>
-          </section>
         )}
 
         {classes.length > 0 && (

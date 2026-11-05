@@ -34,14 +34,6 @@
 .tp-plan .tm-plan-amount strong { font-size: clamp(32px, 2.6vw, 40px); }
 .tp-plan-note { font-size: 13px; color: #8ea3ae; margin: 12px 0 26px; min-height: 1.5em; }
 
-.tp-addons { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
-.tp-addon { display: flex; flex-direction: column; gap: 12px; padding: 26px 24px; border-radius: 18px; background: #1b2429; border: 1px solid #ffffff0d; }
-.tp-addon h3 { font-size: 21px; font-weight: 500; letter-spacing: -.03em; }
-.tp-addon > p { font-size: 14px; color: #a9b4ba; line-height: 1.7; }
-.tp-addon ul { display: flex; flex-direction: column; gap: 8px; }
-.tp-addon li { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #a9b4ba; list-style: none; }
-.tp-addon li strong { color: #8ddfff; font-weight: 600; }
-.tp-addon-link { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; font-size: 14px; color: #8ddfff; }
 
 .tp-timetable ul { margin-top: 22px; }
 .tp-timetable li { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 14px; align-items: baseline; padding-block: 16px; border-bottom: 1px solid #ffffff12; list-style: none; }

@@ -14,5 +14,5 @@ export const revalidate = 60;
 
 export default async function Page() {
   const catalog = await getCatalog();
-  return <PricingPage sections={arrangePlans(catalog.plans)} addons={catalog.addons} classes={catalog.classes} />;
+  return <PricingPage sections={arrangePlans(catalog.plans)} classes={catalog.classes} />;
 }
